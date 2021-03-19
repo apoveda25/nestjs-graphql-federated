@@ -1,0 +1,19 @@
+app:
+  name: 'users-graphql'
+  host: 'http://localhost'
+  port: 5000
+
+arangodb:
+  urls:
+    - 'http://localhost:8529'
+  name: 'farmaco_dev'
+  username: 'farmaco_dev'
+  password: 'secret'
+  certs: []
+
+graphql:
+  introspection: true
+  playground: true
+  subscriptions: false
+  autoSchemaFile: true
+  sortSchema: true
