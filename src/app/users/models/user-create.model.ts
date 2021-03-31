@@ -1,9 +1,7 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { genSaltSync, hashSync } from 'bcrypt';
 import { CreateUserInput } from '../dto/create-user.input';
 import { User } from '../entities/user.entity';
-import { USER_CREATED } from '../user-events.contants';
 
 export class UserCreateModel {
   constructor(private input: CreateUserInput) {}
@@ -19,9 +17,12 @@ export class UserCreateModel {
     );
   }
 
-  commit(eventEmitter: EventEmitter2, event: CreateUserInput) {
-    console.log('UserCreateModel');
+  // commit(eventEmitter: EventEmitter2, event: CreateUserInput) {
+  //   console.log('UserCreateModel');
 
-    eventEmitter.emit(USER_CREATED, event);
+  //   eventEmitter.emit(USER_CREATED, event);
+  // }
+  commit(event: CreateUserInput) {
+    console.log('UserCreateModel');
   }
 }

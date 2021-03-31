@@ -1,35 +1,40 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
-import { ScopesService } from './scopes.service';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { Context, Mutation, Resolver } from '@nestjs/graphql';
+import { ContextGraphQL } from '../../shared/interfaces/context-graphql.interface';
+import { ScopesCreateCommand } from './commands/impl/scopes-create.command';
 import { Scope } from './entities/scope.entity';
-import { CreateScopeInput } from './dto/create-scope.input';
-import { UpdateScopeInput } from './dto/update-scope.input';
 
 @Resolver(() => Scope)
 export class ScopesResolver {
-  constructor(private readonly scopesService: ScopesService) {}
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+  ) {}
 
-  @Mutation(() => Scope)
-  createScope(@Args('createScopeInput') createScopeInput: CreateScopeInput) {
-    return this.scopesService.create(createScopeInput);
+  @Mutation(() => [Scope], {
+    name: 'scopesCreate',
+  })
+  async create(@Context('user') user: ContextGraphQL) {
+    return await this.commandBus.execute(new ScopesCreateCommand(user._id));
   }
 
-  @Query(() => [Scope], { name: 'scopes' })
-  findAll() {
-    return this.scopesService.findAll();
-  }
+  // @Query(() => [Scope], { name: 'scopes' })
+  // findAll() {
+  //   return this.scopesService.findAll();
+  // }
 
-  @Query(() => Scope, { name: 'scope' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.scopesService.findOne(id);
-  }
+  // @Query(() => Scope, { name: 'scope' })
+  // findOne(@Args('id', { type: () => Int }) id: number) {
+  //   return this.scopesService.findOne(id);
+  // }
 
-  @Mutation(() => Scope)
-  updateScope(@Args('updateScopeInput') updateScopeInput: UpdateScopeInput) {
-    return this.scopesService.update(updateScopeInput.id, updateScopeInput);
-  }
+  // @Mutation(() => Scope)
+  // updateScope(@Args('updateScopeInput') updateScopeInput: UpdateScopeInput) {
+  //   return this.scopesService.update(updateScopeInput.id, updateScopeInput);
+  // }
 
-  @Mutation(() => Scope)
-  removeScope(@Args('id', { type: () => Int }) id: number) {
-    return this.scopesService.remove(id);
-  }
+  // @Mutation(() => Scope)
+  // removeScope(@Args('id', { type: () => Int }) id: number) {
+  //   return this.scopesService.remove(id);
+  // }
 }

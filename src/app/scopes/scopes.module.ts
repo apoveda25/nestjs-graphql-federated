@@ -1,8 +1,17 @@
 import { Module } from '@nestjs/common';
-import { ScopesService } from './scopes.service';
+import { CqrsModule } from '@nestjs/cqrs';
+import { ScopesCommandHandlers } from './commands/handlers/index';
+import { ScopesEventHandlers } from './events/handlers/index';
+import { ScopesRepository } from './repositories/scopes.repository';
 import { ScopesResolver } from './scopes.resolver';
 
 @Module({
-  providers: [ScopesResolver, ScopesService]
+  imports: [CqrsModule],
+  providers: [
+    ScopesResolver,
+    ...ScopesCommandHandlers,
+    ...ScopesEventHandlers,
+    ScopesRepository,
+  ],
 })
 export class ScopesModule {}
