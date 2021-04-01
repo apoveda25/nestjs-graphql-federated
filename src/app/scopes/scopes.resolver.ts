@@ -1,8 +1,12 @@
+import { UsePipes, ValidationPipe } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { Context, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ContextGraphQL } from '../../shared/interfaces/context-graphql.interface';
+import { FindResourcePipe } from '../../shared/pipes/find-resource.pipe';
 import { ScopesCreateCommand } from './commands/impl/scopes-create.command';
+import { FindScopeInput } from './dto/find-scope.input';
 import { Scope } from './entities/scope.entity';
+import { ScopeFindQuery } from './queries/impl/scope-find.query';
 
 @Resolver(() => Scope)
 export class ScopesResolver {
@@ -18,10 +22,20 @@ export class ScopesResolver {
     return await this.commandBus.execute(new ScopesCreateCommand(user._id));
   }
 
-  // @Query(() => [Scope], { name: 'scopes' })
-  // findAll() {
-  //   return this.scopesService.findAll();
-  // }
+  @UsePipes(FindResourcePipe)
+  @Query(() => Scope, { name: 'scopeFind' })
+  async find(
+    @Args(
+      {
+        name: 'find',
+        type: () => FindScopeInput,
+      },
+      new ValidationPipe({ expectedType: FindScopeInput }),
+    )
+    findScopeInput: FindScopeInput,
+  ) {
+    return await this.queryBus.execute(new ScopeFindQuery(findScopeInput));
+  }
 
   // @Query(() => Scope, { name: 'scope' })
   // findOne(@Args('id', { type: () => Int }) id: number) {
