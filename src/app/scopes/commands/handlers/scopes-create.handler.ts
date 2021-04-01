@@ -1,9 +1,10 @@
-import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
-import { DocumentCollection, EdgeCollection } from 'arangojs/collection';
+import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateScopeDto } from '../../dto/create-scope.dto';
 import { Scope } from '../../entities/scope.entity';
-import { ScopeCreateModel } from '../../models/scope-create.model';
+import { ScopeCreatedEvent } from '../../events/impl/scope-created.event';
+import { ICollection } from '../../interfaces/scopes-command-handlers.interface';
+import { ScopeModel } from '../../models/scope.model';
 import { ScopesRepository } from '../../repositories/scopes.repository';
 import { SCOPES_ACTIONS } from '../../scopes.constant';
 import { ScopesCreateCommand } from '../impl/scopes-create.command';
@@ -12,36 +13,36 @@ import { ScopesCreateCommand } from '../impl/scopes-create.command';
 export class ScopesCreateCommandHandler
   implements ICommandHandler<ScopesCreateCommand> {
   constructor(
-    private readonly publisher: EventPublisher,
+    private readonly eventBus: EventBus,
     private readonly scopesRepository: ScopesRepository,
+    private readonly scopeModel: ScopeModel,
   ) {}
 
   async execute(command: ScopesCreateCommand): Promise<Scope[]> {
     const results: Scope[] = [];
     const collections = await this.scopesRepository.getCollections();
-
     const createScopes = this.buildData(collections, command.createdBy);
 
-    createScopes.map(async (scope) => {
-      const { name } = scope;
-      const scopeConflict = await this.scopesRepository.findOr({ name });
+    for (const scope of createScopes) {
+      const { _key, name } = scope;
+      const scopeConflict: Scope = await this.scopesRepository.findOr({
+        _key,
+        name,
+      });
 
-      const ScopeAggregate = this.publisher.mergeClassContext(ScopeCreateModel);
-      const aggregate = new ScopeAggregate(scope);
-      const scopeCreated = aggregate.create(scopeConflict);
+      const scopeCreated = this.scopeModel.create(scope, scopeConflict);
 
-      if (scopeCreated) aggregate.commit();
+      if (scopeCreated) results.push(scopeCreated);
+    }
 
-      if (scopeCreated) results.push(scope);
-    });
+    results.map((result) =>
+      this.eventBus.publish(new ScopeCreatedEvent(result)),
+    );
 
     return results;
   }
 
-  buildData(
-    collections: (DocumentCollection<any> & EdgeCollection<any>)[],
-    createdBy: string,
-  ): CreateScopeDto[] {
+  buildData(collections: ICollection[], createdBy: string): CreateScopeDto[] {
     const createScopes: CreateScopeDto[] = [];
 
     collections.map((collection) => {

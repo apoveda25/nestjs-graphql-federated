@@ -46,4 +46,12 @@ export class Scope {
     description: 'Example field (Users/3592b39d-0b79-45dc-a6d0-c8ba815cf350)',
   })
   updatedBy: string;
+
+  public static of(params: Partial<Scope>): Scope {
+    const playlist = new Scope();
+
+    Object.assign(playlist, params);
+
+    return playlist;
+  }
 }

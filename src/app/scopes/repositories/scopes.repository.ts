@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { aql } from 'arangojs/aql';
-import { DocumentCollection, EdgeCollection } from 'arangojs/collection';
+import { DocumentCollection } from 'arangojs/collection';
 import { IScope } from '../../../app/scopes/interfaces/scope.interfaces';
 import { ArangodbService } from '../../../arangodb/arangodb.service';
 import { InputTransform } from '../../../arangodb/providers/input-transform';
@@ -12,6 +12,7 @@ import {
 import { PaginationInput } from '../../../shared/dto/pagination.input';
 import { CreateScopeDto } from '../dto/create-scope.dto';
 import { Scope } from '../entities/scope.entity';
+import { ICollection } from '../interfaces/scopes-command-handlers.interface';
 
 @Injectable()
 export class ScopesRepository implements OnModuleInit {
@@ -29,9 +30,7 @@ export class ScopesRepository implements OnModuleInit {
     ) as DocumentCollection<Scope>;
   }
 
-  async getCollections(): Promise<
-    (DocumentCollection<any> & EdgeCollection<any>)[]
-  > {
+  async getCollections(): Promise<ICollection[]> {
     return await this.arangoService.collections(true);
   }
 
@@ -71,7 +70,7 @@ export class ScopesRepository implements OnModuleInit {
     return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
   }
 
-  async findOr(filters: IScope): Promise<Scope | null> {
+  async findOr(filters: IScope): Promise<Scope> {
     const _filters: IFilterToAQL[] = this.inputTransform.resourceToArray(
       filters,
       '==',
