@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CreateRoleInput } from '../dto/create-role.input';
 import { UpdateRoleInput } from '../dto/update-role.input';
 import { RoleCreateModel } from '../models/role-create.model';
@@ -7,10 +6,7 @@ import { RolesRepository } from '../repositories/roles.repository';
 
 @Injectable()
 export class RolesService {
-  constructor(
-    private readonly rolesRepository: RolesRepository,
-    private eventEmitter: EventEmitter2,
-  ) {}
+  constructor(private readonly rolesRepository: RolesRepository) {}
 
   async create(createRoleInput: CreateRoleInput[]) {
     const aggregates: RoleCreateModel[] = [];
@@ -37,8 +33,10 @@ export class RolesService {
       aggregates.push(aggregate);
     }
 
-    aggregates.map((aggregate, i) =>
-      aggregate.commit(this.eventEmitter, createRoleInput[i]),
+    aggregates.map(
+      (aggregate, i) =>
+        // aggregate.commit(this.eventEmitter, createRoleInput[i]),
+        aggregate,
     );
 
     return await this.rolesRepository.create(
