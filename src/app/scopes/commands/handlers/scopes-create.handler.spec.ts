@@ -1,17 +1,18 @@
-import { EventPublisher } from '@nestjs/cqrs';
+import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { Scope } from '../../entities/scope.entity';
-import { ScopeCreateModelFaker } from '../../models/scope-create-fake.model';
+import { ScopeCreatedEvent } from '../../events/impl/scope-created.event';
+import { ScopeModel } from '../../models/scope.model';
 import { ScopesRepository } from '../../repositories/scopes.repository';
-import { ScopesRepositoryFake } from '../../repositories/scopes.repository-fake';
 import { SCOPES_ACTIONS } from '../../scopes.constant';
 import { ScopesCreateCommandHandler } from './scopes-create.handler';
 
 describe('ScopesCreateCommandHandler', () => {
   let commandHandler: ScopesCreateCommandHandler;
   let scopesRepository: ScopesRepository;
-  let publisher: EventPublisher;
+  let scopeModel: ScopeModel;
+  let eventBus: EventBus;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -19,12 +20,16 @@ describe('ScopesCreateCommandHandler', () => {
         ScopesCreateCommandHandler,
         {
           provide: ScopesRepository,
-          useClass: ScopesRepositoryFake,
+          useFactory: () => ({ getCollections: jest.fn(), findOr: jest.fn() }),
         },
         {
-          provide: EventPublisher,
+          provide: ScopeModel,
+          useFactory: () => ({ create: jest.fn() }),
+        },
+        {
+          provide: EventBus,
           useFactory: () => ({
-            mergeClassContext: jest.fn(),
+            publish: jest.fn(),
           }),
         },
       ],
@@ -34,13 +39,15 @@ describe('ScopesCreateCommandHandler', () => {
       ScopesCreateCommandHandler,
     );
     scopesRepository = module.get<ScopesRepository>(ScopesRepository);
-    publisher = module.get<EventPublisher>(EventPublisher);
+    scopeModel = module.get<ScopeModel>(ScopeModel);
+    eventBus = module.get<EventBus>(EventBus);
   });
 
   it('should be defined', () => {
     expect(commandHandler).toBeDefined();
     expect(scopesRepository).toBeDefined();
-    expect(publisher).toBeDefined();
+    expect(scopeModel).toBeDefined();
+    expect(eventBus).toBeDefined();
   });
 
   describe('buildData', () => {
@@ -72,6 +79,7 @@ describe('ScopesCreateCommandHandler', () => {
       const collections = [{ name: nameCollection }];
       const createdBy = `Users/${faker.datatype.uuid()}`;
       const command = { createdBy };
+      const scopeConflict = null;
       const createScopes: Scope[] = SCOPES_ACTIONS.map((action) => {
         const _key = faker.datatype.uuid();
 
@@ -87,8 +95,9 @@ describe('ScopesCreateCommandHandler', () => {
           updatedBy: '',
         });
       });
-
-      const aggregate = new ScopeCreateModelFaker('');
+      const scopesCreatedEvent = createScopes.map(
+        (scope) => new ScopeCreatedEvent(scope),
+      );
 
       const scopesRepositoryGetCollectionsSpy = jest
         .spyOn(scopesRepository, 'getCollections')
@@ -100,19 +109,13 @@ describe('ScopesCreateCommandHandler', () => {
 
       const scopesRepositoryFindOrSpy = jest
         .spyOn(scopesRepository, 'findOr')
-        .mockResolvedValue(null);
+        .mockResolvedValue(scopeConflict);
 
-      const publisherMergeClassContextSpy = jest
-        .spyOn(publisher, 'mergeClassContext')
-        .mockImplementation();
+      const scopeModelCreateSpy = jest
+        .spyOn(scopeModel, 'create')
+        .mockReturnValue(createScopes[0]);
 
-      const scopeCreateModelCreateSpy = jest
-        .spyOn(aggregate, 'create')
-        .mockReturnValue();
-
-      const scopeCreateModelCommitSpy = jest
-        .spyOn(aggregate, 'commit')
-        .mockReturnValue();
+      const eventBusPublishSpy = jest.spyOn(eventBus, 'publish');
 
       /**
        * Act
@@ -127,12 +130,15 @@ describe('ScopesCreateCommandHandler', () => {
         collections,
         command.createdBy,
       );
-      expect(scopesRepositoryFindOrSpy).lastCalledWith({
-        name: createScopes[5].name,
+      expect(scopesRepositoryFindOrSpy).toHaveBeenCalledWith({
+        _key: createScopes[0]._key,
+        name: createScopes[0].name,
       });
-      expect(publisherMergeClassContextSpy).toHaveBeenCalled();
-      expect(scopeCreateModelCreateSpy).lastCalledWith(createScopes[5]);
-      expect(scopeCreateModelCommitSpy).toHaveBeenCalled();
+      expect(scopeModelCreateSpy).toHaveBeenCalledWith(
+        createScopes[0],
+        scopeConflict,
+      );
+      expect(eventBusPublishSpy).toHaveBeenCalledWith(scopesCreatedEvent[0]);
       expect(result.length).toEqual(6);
     });
   });

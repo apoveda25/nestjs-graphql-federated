@@ -2,7 +2,6 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContextGraphQL } from '../../shared/interfaces/context-graphql.interface';
 import { ScopesCreateCommand } from './commands/impl/scopes-create.command';
-import { Scope } from './entities/scope.entity';
 import { ScopesResolver } from './scopes.resolver';
 
 describe('ScopesResolver', () => {
@@ -12,7 +11,14 @@ describe('ScopesResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ScopesResolver, CommandBus, QueryBus],
+      providers: [
+        ScopesResolver,
+        {
+          provide: CommandBus,
+          useFactory: () => ({ execute: jest.fn() }),
+        },
+        QueryBus,
+      ],
     }).compile();
 
     resolver = module.get<ScopesResolver>(ScopesResolver);
@@ -35,8 +41,9 @@ describe('ScopesResolver', () => {
         _id: 'Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d',
         role: 'client',
       };
+      const scopesCreateCommand = new ScopesCreateCommand(context._id);
 
-      const resultExpected: Scope[] = [
+      const resultExpected = [
         {
           _id: 'Scopes/20f736ce-b6a0-4ed5-8062-47d32c844d3d',
           _key: '20f736ce-b6a0-4ed5-8062-47d32c844d3d',
@@ -50,9 +57,9 @@ describe('ScopesResolver', () => {
         },
       ];
 
-      jest
+      const commandBusExecuteSpy = jest
         .spyOn(commandBus, 'execute')
-        .mockReturnValue(new Promise((resolve) => resolve(resultExpected)));
+        .mockResolvedValue(resultExpected);
 
       /**
        * Act
@@ -62,9 +69,7 @@ describe('ScopesResolver', () => {
       /**
        * Assert
        */
-      expect(commandBus.execute).toHaveBeenCalledWith(
-        new ScopesCreateCommand(context._id),
-      );
+      expect(commandBusExecuteSpy).toHaveBeenCalledWith(scopesCreateCommand);
       expect(result).toEqual(resultExpected);
     });
   });
