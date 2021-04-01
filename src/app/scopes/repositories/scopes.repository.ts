@@ -9,6 +9,11 @@ import {
   ISortToAQL,
 } from '../../../arangodb/providers/object-to-aql.interface';
 import { PaginationInput } from '../../../shared/dto/pagination.input';
+import {
+  FILTER_DEFAULT,
+  PAGINATION_DEFAULT,
+  SORT_DEFAULT,
+} from '../../../shared/queries.constant';
 import { CreateScopeDto } from '../dto/create-scope.dto';
 import { Scope } from '../entities/scope.entity';
 import { ICollection } from '../interfaces/scopes-command-handlers.interface';
@@ -28,9 +33,9 @@ export class ScopesRepository {
   }
 
   async search({
-    filters = [],
-    sort = [],
-    pagination = { offset: 0, count: 30 },
+    filters = FILTER_DEFAULT,
+    sort = SORT_DEFAULT,
+    pagination = PAGINATION_DEFAULT,
   }: {
     filters?: IFilterToAQL[];
     sort?: ISortToAQL[];
