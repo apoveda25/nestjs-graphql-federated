@@ -2,6 +2,7 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContextGraphQL } from '../../shared/interfaces/context-graphql.interface';
 import { ScopesCreateCommand } from './commands/impl/scopes-create.command';
+import { ScopeFindQuery } from './queries/impl/scope-find.query';
 import { ScopesResolver } from './scopes.resolver';
 
 describe('ScopesResolver', () => {
@@ -70,6 +71,44 @@ describe('ScopesResolver', () => {
        * Assert
        */
       expect(commandBusExecuteSpy).toHaveBeenCalledWith(scopesCreateCommand);
+      expect(result).toEqual(resultExpected);
+    });
+  });
+
+  describe('find', () => {
+    it('should find a scope', async () => {
+      /**
+       * Arrange
+       */
+      const findScopeInput = { _key: '20f736ce-b6a0-4ed5-8062-47d32c844d3d' };
+      const createdBy = 'Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d';
+      const scopeFindQuery = new ScopeFindQuery(findScopeInput);
+
+      const resultExpected = {
+        _id: `Scopes/${findScopeInput._key}`,
+        _key: findScopeInput._key,
+        name: 'scopes_create',
+        action: 'CREATE',
+        collection: 'Scopes',
+        createdAt: Date.now(),
+        updatedAt: 0,
+        createdBy,
+        updatedBy: '',
+      };
+
+      const queryBusExecuteSpy = jest
+        .spyOn(queryBus, 'execute')
+        .mockResolvedValue(resultExpected);
+
+      /**
+       * Act
+       */
+      const result = await resolver.find(findScopeInput);
+
+      /**
+       * Assert
+       */
+      expect(queryBusExecuteSpy).toHaveBeenCalledWith(scopeFindQuery);
       expect(result).toEqual(resultExpected);
     });
   });

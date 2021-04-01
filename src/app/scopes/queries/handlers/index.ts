@@ -1,3 +1,3 @@
-import { ScopeFindHandler } from './scope-find.handler';
+import { ScopeFindQueryHandler } from './scope-find.handler';
 
-export const ScopesQueryHandlers = [ScopeFindHandler];
+export const ScopesQueryHandlers = [ScopeFindQueryHandler];
