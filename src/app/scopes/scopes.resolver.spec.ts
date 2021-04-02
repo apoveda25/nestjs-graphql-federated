@@ -4,6 +4,7 @@ import { InputTransform } from '../../arangodb/providers/input-transform';
 import { ContextGraphQL } from '../../shared/interfaces/context-graphql.interface';
 import { ScopesCreateCommand } from './commands/impl/scopes-create.command';
 import { ScopeFindQuery } from './queries/impl/scope-find.query';
+import { ScopesCountQuery } from './queries/impl/scopes-count.query';
 import { ScopesSearchQuery } from './queries/impl/scopes-search.query';
 import { ScopesResolver } from './scopes.resolver';
 
@@ -149,6 +150,33 @@ describe('ScopesResolver', () => {
        * Act
        */
       const result = await resolver.search(filters, sort, pagination);
+
+      /**
+       * Assert
+       */
+      expect(queryBusExecuteSpy).toHaveBeenCalledWith(scopesSearchQuery);
+      expect(result).toEqual(resultExpected);
+    });
+  });
+
+  describe('count', () => {
+    it('should count the scopes that match the applied filters', async () => {
+      /**
+       * Arrange
+       */
+      const filters = [];
+      const scopesSearchQuery = new ScopesCountQuery({ filters });
+
+      const resultExpected = 0;
+
+      const queryBusExecuteSpy = jest
+        .spyOn(queryBus, 'execute')
+        .mockResolvedValue(resultExpected);
+
+      /**
+       * Act
+       */
+      const result = await resolver.count(filters);
 
       /**
        * Assert

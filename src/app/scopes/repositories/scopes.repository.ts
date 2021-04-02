@@ -88,10 +88,7 @@ export class ScopesRepository {
       )
     `);
 
-    // return await cursor.reduce((acc: any, cur: any) => cur || acc, 0);
-    const result = await cursor.reduce((acc: any, cur: any) => cur || acc, 0);
-    console.log(result);
-    return result;
+    return await cursor.reduce((acc: any, cur: any) => cur || acc, 0);
   }
 
   async search({
