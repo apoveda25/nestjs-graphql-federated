@@ -9,6 +9,11 @@ import {
   ISortToAQL,
 } from '../../../arangodb/providers/object-to-aql.interface';
 import { PaginationInput } from '../../../shared/dto/pagination.input';
+import {
+  FILTER_DEFAULT,
+  PAGINATION_DEFAULT,
+  SORT_DEFAULT,
+} from '../../../shared/queries.constant';
 import { CreateScopeDto } from '../dto/create-scope.dto';
 import { Scope } from '../entities/scope.entity';
 import { ICollection } from '../interfaces/scopes-command-handlers.interface';
@@ -28,9 +33,9 @@ export class ScopesRepository {
   }
 
   async search({
-    filters = [],
-    sort = [],
-    pagination = { offset: 0, count: 30 },
+    filters = FILTER_DEFAULT,
+    sort = SORT_DEFAULT,
+    pagination = PAGINATION_DEFAULT,
   }: {
     filters?: IFilterToAQL[];
     sort?: ISortToAQL[];
@@ -44,7 +49,7 @@ export class ScopesRepository {
       RETURN doc
     `);
 
-    return await cursor.map((el) => el);
+    return await cursor.map((doc) => doc);
   }
 
   async findAnd(filters: IScope): Promise<Scope | null> {
@@ -80,12 +85,13 @@ export class ScopesRepository {
   }
 
   async create(createScopeDto: CreateScopeDto[]): Promise<Scope[]> {
-    const results = await this.arangoService
-      .collection(this.name)
-      .saveAll(createScopeDto, {
-        returnNew: true,
-      });
+    const cursor = await this.arangoService.query(aql`
+      FOR doc IN ${createScopeDto}
+      INSERT doc INTO ${this.arangoService.collection(this.name)}
+      OPTIONS { waitForSync: true }
+      RETURN doc
+    `);
 
-    return results.map((result) => result.new);
+    return await cursor.map((doc) => doc);
   }
 }
