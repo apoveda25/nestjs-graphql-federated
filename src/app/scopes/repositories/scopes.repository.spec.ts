@@ -56,7 +56,7 @@ describe('ScopesRepository', () => {
   });
 
   describe('getCollections', () => {
-    it('fetch all collections', async () => {
+    it('should fetch all collections', async () => {
       /**
        * Arrange
        */
@@ -79,48 +79,8 @@ describe('ScopesRepository', () => {
     });
   });
 
-  describe('search', () => {
-    it('search scopes', async () => {
-      /**
-       * Arrange
-       */
-      const filters = [];
-      const sort = [];
-      const pagination = { offset: 0, count: 30 };
-      const nameDocument = 'doc';
-
-      const arangoServiceQuerySpy = jest.spyOn(arangoService, 'query');
-      const objectToAQLFiltersToAQLSpy = jest.spyOn(
-        objectToAQL,
-        'filtersToAql',
-      );
-      const objectToAQLSortToAQLSpy = jest.spyOn(objectToAQL, 'sortToAql');
-      const objectToAQLPaginationToAQLSpy = jest.spyOn(
-        objectToAQL,
-        'paginationToAql',
-      );
-      aql.join = jest.fn();
-
-      /**
-       * Act
-       */
-      await provider.search({ filters, sort, pagination });
-
-      /**
-       * Assert
-       */
-      expect(arangoServiceQuerySpy).toHaveBeenCalled();
-      expect(objectToAQLFiltersToAQLSpy).toHaveBeenCalledWith(
-        filters,
-        nameDocument,
-      );
-      expect(objectToAQLSortToAQLSpy).toHaveBeenCalledWith(sort, nameDocument);
-      expect(objectToAQLPaginationToAQLSpy).toHaveBeenCalledWith(pagination);
-    });
-  });
-
   describe('findAnd', () => {
-    it('should return a scope', async () => {
+    it('should find a scope', async () => {
       /**
        * Arrange
        */
@@ -162,6 +122,7 @@ describe('ScopesRepository', () => {
         objectToAQL,
         'filtersToAql',
       );
+
       aql.join = jest.fn();
 
       /**
@@ -217,6 +178,7 @@ describe('ScopesRepository', () => {
         objectToAQL,
         'filtersToAql',
       );
+
       aql.join = jest.fn();
 
       /**
@@ -243,7 +205,7 @@ describe('ScopesRepository', () => {
   });
 
   describe('findOr', () => {
-    it('should return a scope', async () => {
+    it('should find a scope', async () => {
       /**
        * Arrange
        */
@@ -316,7 +278,7 @@ describe('ScopesRepository', () => {
       const name = 'Scopes';
       const filters = { collection: faker.random.word() };
       const separator = '==';
-      const operator = 'AND';
+      const operator = 'OR';
       const _filters = [
         { key: 'collection', value: filters.collection, operator, separator },
       ];
@@ -340,6 +302,7 @@ describe('ScopesRepository', () => {
         objectToAQL,
         'filtersToAql',
       );
+
       aql.join = jest.fn();
 
       /**
@@ -365,8 +328,107 @@ describe('ScopesRepository', () => {
     });
   });
 
+  describe('count', () => {
+    it('should count scopes', async () => {
+      /**
+       * Arrange
+       */
+      const name = 'Scopes';
+      const filters = [];
+      const nameDocument = 'doc';
+      const resultExpected = 0;
+
+      const arangoServiceQuerySpy = jest
+        .spyOn(arangoService, 'query')
+        .mockImplementation(jest.fn().mockReturnValue([resultExpected]));
+
+      const arangoServiceCollectionSpy = jest.spyOn(
+        arangoService,
+        'collection',
+      );
+
+      const objectToAQLFiltersToAQLSpy = jest.spyOn(
+        objectToAQL,
+        'filtersToAql',
+      );
+
+      aql.join = jest.fn();
+
+      /**
+       * Act
+       */
+      const result = await provider.count({ filters });
+
+      /**
+       * Assert
+       */
+      expect(arangoServiceQuerySpy).toHaveBeenCalled();
+      expect(arangoServiceCollectionSpy).toHaveBeenCalledWith(name);
+      expect(objectToAQLFiltersToAQLSpy).toHaveBeenCalledWith(
+        filters,
+        nameDocument,
+      );
+      expect(result).toEqual(resultExpected);
+    });
+  });
+
+  describe('search', () => {
+    it('should search scopes', async () => {
+      /**
+       * Arrange
+       */
+      const name = 'Scopes';
+      const filters = [];
+      const sort = [];
+      const pagination = { offset: 0, count: 30 };
+      const nameDocument = 'doc';
+      const resultExpected = [];
+
+      const arangoServiceQuerySpy = jest
+        .spyOn(arangoService, 'query')
+        .mockImplementation(jest.fn().mockReturnValue(resultExpected));
+
+      const arangoServiceCollectionSpy = jest.spyOn(
+        arangoService,
+        'collection',
+      );
+
+      const objectToAQLFiltersToAQLSpy = jest.spyOn(
+        objectToAQL,
+        'filtersToAql',
+      );
+
+      const objectToAQLSortToAQLSpy = jest.spyOn(objectToAQL, 'sortToAql');
+
+      const objectToAQLPaginationToAQLSpy = jest.spyOn(
+        objectToAQL,
+        'paginationToAql',
+      );
+
+      aql.join = jest.fn();
+
+      /**
+       * Act
+       */
+      const result = await provider.search({ filters, sort, pagination });
+
+      /**
+       * Assert
+       */
+      expect(arangoServiceQuerySpy).toHaveBeenCalled();
+      expect(arangoServiceCollectionSpy).toHaveBeenCalledWith(name);
+      expect(objectToAQLFiltersToAQLSpy).toHaveBeenCalledWith(
+        filters,
+        nameDocument,
+      );
+      expect(objectToAQLSortToAQLSpy).toHaveBeenCalledWith(sort, nameDocument);
+      expect(objectToAQLPaginationToAQLSpy).toHaveBeenCalledWith(pagination);
+      expect(result).toEqual(resultExpected);
+    });
+  });
+
   describe('create', () => {
-    it('create scopes', async () => {
+    it('should create scopes', async () => {
       /**
        * Arrange
        */

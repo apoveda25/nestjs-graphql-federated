@@ -32,20 +32,11 @@ export class ScopesRepository {
     return await this.arangoService.collections(true);
   }
 
-  async search({
-    filters = FILTER_DEFAULT,
-    sort = SORT_DEFAULT,
-    pagination = PAGINATION_DEFAULT,
-  }: {
-    filters?: IFilterToAQL[];
-    sort?: ISortToAQL[];
-    pagination?: PaginationInput;
-  }): Promise<Scope[]> {
+  async create(createScopeDto: CreateScopeDto[]): Promise<Scope[]> {
     const cursor = await this.arangoService.query(aql`
-      FOR doc IN ${this.arangoService.collection(this.name)}
-      ${aql.join(this.objectToAQL.filtersToAql(filters, 'doc'))}
-      ${aql.join(this.objectToAQL.sortToAql(sort, 'doc'))}
-      ${this.objectToAQL.paginationToAql(pagination)}
+      FOR doc IN ${createScopeDto}
+      INSERT doc INTO ${this.arangoService.collection(this.name)}
+      OPTIONS { waitForSync: true }
       RETURN doc
     `);
 
@@ -84,11 +75,36 @@ export class ScopesRepository {
     return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
   }
 
-  async create(createScopeDto: CreateScopeDto[]): Promise<Scope[]> {
+  async count({
+    filters = FILTER_DEFAULT,
+  }: {
+    filters?: IFilterToAQL[];
+  }): Promise<number> {
     const cursor = await this.arangoService.query(aql`
-      FOR doc IN ${createScopeDto}
-      INSERT doc INTO ${this.arangoService.collection(this.name)}
-      OPTIONS { waitForSync: true }
+      RETURN COUNT (
+        FOR doc IN ${this.arangoService.collection(this.name)}
+        ${aql.join(this.objectToAQL.filtersToAql(filters, 'doc'))}
+        RETURN doc
+      )
+    `);
+
+    return await cursor.reduce((acc: any, cur: any) => cur || acc, 0);
+  }
+
+  async search({
+    filters = FILTER_DEFAULT,
+    sort = SORT_DEFAULT,
+    pagination = PAGINATION_DEFAULT,
+  }: {
+    filters?: IFilterToAQL[];
+    sort?: ISortToAQL[];
+    pagination?: PaginationInput;
+  }): Promise<Scope[]> {
+    const cursor = await this.arangoService.query(aql`
+      FOR doc IN ${this.arangoService.collection(this.name)}
+      ${aql.join(this.objectToAQL.filtersToAql(filters, 'doc'))}
+      ${aql.join(this.objectToAQL.sortToAql(sort, 'doc'))}
+      ${this.objectToAQL.paginationToAql(pagination)}
       RETURN doc
     `);
 

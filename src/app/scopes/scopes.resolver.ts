@@ -1,12 +1,13 @@
 import { UsePipes, ValidationPipe } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
   IFilterToAQL,
   ISortToAQL,
 } from '../../arangodb/providers/object-to-aql.interface';
 import { PaginationInput } from '../../shared/dto/pagination.input';
 import { ContextGraphQL } from '../../shared/interfaces/context-graphql.interface';
+import { CountResourcesPipe } from '../../shared/pipes/count-resources.pipe';
 import { FindResourcePipe } from '../../shared/pipes/find-resource.pipe';
 import { SearchResourcesPipe } from '../../shared/pipes/search-resources.pipe';
 import {
@@ -20,6 +21,7 @@ import { FindScopeInput } from './dto/find-scope.input';
 import { SortScopeInput } from './dto/sort-scope.input';
 import { Scope } from './entities/scope.entity';
 import { ScopeFindQuery } from './queries/impl/scope-find.query';
+import { ScopesCountQuery } from './queries/impl/scopes-count.query';
 import { ScopesSearchQuery } from './queries/impl/scopes-search.query';
 
 @Resolver(() => Scope)
@@ -78,13 +80,16 @@ export class ScopesResolver {
     );
   }
 
-  // @Mutation(() => Scope)
-  // updateScope(@Args('updateScopeInput') updateScopeInput: UpdateScopeInput) {
-  //   return this.scopesService.update(updateScopeInput.id, updateScopeInput);
-  // }
-
-  // @Mutation(() => Scope)
-  // removeScope(@Args('id', { type: () => Int }) id: number) {
-  //   return this.scopesService.remove(id);
-  // }
+  // @Authorization(Permission.UsersSearch)
+  @UsePipes(CountResourcesPipe)
+  @Query(() => Int, { name: 'scopesCount' })
+  async count(
+    @Args('filters', {
+      type: () => FilterScopeInput,
+      nullable: true,
+    })
+    filters: IFilterToAQL[] = FILTER_DEFAULT,
+  ) {
+    return await this.queryBus.execute(new ScopesCountQuery({ filters }));
+  }
 }
