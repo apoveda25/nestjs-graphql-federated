@@ -1,8 +1,10 @@
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
+import { InputTransform } from '../../arangodb/providers/input-transform';
 import { ContextGraphQL } from '../../shared/interfaces/context-graphql.interface';
 import { ScopesCreateCommand } from './commands/impl/scopes-create.command';
 import { ScopeFindQuery } from './queries/impl/scope-find.query';
+import { ScopesSearchQuery } from './queries/impl/scopes-search.query';
 import { ScopesResolver } from './scopes.resolver';
 
 describe('ScopesResolver', () => {
@@ -18,7 +20,17 @@ describe('ScopesResolver', () => {
           provide: CommandBus,
           useFactory: () => ({ execute: jest.fn() }),
         },
-        QueryBus,
+        {
+          provide: QueryBus,
+          useFactory: () => ({ execute: jest.fn() }),
+        },
+        {
+          provide: InputTransform,
+          useFactory: () => ({
+            filtersToArray: jest.fn(),
+            sortToArray: jest.fn(),
+          }),
+        },
       ],
     }).compile();
 
@@ -109,6 +121,39 @@ describe('ScopesResolver', () => {
        * Assert
        */
       expect(queryBusExecuteSpy).toHaveBeenCalledWith(scopeFindQuery);
+      expect(result).toEqual(resultExpected);
+    });
+  });
+
+  describe('search', () => {
+    it('should search and return an array of scopes', async () => {
+      /**
+       * Arrange
+       */
+      const filters = [];
+      const sort = [];
+      const pagination = { offset: 0, count: 10 };
+      const scopesSearchQuery = new ScopesSearchQuery({
+        filters,
+        sort,
+        pagination,
+      });
+
+      const resultExpected = [];
+
+      const queryBusExecuteSpy = jest
+        .spyOn(queryBus, 'execute')
+        .mockResolvedValue(resultExpected);
+
+      /**
+       * Act
+       */
+      const result = await resolver.search(filters, sort, pagination);
+
+      /**
+       * Assert
+       */
+      expect(queryBusExecuteSpy).toHaveBeenCalledWith(scopesSearchQuery);
       expect(result).toEqual(resultExpected);
     });
   });

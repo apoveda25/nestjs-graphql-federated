@@ -1,8 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { aql } from 'arangojs/aql';
+import * as faker from 'faker';
 import { ArangodbService } from '../../../arangodb/arangodb.service';
 import { InputTransform } from '../../../arangodb/providers/input-transform';
 import { ObjectToAQL } from '../../../arangodb/providers/object-to-aql';
+import { Scope } from '../entities/scope.entity';
 import { ScopesRepository } from './scopes.repository';
 
 describe('ScopesRepository', () => {
@@ -10,19 +12,17 @@ describe('ScopesRepository', () => {
   let arangoService: ArangodbService;
   let objectToAQL: ObjectToAQL;
   let inputTransform: InputTransform;
-  let saveAll: any;
 
   beforeEach(async () => {
-    saveAll = jest.fn().mockReturnValue([]);
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ScopesRepository,
         {
           provide: ArangodbService,
           useFactory: () => ({
-            collection: jest.fn(() => ({ saveAll })),
+            collection: jest.fn(),
             collections: jest.fn(),
-            query: jest.fn().mockReturnValue([]),
+            query: jest.fn(),
           }),
         },
         {
@@ -36,7 +36,7 @@ describe('ScopesRepository', () => {
         {
           provide: InputTransform,
           useFactory: () => ({
-            resourceToArray: jest.fn().mockReturnValue([]),
+            resourceToArray: jest.fn(),
           }),
         },
       ],
@@ -120,21 +120,44 @@ describe('ScopesRepository', () => {
   });
 
   describe('findAnd', () => {
-    it('find scope by key', async () => {
+    it('should return a scope', async () => {
       /**
        * Arrange
        */
-      const filters = {};
-      const _filters = [];
+      const name = 'Scopes';
+      const filters = { collection: faker.random.word() };
       const separator = '==';
       const operator = 'AND';
+      const _filters = [
+        { key: 'collection', value: filters.collection, operator, separator },
+      ];
       const nameDocument = 'doc';
+      const _key = faker.datatype.uuid();
+      const resultExpected = Scope.of({
+        _id: `${name}/${_key}`,
+        _key,
+        name: faker.random.word(),
+        action: faker.random.word(),
+        collection: filters.collection,
+        createdAt: faker.datatype.datetime().getMilliseconds(),
+        updatedAt: faker.datatype.datetime().getMilliseconds(),
+        createdBy: `Users/${faker.datatype.uuid()}`,
+        updatedBy: '',
+      });
 
-      const inputTransformResourceToArraySpy = jest.spyOn(
-        inputTransform,
-        'resourceToArray',
+      const inputTransformResourceToArraySpy = jest
+        .spyOn(inputTransform, 'resourceToArray')
+        .mockReturnValue(_filters);
+
+      const arangoServiceQuerySpy = jest
+        .spyOn(arangoService, 'query')
+        .mockImplementation(jest.fn().mockReturnValue([resultExpected]));
+
+      const arangoServiceCollectionSpy = jest.spyOn(
+        arangoService,
+        'collection',
       );
-      const arangoServiceQuerySpy = jest.spyOn(arangoService, 'query');
+
       const objectToAQLFiltersToAQLSpy = jest.spyOn(
         objectToAQL,
         'filtersToAql',
@@ -144,7 +167,7 @@ describe('ScopesRepository', () => {
       /**
        * Act
        */
-      await provider.findAnd(filters);
+      const result = await provider.findAnd(filters);
 
       /**
        * Assert
@@ -155,29 +178,109 @@ describe('ScopesRepository', () => {
         operator,
       );
       expect(arangoServiceQuerySpy).toHaveBeenCalled();
+      expect(arangoServiceCollectionSpy).toHaveBeenCalledWith(name);
       expect(objectToAQLFiltersToAQLSpy).toHaveBeenCalledWith(
         _filters,
         nameDocument,
       );
+      expect(result).toEqual(resultExpected);
+    });
+
+    it('should return null', async () => {
+      /**
+       * Arrange
+       */
+      const name = 'Scopes';
+      const filters = { collection: faker.random.word() };
+      const separator = '==';
+      const operator = 'AND';
+      const _filters = [
+        { key: 'collection', value: filters.collection, operator, separator },
+      ];
+      const nameDocument = 'doc';
+      const resultExpected = null;
+
+      const inputTransformResourceToArraySpy = jest
+        .spyOn(inputTransform, 'resourceToArray')
+        .mockReturnValue(_filters);
+
+      const arangoServiceQuerySpy = jest
+        .spyOn(arangoService, 'query')
+        .mockImplementation(jest.fn().mockReturnValue([]));
+
+      const arangoServiceCollectionSpy = jest.spyOn(
+        arangoService,
+        'collection',
+      );
+
+      const objectToAQLFiltersToAQLSpy = jest.spyOn(
+        objectToAQL,
+        'filtersToAql',
+      );
+      aql.join = jest.fn();
+
+      /**
+       * Act
+       */
+      const result = await provider.findAnd(filters);
+
+      /**
+       * Assert
+       */
+      expect(inputTransformResourceToArraySpy).toHaveBeenCalledWith(
+        filters,
+        separator,
+        operator,
+      );
+      expect(arangoServiceQuerySpy).toHaveBeenCalled();
+      expect(arangoServiceCollectionSpy).toHaveBeenCalledWith(name);
+      expect(objectToAQLFiltersToAQLSpy).toHaveBeenCalledWith(
+        _filters,
+        nameDocument,
+      );
+      expect(result).toEqual(resultExpected);
     });
   });
 
   describe('findOr', () => {
-    it('find scope by key', async () => {
+    it('should return a scope', async () => {
       /**
        * Arrange
        */
-      const filters = {};
-      const _filters = [];
+      const name = 'Scopes';
+      const filters = { collection: faker.random.word() };
       const separator = '==';
       const operator = 'OR';
+      const _filters = [
+        { key: 'collection', value: filters.collection, operator, separator },
+      ];
       const nameDocument = 'doc';
+      const _key = faker.datatype.uuid();
+      const resultExpected = Scope.of({
+        _id: `${name}/${_key}`,
+        _key,
+        name: faker.random.word(),
+        action: faker.random.word(),
+        collection: filters.collection,
+        createdAt: faker.datatype.datetime().getMilliseconds(),
+        updatedAt: faker.datatype.datetime().getMilliseconds(),
+        createdBy: `Users/${faker.datatype.uuid()}`,
+        updatedBy: '',
+      });
 
-      const inputTransformResourceToArraySpy = jest.spyOn(
-        inputTransform,
-        'resourceToArray',
+      const inputTransformResourceToArraySpy = jest
+        .spyOn(inputTransform, 'resourceToArray')
+        .mockReturnValue(_filters);
+
+      const arangoServiceQuerySpy = jest
+        .spyOn(arangoService, 'query')
+        .mockImplementation(jest.fn().mockReturnValue([resultExpected]));
+
+      const arangoServiceCollectionSpy = jest.spyOn(
+        arangoService,
+        'collection',
       );
-      const arangoServiceQuerySpy = jest.spyOn(arangoService, 'query');
+
       const objectToAQLFiltersToAQLSpy = jest.spyOn(
         objectToAQL,
         'filtersToAql',
@@ -187,7 +290,7 @@ describe('ScopesRepository', () => {
       /**
        * Act
        */
-      await provider.findOr(filters);
+      const result = await provider.findOr(filters);
 
       /**
        * Assert
@@ -198,10 +301,67 @@ describe('ScopesRepository', () => {
         operator,
       );
       expect(arangoServiceQuerySpy).toHaveBeenCalled();
+      expect(arangoServiceCollectionSpy).toHaveBeenCalledWith(name);
       expect(objectToAQLFiltersToAQLSpy).toHaveBeenCalledWith(
         _filters,
         nameDocument,
       );
+      expect(result).toEqual(resultExpected);
+    });
+
+    it('should return null', async () => {
+      /**
+       * Arrange
+       */
+      const name = 'Scopes';
+      const filters = { collection: faker.random.word() };
+      const separator = '==';
+      const operator = 'AND';
+      const _filters = [
+        { key: 'collection', value: filters.collection, operator, separator },
+      ];
+      const nameDocument = 'doc';
+      const resultExpected = null;
+
+      const inputTransformResourceToArraySpy = jest
+        .spyOn(inputTransform, 'resourceToArray')
+        .mockReturnValue(_filters);
+
+      const arangoServiceQuerySpy = jest
+        .spyOn(arangoService, 'query')
+        .mockImplementation(jest.fn().mockReturnValue([]));
+
+      const arangoServiceCollectionSpy = jest.spyOn(
+        arangoService,
+        'collection',
+      );
+
+      const objectToAQLFiltersToAQLSpy = jest.spyOn(
+        objectToAQL,
+        'filtersToAql',
+      );
+      aql.join = jest.fn();
+
+      /**
+       * Act
+       */
+      const result = await provider.findOr(filters);
+
+      /**
+       * Assert
+       */
+      expect(inputTransformResourceToArraySpy).toHaveBeenCalledWith(
+        filters,
+        separator,
+        operator,
+      );
+      expect(arangoServiceQuerySpy).toHaveBeenCalled();
+      expect(arangoServiceCollectionSpy).toHaveBeenCalledWith(name);
+      expect(objectToAQLFiltersToAQLSpy).toHaveBeenCalledWith(
+        _filters,
+        nameDocument,
+      );
+      expect(result).toEqual(resultExpected);
     });
   });
 
@@ -210,9 +370,16 @@ describe('ScopesRepository', () => {
       /**
        * Arrange
        */
-      const nameCollection = 'Scopes';
+      const name = 'Scopes';
       const createScopeDto = [];
-      const options = { returnNew: true };
+
+      const arangoServiceQuerySpy = jest
+        .spyOn(arangoService, 'query')
+        .mockImplementation(jest.fn().mockReturnValue([]));
+      const arangoServiceCollectionSpy = jest.spyOn(
+        arangoService,
+        'collection',
+      );
 
       /**
        * Act
@@ -222,8 +389,8 @@ describe('ScopesRepository', () => {
       /**
        * Assert
        */
-      expect(arangoService.collection).toHaveBeenCalledWith(nameCollection);
-      expect(saveAll).toHaveBeenCalledWith(createScopeDto, options);
+      expect(arangoServiceQuerySpy).toHaveBeenCalled();
+      expect(arangoServiceCollectionSpy).toHaveBeenCalledWith(name);
       expect(result).toEqual([]);
     });
   });

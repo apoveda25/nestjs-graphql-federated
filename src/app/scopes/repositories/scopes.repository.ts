@@ -49,7 +49,7 @@ export class ScopesRepository {
       RETURN doc
     `);
 
-    return await cursor.map((el) => el);
+    return await cursor.map((doc) => doc);
   }
 
   async findAnd(filters: IScope): Promise<Scope | null> {
@@ -85,12 +85,13 @@ export class ScopesRepository {
   }
 
   async create(createScopeDto: CreateScopeDto[]): Promise<Scope[]> {
-    const results = await this.arangoService
-      .collection(this.name)
-      .saveAll(createScopeDto, {
-        returnNew: true,
-      });
+    const cursor = await this.arangoService.query(aql`
+      FOR doc IN ${createScopeDto}
+      INSERT doc INTO ${this.arangoService.collection(this.name)}
+      OPTIONS { waitForSync: true }
+      RETURN doc
+    `);
 
-    return results.map((result) => result.new);
+    return await cursor.map((doc) => doc);
   }
 }
