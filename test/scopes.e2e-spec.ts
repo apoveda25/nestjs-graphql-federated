@@ -5,20 +5,11 @@ import { AppModule } from '../src/app.module';
 
 describe('Scopes (e2e)', () => {
   let app: INestApplication;
-  // const scopesRepository = {
-  //   getCollections: () => [],
-  //   create: () => [],
-  //   findAnd: () => null,
-  //   findOr: () => null,
-  // };
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
-    })
-      // .overrideProvider(ScopesRepository)
-      // .useValue(scopesRepository)
-      .compile();
+    }).compile();
 
     app = moduleRef.createNestApplication();
     await app.init();
@@ -115,7 +106,170 @@ describe('Scopes (e2e)', () => {
       .send({ query, variables })
       .expect(400)
       .expect(resultExpected);
-    // .then((value) => console.log(JSON.stringify(value.body), value.status))
+  });
+
+  it('Mutation scopesSearch (Ok)', () => {
+    const query = `
+      query($filters: FilterScopeInput) {
+        scopesSearch(filters: $filters) {
+          name
+        }
+      }
+    `;
+    const variables = {
+      filters: {
+        name: [{ value: 'scopes_search', operator: 'EQUAL' }],
+        separator: 'AND',
+      },
+    };
+    const resultExpected = {
+      data: {
+        scopesSearch: [
+          {
+            name: 'scopes_search',
+          },
+        ],
+      },
+    };
+
+    return request(app.getHttpServer())
+      .post('/graphql')
+      .set('Accept', 'application/json')
+      .send({ query, variables })
+      .expect(200)
+      .expect(resultExpected);
+  });
+
+  it('Mutation scopesSearch (Not Found)', () => {
+    const query = `
+      query($filters: FilterScopeInput) {
+        scopesSearch(filters: $filters) {
+          name
+        }
+      }
+    `;
+    const variables = {
+      filters: {
+        name: [{ value: 'scopes_searc', operator: 'EQUAL' }],
+        separator: 'AND',
+      },
+    };
+    const resultExpected = { data: { scopesSearch: [] } };
+
+    return request(app.getHttpServer())
+      .post('/graphql')
+      .set('Accept', 'application/json')
+      .send({ query, variables })
+      .expect(200)
+      .expect(resultExpected);
+  });
+
+  it('Mutation scopesSearch (Bad Request)', () => {
+    const query = `
+      query($filters: FilterScopeInput) {
+        scopesSearch(filters: $filters) {
+          name
+        }
+      }
+    `;
+    const variables = {
+      filters: {
+        name: [{ value: 'scopes_search', operator: 'EQUA' }],
+        separator: 'AND',
+      },
+    };
+    const resultExpected = {
+      errors: [
+        {
+          message:
+            'Variable "$filters" got invalid value "EQUA" at "filters.name[0].operator"; Value "EQUA" does not exist in "ComparisonOperatorString" enum. Did you mean the enum value "EQUAL"?',
+          locations: [{ line: 2, column: 13 }],
+          extensions: { code: 'INTERNAL_SERVER_ERROR' },
+        },
+      ],
+    };
+
+    return request(app.getHttpServer())
+      .post('/graphql')
+      .set('Accept', 'application/json')
+      .send({ query, variables })
+      .expect(400)
+      .expect(resultExpected);
+  });
+
+  it('Mutation scopesCount (Ok)', () => {
+    const query = `
+      query($filters: FilterScopeInput) {
+        scopesCount(filters: $filters)
+      }
+    `;
+    const variables = {
+      filters: {
+        name: [{ value: 'scopes_count', operator: 'EQUAL' }],
+        separator: 'AND',
+      },
+    };
+    const resultExpected = { data: { scopesCount: 1 } };
+
+    return request(app.getHttpServer())
+      .post('/graphql')
+      .set('Accept', 'application/json')
+      .send({ query, variables })
+      .expect(200)
+      .expect(resultExpected);
+  });
+
+  it('Mutation scopesCount (Not Found)', () => {
+    const query = `
+      query($filters: FilterScopeInput) {
+        scopesCount(filters: $filters)
+      }
+    `;
+    const variables = {
+      filters: {
+        name: [{ value: 'scopes_coun', operator: 'EQUAL' }],
+        separator: 'AND',
+      },
+    };
+    const resultExpected = { data: { scopesCount: 0 } };
+
+    return request(app.getHttpServer())
+      .post('/graphql')
+      .set('Accept', 'application/json')
+      .send({ query, variables })
+      .expect(200)
+      .expect(resultExpected);
+  });
+
+  it('Mutation scopesCount (Bad Request)', () => {
+    const query = `
+      query($filters: FilterScopeInput) {
+        scopesCount(filters: $filters)
+      }
+    `;
+    const variables = {
+      filters: {
+        name: [{ value: 'scopes_count', operator: 'EQUA' }],
+        separator: 'AND',
+      },
+    };
+    const resultExpected = {
+      errors: [
+        {
+          message:
+            'Variable "$filters" got invalid value "EQUA" at "filters.name[0].operator"; Value "EQUA" does not exist in "ComparisonOperatorString" enum. Did you mean the enum value "EQUAL"?',
+          locations: [{ line: 2, column: 13 }],
+          extensions: { code: 'INTERNAL_SERVER_ERROR' },
+        },
+      ],
+    };
+
+    return request(app.getHttpServer())
+      .post('/graphql')
+      .set('Accept', 'application/json')
+      .send({ query, variables })
+      .expect(400)
+      .expect(resultExpected);
   });
 
   afterAll(async () => {
