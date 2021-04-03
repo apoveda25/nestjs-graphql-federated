@@ -3,22 +3,41 @@ import { IFilter, IFilterToAQL, ISortToAQL } from './object-to-aql.interface';
 
 @Injectable()
 export class InputTransform {
-  filtersToArray(filters: any = {}) {
+  filtersToArray(filters: any = {}): IFilterToAQL[] {
     const filtersToAQL: IFilterToAQL[] = [];
 
-    Object.keys(filters)
-      .filter((key) => Array.isArray(filters[key]))
-      .map((key: string) => {
-        filters[key].map((filter: IFilter) =>
-          filtersToAQL.push({
-            key,
-            ...filter,
-            separator: filters.separator,
-          }),
-        );
-      });
+    const keys = Object.keys(filters);
+
+    const keysWithArrayValue = keys.filter((key) =>
+      Array.isArray(filters[key]),
+    );
+
+    keysWithArrayValue.map((key: string) => {
+      filters[key].map((filter: IFilter) =>
+        filtersToAQL.push({
+          key,
+          ...filter,
+          separator: filters.separator,
+        }),
+      );
+    });
 
     return filtersToAQL;
+  }
+
+  resourceToArray(
+    filters: Record<string, any>,
+    operator: string,
+    separator: string,
+  ): IFilterToAQL[] {
+    const keys = Object.keys(filters);
+
+    return keys.map((key) => ({
+      value: filters[key],
+      key,
+      operator,
+      separator,
+    }));
   }
 
   sortToArray(sort: any = {}): ISortToAQL[] {

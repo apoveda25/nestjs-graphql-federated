@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { EventEmitterModule } from '@nestjs/event-emitter';
 import { GraphQLFederationModule } from '@nestjs/graphql';
 import { RolesModule } from './app/roles/roles.module';
 import { ScopesModule } from './app/scopes/scopes.module';
@@ -28,7 +27,6 @@ import { SharedModule } from './shared/shared.module';
       inject: [ConfigService],
       useFactory: graphqlFederatedConfig,
     }),
-    EventEmitterModule.forRoot({ delimiter: '.', maxListeners: 10 }),
     SharedModule,
     UsersModule,
     RolesModule,

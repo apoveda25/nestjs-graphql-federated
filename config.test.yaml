@@ -6,8 +6,8 @@ app:
 arangodb:
   urls:
     - 'http://localhost:8529'
-  name: 'farmaco_dev'
-  username: 'farmaco_dev'
+  name: 'farmaco_test'
+  username: 'farmaco_test'
   password: 'secret'
   certs: []
 

@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CreateUserInput } from '../dto/create-user.input';
 import { UpdateUserInput } from '../dto/update-user.input';
 import { UserCreateModel } from '../models/user-create.model';
@@ -13,7 +12,6 @@ export class UsersService {
     private readonly usersRepository: UsersRepository,
     private readonly credentialsRepository: CredentialsRepository,
     private readonly rolesRepository: RolesRepository,
-    private eventEmitter: EventEmitter2,
   ) {}
 
   async create(createUserInput: CreateUserInput[]) {
@@ -49,8 +47,10 @@ export class UsersService {
       aggregates.push(aggregate);
     }
 
-    aggregates.map((aggregate, i) =>
-      aggregate.commit(this.eventEmitter, createUserInput[i]),
+    aggregates.map(
+      (aggregate, i) =>
+        // aggregate.commit(this.eventEmitter, createUserInput[i]),
+        aggregate,
     );
 
     await this.credentialsRepository.create(
