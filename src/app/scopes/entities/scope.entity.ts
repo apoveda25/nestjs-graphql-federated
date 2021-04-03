@@ -1,4 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Role } from '../../roles/entities/role.entity';
 
 @ObjectType()
 export class Scope {
@@ -47,11 +48,14 @@ export class Scope {
   })
   updatedBy: string;
 
+  @Field(() => [Role])
+  roles?: Role[];
+
   public static of(params: Partial<Scope>): Scope {
-    const playlist = new Scope();
+    const entity = new Scope();
 
-    Object.assign(playlist, params);
+    Object.assign(entity, params);
 
-    return playlist;
+    return entity;
   }
 }

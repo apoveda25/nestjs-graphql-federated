@@ -20,7 +20,7 @@ import { ICollection } from '../interfaces/scopes-command-handlers.interface';
 
 @Injectable()
 export class ScopesRepository {
-  private readonly name = 'Scopes';
+  readonly name = 'Scopes';
 
   constructor(
     private readonly arangoService: ArangodbService,

@@ -1,9 +1,20 @@
 import { Module } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
+import { RolesCommandHandlers } from './commands/handlers/index';
+import { RolesEventHandlers } from './events/handlers/index';
+import { RoleModel } from './models/role.model';
 import { RolesRepository } from './repositories/roles.repository';
 import { RolesResolver } from './roles.resolver';
-import { RolesService } from './services/roles.service';
 
 @Module({
-  providers: [RolesResolver, RolesService, RolesRepository],
+  imports: [CqrsModule],
+  providers: [
+    RolesResolver,
+    // ...RolesQueryHandlers,
+    ...RolesCommandHandlers,
+    ...RolesEventHandlers,
+    RolesRepository,
+    RoleModel,
+  ],
 })
 export class RolesModule {}
