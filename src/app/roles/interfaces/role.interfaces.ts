@@ -1,9 +1,10 @@
-export interface IScope {
+export interface IRole {
   _id?: string;
   _key?: string;
   name?: string;
-  action?: string;
-  collection?: string;
+  description?: string;
+  active?: boolean;
+  default?: boolean;
   createdBy?: string;
   updatedBy?: string;
 }

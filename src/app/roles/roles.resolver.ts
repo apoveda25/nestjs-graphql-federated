@@ -1,47 +1,51 @@
-import { ParseArrayPipe, UsePipes } from '@nestjs/common';
-import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { UsePipes, ValidationPipe } from '@nestjs/common';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { RoleCreateCommand } from './commands/impl/role-create.command';
+import { CreateRoleDto } from './dto/create-role.dto';
 import { CreateRoleInput } from './dto/create-role.input';
-import { UpdateRoleInput } from './dto/update-role.input';
 import { Role } from './entities/role.entity';
-import { CreateRolesPipe } from './pipes/create-roles.pipe';
-import { RolesService } from './services/roles.service';
+import { CreateRolePipe } from './pipes/create-role.pipe';
 
 @Resolver(() => Role)
 export class RolesResolver {
-  constructor(private readonly rolesService: RolesService) {}
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+  ) {}
 
-  @UsePipes(CreateRolesPipe)
-  @Mutation(() => [Role], { name: 'rolesCreate' })
-  create(
+  @UsePipes(CreateRolePipe)
+  @Mutation(() => Role, { name: 'roleCreate' })
+  async create(
     @Args(
       {
-        name: 'create',
-        type: () => [CreateRoleInput],
+        name: 'role',
+        type: () => CreateRoleInput,
       },
-      new ParseArrayPipe({ items: CreateRoleInput }),
+      new ValidationPipe({ expectedType: CreateRoleDto }),
     )
-    createRoleInput: CreateRoleInput[],
+    createRoleDto: CreateRoleDto,
   ) {
-    return this.rolesService.create(createRoleInput);
+    return await this.commandBus.execute(new RoleCreateCommand(createRoleDto));
   }
 
-  @Query(() => [Role], { name: 'roles' })
-  findAll() {
-    return this.rolesService.findAll();
-  }
+  // @Query(() => [Role], { name: 'roles' })
+  // findAll() {
+  //   return this.rolesService.findAll();
+  // }
 
-  @Query(() => Role, { name: 'role' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.rolesService.findOne(id);
-  }
+  // @Query(() => Role, { name: 'role' })
+  // findOne(@Args('id', { type: () => Int }) id: number) {
+  //   return this.rolesService.findOne(id);
+  // }
 
-  @Mutation(() => Role)
-  updateRole(@Args('updateRoleInput') updateRoleInput: UpdateRoleInput) {
-    return this.rolesService.update(updateRoleInput.id, updateRoleInput);
-  }
+  // @Mutation(() => Role)
+  // updateRole(@Args('updateRoleInput') updateRoleInput: UpdateRoleInput) {
+  //   return this.rolesService.update(updateRoleInput.id, updateRoleInput);
+  // }
 
-  @Mutation(() => Role)
-  removeRole(@Args('id', { type: () => Int }) id: number) {
-    return this.rolesService.remove(id);
-  }
+  // @Mutation(() => Role)
+  // removeRole(@Args('id', { type: () => Int }) id: number) {
+  //   return this.rolesService.remove(id);
+  // }
 }
