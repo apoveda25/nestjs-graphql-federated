@@ -2,9 +2,10 @@ import { UsePipes, ValidationPipe } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { RoleCreateCommand } from './commands/impl/role-create.command';
+import { CreateRoleDto } from './dto/create-role.dto';
 import { CreateRoleInput } from './dto/create-role.input';
 import { Role } from './entities/role.entity';
-import { CreateRolesPipe } from './pipes/create-roles.pipe';
+import { CreateRolePipe } from './pipes/create-role.pipe';
 
 @Resolver(() => Role)
 export class RolesResolver {
@@ -13,7 +14,7 @@ export class RolesResolver {
     private readonly queryBus: QueryBus,
   ) {}
 
-  @UsePipes(CreateRolesPipe)
+  @UsePipes(CreateRolePipe)
   @Mutation(() => Role, { name: 'roleCreate' })
   async create(
     @Args(
@@ -21,13 +22,11 @@ export class RolesResolver {
         name: 'role',
         type: () => CreateRoleInput,
       },
-      new ValidationPipe({ expectedType: CreateRoleInput }),
+      new ValidationPipe({ expectedType: CreateRoleDto }),
     )
-    createRoleInput: CreateRoleInput,
+    createRoleDto: CreateRoleDto,
   ) {
-    return await this.commandBus.execute(
-      new RoleCreateCommand(createRoleInput),
-    );
+    return await this.commandBus.execute(new RoleCreateCommand(createRoleDto));
   }
 
   // @Query(() => [Role], { name: 'roles' })

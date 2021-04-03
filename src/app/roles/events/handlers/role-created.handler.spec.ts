@@ -1,68 +1,69 @@
-// import { Test, TestingModule } from '@nestjs/testing';
-// import * as faker from 'faker';
-// import { Scope } from '../../entities/scope.entity';
-// import { ScopesRepository } from '../../repositories/scopes.repository';
-// import { ScopeCreatedEventHandler } from './role-created.handler';
+import { Test, TestingModule } from '@nestjs/testing';
+import * as faker from 'faker';
+import { CreateRoleDto } from '../../dto/create-role.dto';
+import { RolesRepository } from '../../repositories/roles.repository';
+import { RoleCreatedEvent } from '../impl/role-created.event';
+import { RoleCreatedEventHandler } from './role-created.handler';
 
-// describe('ScopeCreatedEventHandler', () => {
-//   let eventHandler: ScopeCreatedEventHandler;
-//   let scopesRepository: ScopesRepository;
+describe('RoleCreatedEventHandler', () => {
+  let eventHandler: RoleCreatedEventHandler;
+  let rolesRepository: RolesRepository;
 
-//   beforeEach(async () => {
-//     const module: TestingModule = await Test.createTestingModule({
-//       providers: [
-//         ScopeCreatedEventHandler,
-//         {
-//           provide: ScopesRepository,
-//           useFactory: () => ({ create: jest.fn() }),
-//         },
-//       ],
-//     }).compile();
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        RoleCreatedEventHandler,
+        {
+          provide: RolesRepository,
+          useFactory: () => ({ create: jest.fn() }),
+        },
+      ],
+    }).compile();
 
-//     eventHandler = module.get<ScopeCreatedEventHandler>(
-//       ScopeCreatedEventHandler,
-//     );
-//     scopesRepository = module.get<ScopesRepository>(ScopesRepository);
-//   });
+    eventHandler = module.get<RoleCreatedEventHandler>(RoleCreatedEventHandler);
+    rolesRepository = module.get<RolesRepository>(RolesRepository);
+  });
 
-//   it('should be defined', () => {
-//     expect(eventHandler).toBeDefined();
-//     expect(scopesRepository).toBeDefined();
-//   });
+  it('should be defined', () => {
+    expect(eventHandler).toBeDefined();
+    expect(rolesRepository).toBeDefined();
+  });
 
-//   describe('handle', () => {
-//     it('create scopes', async () => {
-//       /**
-//        * Arrange
-//        */
-//       const _key = faker.datatype.uuid();
-//       const createScope = Scope.of({
-//         _id: `Scopes/${_key}`,
-//         _key,
-//         name: faker.lorem.word(),
-//         action: faker.lorem.word(),
-//         collection: faker.lorem.word(),
-//         createdAt: Date.now(),
-//         updatedAt: 0,
-//         createdBy: `Users/${faker.datatype.uuid()}`,
-//         updatedBy: '',
-//       });
-//       const event = { input: createScope };
+  describe('handle', () => {
+    it('should create a role', async () => {
+      /**
+       * Arrange
+       */
+      const _key = faker.datatype.uuid();
+      const createRoleDto: CreateRoleDto = {
+        _id: `Roles/${_key}`,
+        _key,
+        name: faker.random.word(),
+        description: faker.random.words(10),
+        active: true,
+        default: false,
+        createdAt: Date.now(),
+        updatedAt: 0,
+        createdBy: `Users/${_key}`,
+        updatedBy: '',
+      };
+      const event = new RoleCreatedEvent(createRoleDto);
+      const resultExpected = { ...createRoleDto };
 
-//       const scopesRepositoryHandleSpy = jest
-//         .spyOn(scopesRepository, 'create')
-//         .mockResolvedValue([createScope]);
+      const rolesRepositoryHandleSpy = jest
+        .spyOn(rolesRepository, 'create')
+        .mockResolvedValue(event.role);
 
-//       /**
-//        * Act
-//        */
-//       const result = await eventHandler.handle(event);
+      /**
+       * Act
+       */
+      const result = await eventHandler.handle(event);
 
-//       /**
-//        * Assert
-//        */
-//       expect(scopesRepositoryHandleSpy).toHaveBeenCalledWith([event.input]);
-//       expect(result).toStrictEqual([createScope]);
-//     });
-//   });
-// });
+      /**
+       * Assert
+       */
+      expect(rolesRepositoryHandleSpy).toHaveBeenCalledWith(event.role);
+      expect(result).toStrictEqual(resultExpected);
+    });
+  });
+});

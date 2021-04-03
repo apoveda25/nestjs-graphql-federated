@@ -16,7 +16,7 @@ export class RoleCreateCommandHandler
 
   async execute(command: RoleCreateCommand): Promise<Role> {
     const { _key, name } = command.role;
-    const roleConflict: Role = await this.rolesRepository.findOr({
+    const roleConflict = await this.rolesRepository.findOr({
       _key,
       name,
     });
