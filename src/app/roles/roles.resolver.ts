@@ -35,7 +35,7 @@ export class RolesResolver {
 
   @UsePipes(UpdateRolesPipe)
   @Mutation(() => [Role], { name: 'rolesUpdate' })
-  async updateRole(
+  async update(
     @Args(
       {
         name: 'roles',

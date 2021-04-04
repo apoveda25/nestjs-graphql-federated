@@ -1,9 +1,13 @@
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
+import * as faker from 'faker';
 import { InputTransform } from '../../arangodb/providers/input-transform';
 import { RoleCreateCommand } from './commands/impl/role-create.command';
+import { RolesUpdateCommand } from './commands/impl/roles-update.command';
 import { CreateRoleDto } from './dto/create-role.dto';
+import { Role } from './entities/role.entity';
 import { CreateRolePipe } from './pipes/create-role.pipe';
+import { UpdateRolesPipe } from './pipes/update-roles.pipe';
 import { RolesResolver } from './roles.resolver';
 
 describe('RolesResolver', () => {
@@ -33,6 +37,8 @@ describe('RolesResolver', () => {
       ],
     })
       .overridePipe(CreateRolePipe)
+      .useValue({})
+      .overridePipe(UpdateRolesPipe)
       .useValue({})
       .compile();
 
@@ -81,6 +87,46 @@ describe('RolesResolver', () => {
        * Assert
        */
       expect(commandBusExecuteSpy).toHaveBeenCalledWith(roleCreateCommand);
+      expect(result).toEqual(resultExpected);
+    });
+  });
+
+  describe('update', () => {
+    it('should update roles', async () => {
+      /**
+       * Arrange
+       */
+      const _key = faker.datatype.uuid();
+      const updateRoleDto = {
+        _id: `Roles/${_key}`,
+        _key,
+        name: 'client',
+        description: '',
+        active: true,
+        default: false,
+        updatedAt: Date.now(),
+        updatedBy: `Users/${_key}`,
+      };
+      const rolesUpdateCommand = new RolesUpdateCommand([updateRoleDto]);
+      const resultExpected: Role = {
+        ...updateRoleDto,
+        createdAt: Date.now(),
+        createdBy: `Users/${_key}`,
+      };
+
+      const commandBusExecuteSpy = jest
+        .spyOn(commandBus, 'execute')
+        .mockResolvedValue(resultExpected);
+
+      /**
+       * Act
+       */
+      const result = await resolver.update([updateRoleDto]);
+
+      /**
+       * Assert
+       */
+      expect(commandBusExecuteSpy).toHaveBeenCalledWith(rolesUpdateCommand);
       expect(result).toEqual(resultExpected);
     });
   });
