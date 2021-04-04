@@ -2,8 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { IRoleUpdateConflits } from '../../../../dist/app/roles/interfaces/role.interfaces';
 import { CreateRoleDto } from '../dto/create-role.dto';
+import { DeleteRoleDto } from '../dto/delete-role.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
 import { Role } from '../entities/role.entity';
+import { IRoleDeleteConflits } from '../interfaces/role.interfaces';
 import { RoleModel } from './role.model';
 
 describe('RoleModel', () => {
@@ -55,7 +57,7 @@ describe('RoleModel', () => {
   });
 
   describe('update', () => {
-    it('should updates roles', async () => {
+    it('should update a role', async () => {
       /**
        * Arrange
        */
@@ -93,6 +95,40 @@ describe('RoleModel', () => {
        * Act
        */
       const result = model.update(updateRoleDto, roleConflicts);
+
+      /**
+       * Assert
+       */
+      expect(result).toEqual(resultExpected);
+    });
+  });
+
+  describe('delete', () => {
+    it('should delete a role', async () => {
+      /**
+       * Arrange
+       */
+      const _key = faker.datatype.uuid();
+      const deleteRoleDto: DeleteRoleDto = { _id: `Roles/${_key}`, _key };
+      const withKey: Role = {
+        _id: `Roles/${_key}`,
+        _key,
+        name: faker.random.word(),
+        description: faker.random.words(10),
+        active: true,
+        default: false,
+        createdAt: Date.now(),
+        createdBy: `Users/${_key}`,
+        updatedAt: 0,
+        updatedBy: '',
+      };
+      const roleConflicts: IRoleDeleteConflits = { withKey, withEdges: [] };
+      const resultExpected = { ...withKey, ...deleteRoleDto };
+
+      /**
+       * Act
+       */
+      const result = model.delete(deleteRoleDto, roleConflicts);
 
       /**
        * Assert
