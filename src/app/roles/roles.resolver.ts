@@ -1,11 +1,15 @@
-import { UsePipes, ValidationPipe } from '@nestjs/common';
+import { ParseArrayPipe, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { RoleCreateCommand } from './commands/impl/role-create.command';
+import { RolesUpdateCommand } from './commands/impl/roles-update.command';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { CreateRoleInput } from './dto/create-role.input';
+import { UpdateRoleDto } from './dto/update-role.dto';
+import { UpdateRoleInput } from './dto/update-role.input';
 import { Role } from './entities/role.entity';
 import { CreateRolePipe } from './pipes/create-role.pipe';
+import { UpdateRolesPipe } from './pipes/update-roles.pipe';
 
 @Resolver(() => Role)
 export class RolesResolver {
@@ -29,6 +33,21 @@ export class RolesResolver {
     return await this.commandBus.execute(new RoleCreateCommand(createRoleDto));
   }
 
+  @UsePipes(UpdateRolesPipe)
+  @Mutation(() => [Role], { name: 'rolesUpdate' })
+  async update(
+    @Args(
+      {
+        name: 'roles',
+        type: () => [UpdateRoleInput],
+      },
+      new ParseArrayPipe({ items: UpdateRoleDto }),
+    )
+    updateRoleDto: UpdateRoleDto[],
+  ) {
+    return await this.commandBus.execute(new RolesUpdateCommand(updateRoleDto));
+  }
+
   // @Query(() => [Role], { name: 'roles' })
   // findAll() {
   //   return this.rolesService.findAll();
@@ -37,11 +56,6 @@ export class RolesResolver {
   // @Query(() => Role, { name: 'role' })
   // findOne(@Args('id', { type: () => Int }) id: number) {
   //   return this.rolesService.findOne(id);
-  // }
-
-  // @Mutation(() => Role)
-  // updateRole(@Args('updateRoleInput') updateRoleInput: UpdateRoleInput) {
-  //   return this.rolesService.update(updateRoleInput.id, updateRoleInput);
   // }
 
   // @Mutation(() => Role)

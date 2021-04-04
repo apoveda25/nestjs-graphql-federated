@@ -1,4 +1,4 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import { Scope } from '../../scopes/entities/scope.entity';
 
 @ObjectType()
@@ -43,12 +43,12 @@ export class Role {
   })
   updatedBy: string;
 
-  @Field(() => Number, {
+  @Field(() => Int, {
     description: `Example field (${Date.now()})`,
   })
   createdAt: number;
 
-  @Field(() => Number, {
+  @Field(() => Int, {
     description: `Example field (${Date.now()})`,
   })
   updatedAt: number;
