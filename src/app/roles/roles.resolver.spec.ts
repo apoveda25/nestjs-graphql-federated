@@ -3,10 +3,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { InputTransform } from '../../arangodb/providers/input-transform';
 import { RoleCreateCommand } from './commands/impl/role-create.command';
+import { RolesDeleteCommand } from './commands/impl/roles-delete.command';
 import { RolesUpdateCommand } from './commands/impl/roles-update.command';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { Role } from './entities/role.entity';
 import { CreateRolePipe } from './pipes/create-role.pipe';
+import { DeleteRolesPipe } from './pipes/delete-roles.pipe';
 import { UpdateRolesPipe } from './pipes/update-roles.pipe';
 import { RolesResolver } from './roles.resolver';
 
@@ -39,6 +41,8 @@ describe('RolesResolver', () => {
       .overridePipe(CreateRolePipe)
       .useValue({})
       .overridePipe(UpdateRolesPipe)
+      .useValue({})
+      .overridePipe(DeleteRolesPipe)
       .useValue({})
       .compile();
 
@@ -127,6 +131,45 @@ describe('RolesResolver', () => {
        * Assert
        */
       expect(commandBusExecuteSpy).toHaveBeenCalledWith(rolesUpdateCommand);
+      expect(result).toEqual(resultExpected);
+    });
+  });
+
+  describe('delete', () => {
+    it('should delete roles', async () => {
+      /**
+       * Arrange
+       */
+      const _key = faker.datatype.uuid();
+      const deleteRoleDto = { _id: `Roles/${_key}`, _key };
+      const rolesDeleteCommand = new RolesDeleteCommand([deleteRoleDto]);
+      const resultExpected: Role[] = [
+        {
+          ...deleteRoleDto,
+          name: 'client',
+          description: '',
+          active: true,
+          default: false,
+          updatedAt: Date.now(),
+          updatedBy: `Users/${_key}`,
+          createdAt: Date.now(),
+          createdBy: `Users/${_key}`,
+        },
+      ];
+
+      const commandBusExecuteSpy = jest
+        .spyOn(commandBus, 'execute')
+        .mockResolvedValue(resultExpected);
+
+      /**
+       * Act
+       */
+      const result = await resolver.delete([deleteRoleDto]);
+
+      /**
+       * Assert
+       */
+      expect(commandBusExecuteSpy).toHaveBeenCalledWith(rolesDeleteCommand);
       expect(result).toEqual(resultExpected);
     });
   });

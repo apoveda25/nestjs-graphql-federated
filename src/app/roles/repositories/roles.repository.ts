@@ -5,7 +5,12 @@ import { ArangodbService } from '../../../arangodb/arangodb.service';
 import { InputTransform } from '../../../arangodb/providers/input-transform';
 import { ObjectToAQL } from '../../../arangodb/providers/object-to-aql';
 import { IFilterToAQL } from '../../../arangodb/providers/object-to-aql.interface';
+import {
+  IEdge,
+  IEdgeSearchInput,
+} from '../../../shared/interfaces/edge.interface';
 import { CreateRoleDto } from '../dto/create-role.dto';
+import { DeleteRoleDto } from '../dto/delete-role.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
 import { Role } from '../entities/role.entity';
 
@@ -31,6 +36,15 @@ export class RolesRepository {
     const cursor = await this.arangoService.query(aql`
       FOR doc IN ${updateRoleDto}
       UPDATE doc IN ${this.arangoService.collection(this.name)}
+    `);
+
+    return await cursor.map((doc) => doc);
+  }
+
+  async delete(deleteRoleDto: DeleteRoleDto[]) {
+    const cursor = await this.arangoService.query(aql`
+      FOR doc IN ${deleteRoleDto}
+      REMOVE doc IN ${this.arangoService.collection(this.name)}
     `);
 
     return await cursor.map((doc) => doc);
@@ -99,4 +113,20 @@ export class RolesRepository {
 
   //   return await cursor.reduce((acc: number, cur: number) => acc + cur, 0);
   // }
+
+  async searchEdgeConnections(input: IEdgeSearchInput): Promise<IEdge[]> {
+    const collections = input.collections.map((collection) =>
+      this.arangoService.collection(collection),
+    );
+
+    const cursor = await this.arangoService.query(aql`
+      WITH ${aql.join(collections)}
+      FOR vertex, edge IN ${input.direction} ${input.startVertexId} ${aql.join(
+      collections,
+    )}
+      RETURN edge
+    `);
+
+    return await cursor.map((el) => el);
+  }
 }

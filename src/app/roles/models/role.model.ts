@@ -3,10 +3,15 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { IEdge } from '../../../shared/interfaces/edge.interface';
 import { CreateRoleDto } from '../dto/create-role.dto';
+import { DeleteRoleDto } from '../dto/delete-role.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
 import { Role } from '../entities/role.entity';
-import { IRoleUpdateConflits } from '../interfaces/role.interfaces';
+import {
+  IRoleDeleteConflits,
+  IRoleUpdateConflits,
+} from '../interfaces/role.interfaces';
 
 @Injectable()
 export class RoleModel {
@@ -29,6 +34,16 @@ export class RoleModel {
     return { ...roleConflicts.withKey, ...role };
   }
 
+  delete(role: DeleteRoleDto, roleConflicts: IRoleDeleteConflits): Role {
+    if (this.isNotRoleExist(roleConflicts.withKey))
+      throw new NotFoundException();
+
+    if (this.haveEdgeConnections(roleConflicts.withEdges))
+      throw new ConflictException();
+
+    return { ...roleConflicts.withKey, ...role };
+  }
+
   private isNotRoleExist(roleConflict: Role): boolean {
     return !roleConflict;
   }
@@ -42,5 +57,9 @@ export class RoleModel {
 
   private isThereAnotherDefaultRole(roleConflict: Role): boolean {
     return roleConflict ? true : false;
+  }
+
+  private haveEdgeConnections(roleConflict: IEdge[]): boolean {
+    return roleConflict.length ? true : false;
   }
 }
