@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { aql } from 'arangojs/aql';
-import { IRole } from '../../../app/roles/interfaces/role.interfaces';
 import { ArangodbService } from '../../../arangodb/arangodb.service';
 import { InputTransform } from '../../../arangodb/providers/input-transform';
 import { ObjectToAQL } from '../../../arangodb/providers/object-to-aql';
@@ -11,6 +10,7 @@ import {
 } from '../../../shared/interfaces/edge.interface';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { DeleteRoleDto } from '../dto/delete-role.dto';
+import { FindRoleDto } from '../dto/find-role.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
 import { Role } from '../entities/role.entity';
 
@@ -50,6 +50,40 @@ export class RolesRepository {
     return await cursor.map((doc) => doc);
   }
 
+  async findAnd(filters: FindRoleDto): Promise<Role | null> {
+    const _filters: IFilterToAQL[] = this.inputTransform.resourceToArray(
+      filters,
+      '==',
+      'AND',
+    );
+
+    const cursor = await this.arangoService.query(aql`
+      FOR doc IN ${this.arangoService.collection(this.name)}
+      ${aql.join(this.objectToAQL.filtersToAql(_filters, 'doc'))}
+      LIMIT 1
+      RETURN doc
+    `);
+
+    return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
+  }
+
+  async findOr(filters: FindRoleDto): Promise<Role | null> {
+    const _filters: IFilterToAQL[] = this.inputTransform.resourceToArray(
+      filters,
+      '==',
+      'OR',
+    );
+
+    const cursor = await this.arangoService.query(aql`
+      FOR doc IN ${this.arangoService.collection(this.name)}
+      ${aql.join(this.objectToAQL.filtersToAql(_filters, 'doc'))}
+      LIMIT 1
+      RETURN doc
+    `);
+
+    return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
+  }
+
   // async search({
   //   filters,
   //   sort,
@@ -69,38 +103,6 @@ export class RolesRepository {
 
   //   return await cursor.map((el) => el);
   // }
-
-  async findAnd(filters: IRole): Promise<Role | null> {
-    const _filters: IFilterToAQL[] = this.inputTransform.resourceToArray(
-      filters,
-      '==',
-      'AND',
-    );
-
-    const cursor = await this.arangoService.query(aql`
-      FOR doc IN ${this.arangoService.collection(this.name)}
-      ${aql.join(this.objectToAQL.filtersToAql(_filters, 'doc'))}
-      RETURN doc
-    `);
-
-    return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
-  }
-
-  async findOr(filters: IRole): Promise<Role | null> {
-    const _filters: IFilterToAQL[] = this.inputTransform.resourceToArray(
-      filters,
-      '==',
-      'OR',
-    );
-
-    const cursor = await this.arangoService.query(aql`
-      FOR doc IN ${this.arangoService.collection(this.name)}
-      ${aql.join(this.objectToAQL.filtersToAql(_filters, 'doc'))}
-      RETURN doc
-    `);
-
-    return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
-  }
 
   // async count(filters: IFilterToAQL[]): Promise<number> {
   //   const cursor = await this.arangoService.query(aql`
