@@ -6,10 +6,12 @@ import { RoleCreateCommand } from './commands/impl/role-create.command';
 import { RolesDeleteCommand } from './commands/impl/roles-delete.command';
 import { RolesUpdateCommand } from './commands/impl/roles-update.command';
 import { CreateRoleDto } from './dto/create-role.dto';
+import { FindRoleDto } from './dto/find-role.dto';
 import { Role } from './entities/role.entity';
 import { CreateRolePipe } from './pipes/create-role.pipe';
 import { DeleteRolesPipe } from './pipes/delete-roles.pipe';
 import { UpdateRolesPipe } from './pipes/update-roles.pipe';
+import { RoleFindQuery } from './queries/impl/role-find.query';
 import { RolesResolver } from './roles.resolver';
 
 describe('RolesResolver', () => {
@@ -170,6 +172,44 @@ describe('RolesResolver', () => {
        * Assert
        */
       expect(commandBusExecuteSpy).toHaveBeenCalledWith(rolesDeleteCommand);
+      expect(result).toEqual(resultExpected);
+    });
+  });
+
+  describe('find', () => {
+    it('should find a role', async () => {
+      /**
+       * Arrange
+       */
+      const _key = faker.datatype.uuid();
+      const filters: FindRoleDto = { _key };
+      const roleFindQuery = new RoleFindQuery(filters);
+      const resultExpected: Role = {
+        _id: `Roles/${_key}`,
+        _key,
+        name: 'client',
+        description: '',
+        active: true,
+        default: false,
+        updatedAt: Date.now(),
+        updatedBy: `Users/${_key}`,
+        createdAt: Date.now(),
+        createdBy: `Users/${_key}`,
+      };
+
+      const queryBusExecuteSpy = jest
+        .spyOn(queryBus, 'execute')
+        .mockResolvedValue(resultExpected);
+
+      /**
+       * Act
+       */
+      const result = await resolver.find(filters);
+
+      /**
+       * Assert
+       */
+      expect(queryBusExecuteSpy).toHaveBeenCalledWith(roleFindQuery);
       expect(result).toEqual(resultExpected);
     });
   });

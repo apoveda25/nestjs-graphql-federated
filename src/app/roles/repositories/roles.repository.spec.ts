@@ -7,6 +7,7 @@ import { ObjectToAQL } from '../../../arangodb/providers/object-to-aql';
 import { IEdgeSearchInput } from '../../../shared/interfaces/edge.interface';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { DeleteRoleDto } from '../dto/delete-role.dto';
+import { FindRoleDto } from '../dto/find-role.dto';
 import { Role } from '../entities/role.entity';
 import { RolesRepository } from './roles.repository';
 
@@ -232,6 +233,94 @@ describe('RolesRepository', () => {
       expect(arangoServiceCollectionSpy).toHaveBeenCalledWith(
         input.collections[1],
       );
+      expect(result).toEqual(resultExpected);
+    });
+  });
+
+  describe('findAnd', () => {
+    it('should find a role', async () => {
+      /**
+       * Arrange
+       */
+      const name = 'Roles';
+      const _key = faker.datatype.uuid();
+      const findRoleDto: FindRoleDto = { _key };
+      const resultExpected: Role = {
+        _id: `Roles/${_key}`,
+        _key,
+        name: faker.name.firstName(),
+        description: faker.random.words(10),
+        active: true,
+        default: false,
+        createdAt: Date.now(),
+        createdBy: `Users/${_key}`,
+        updatedAt: 0,
+        updatedBy: '',
+      };
+      const cursor = [resultExpected];
+
+      const arangoServiceQuerySpy = jest
+        .spyOn(arangoService, 'query')
+        .mockImplementation(jest.fn().mockReturnValue(cursor));
+      const arangoServiceCollectionSpy = jest.spyOn(
+        arangoService,
+        'collection',
+      );
+
+      /**
+       * Act
+       */
+      const result = await provider.findAnd(findRoleDto);
+
+      /**
+       * Assert
+       */
+      expect(arangoServiceQuerySpy).toHaveBeenCalled();
+      expect(arangoServiceCollectionSpy).toHaveBeenCalledWith(name);
+      expect(result).toEqual(resultExpected);
+    });
+  });
+
+  describe('findOr', () => {
+    it('should find a role', async () => {
+      /**
+       * Arrange
+       */
+      const name = 'Roles';
+      const _key = faker.datatype.uuid();
+      const findRoleDto: FindRoleDto = { _key };
+      const resultExpected: Role = {
+        _id: `Roles/${_key}`,
+        _key,
+        name: faker.name.firstName(),
+        description: faker.random.words(10),
+        active: true,
+        default: false,
+        createdAt: Date.now(),
+        createdBy: `Users/${_key}`,
+        updatedAt: 0,
+        updatedBy: '',
+      };
+      const cursor = [resultExpected];
+
+      const arangoServiceQuerySpy = jest
+        .spyOn(arangoService, 'query')
+        .mockImplementation(jest.fn().mockReturnValue(cursor));
+      const arangoServiceCollectionSpy = jest.spyOn(
+        arangoService,
+        'collection',
+      );
+
+      /**
+       * Act
+       */
+      const result = await provider.findOr(findRoleDto);
+
+      /**
+       * Assert
+       */
+      expect(arangoServiceQuerySpy).toHaveBeenCalled();
+      expect(arangoServiceCollectionSpy).toHaveBeenCalledWith(name);
       expect(result).toEqual(resultExpected);
     });
   });
