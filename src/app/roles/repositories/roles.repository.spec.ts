@@ -324,4 +324,53 @@ describe('RolesRepository', () => {
       expect(result).toEqual(resultExpected);
     });
   });
+
+  describe('search', () => {
+    it('should search roles', async () => {
+      /**
+       * Arrange
+       */
+      const name = 'Roles';
+      const filters = [];
+      const sort = [];
+      const pagination = { offset: 0, count: 1 };
+
+      const _key = faker.datatype.uuid();
+      const resultExpected: Role[] = [
+        {
+          _id: `Roles/${_key}`,
+          _key,
+          name: faker.name.firstName(),
+          description: faker.random.words(10),
+          active: true,
+          default: false,
+          createdAt: Date.now(),
+          createdBy: `Users/${_key}`,
+          updatedAt: 0,
+          updatedBy: '',
+        },
+      ];
+
+      const arangoServiceQuerySpy = jest
+        .spyOn(arangoService, 'query')
+        .mockImplementation(jest.fn().mockReturnValue(resultExpected));
+
+      const arangoServiceCollectionSpy = jest.spyOn(
+        arangoService,
+        'collection',
+      );
+
+      /**
+       * Act
+       */
+      const result = await provider.search({ filters, sort, pagination });
+
+      /**
+       * Assert
+       */
+      expect(arangoServiceQuerySpy).toHaveBeenCalled();
+      expect(arangoServiceCollectionSpy).toHaveBeenCalledWith(name);
+      expect(result).toEqual(resultExpected);
+    });
+  });
 });
