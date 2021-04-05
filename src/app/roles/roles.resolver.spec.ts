@@ -2,6 +2,8 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { InputTransform } from '../../arangodb/providers/input-transform';
+import { FindResourcePipe } from '../../shared/pipes/find-resource.pipe';
+import { SearchResourcesPipe } from '../../shared/pipes/search-resources.pipe';
 import { RoleCreateCommand } from './commands/impl/role-create.command';
 import { RolesDeleteCommand } from './commands/impl/roles-delete.command';
 import { RolesUpdateCommand } from './commands/impl/roles-update.command';
@@ -12,6 +14,7 @@ import { CreateRolePipe } from './pipes/create-role.pipe';
 import { DeleteRolesPipe } from './pipes/delete-roles.pipe';
 import { UpdateRolesPipe } from './pipes/update-roles.pipe';
 import { RoleFindQuery } from './queries/impl/role-find.query';
+import { RolesSearchQuery } from './queries/impl/roles-search.query';
 import { RolesResolver } from './roles.resolver';
 
 describe('RolesResolver', () => {
@@ -45,6 +48,10 @@ describe('RolesResolver', () => {
       .overridePipe(UpdateRolesPipe)
       .useValue({})
       .overridePipe(DeleteRolesPipe)
+      .useValue({})
+      .overridePipe(FindResourcePipe)
+      .useValue({})
+      .overridePipe(SearchResourcesPipe)
       .useValue({})
       .compile();
 
@@ -210,6 +217,52 @@ describe('RolesResolver', () => {
        * Assert
        */
       expect(queryBusExecuteSpy).toHaveBeenCalledWith(roleFindQuery);
+      expect(result).toEqual(resultExpected);
+    });
+  });
+
+  describe('search', () => {
+    it('should search roles', async () => {
+      /**
+       * Arrange
+       */
+      const _key = faker.datatype.uuid();
+      const filters = [];
+      const sort = [];
+      const pagination = { offset: 0, count: 1 };
+      const rolesSearchQuery = new RolesSearchQuery({
+        filters,
+        sort,
+        pagination,
+      });
+      const resultExpected: Role[] = [
+        {
+          _id: `Roles/${_key}`,
+          _key,
+          name: 'client',
+          description: '',
+          active: true,
+          default: false,
+          updatedAt: Date.now(),
+          updatedBy: `Users/${_key}`,
+          createdAt: Date.now(),
+          createdBy: `Users/${_key}`,
+        },
+      ];
+
+      const queryBusExecuteSpy = jest
+        .spyOn(queryBus, 'execute')
+        .mockResolvedValue(resultExpected);
+
+      /**
+       * Act
+       */
+      const result = await resolver.search(filters, sort, pagination);
+
+      /**
+       * Assert
+       */
+      expect(queryBusExecuteSpy).toHaveBeenCalledWith(rolesSearchQuery);
       expect(result).toEqual(resultExpected);
     });
   });
