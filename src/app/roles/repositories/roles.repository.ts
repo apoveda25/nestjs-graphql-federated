@@ -14,7 +14,7 @@ import {
 } from '../../../shared/interfaces/edge.interface';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { DeleteRoleDto } from '../dto/delete-role.dto';
-import { FindRoleDto } from '../dto/find-role.dto';
+import { FindRoleInput } from '../dto/find-role.input';
 import { UpdateRoleDto } from '../dto/update-role.dto';
 import { Role } from '../entities/role.entity';
 
@@ -54,7 +54,7 @@ export class RolesRepository {
     return await cursor.map((doc) => doc);
   }
 
-  async findAnd(filters: FindRoleDto): Promise<Role | null> {
+  async findAnd(filters: FindRoleInput): Promise<Role | null> {
     const _filters: IFilterToAQL[] = this.inputTransform.resourceToArray(
       filters,
       '==',
@@ -71,7 +71,7 @@ export class RolesRepository {
     return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
   }
 
-  async findOr(filters: FindRoleDto): Promise<Role | null> {
+  async findOr(filters: FindRoleInput): Promise<Role | null> {
     const _filters: IFilterToAQL[] = this.inputTransform.resourceToArray(
       filters,
       '==',

@@ -7,7 +7,7 @@ import { ObjectToAQL } from '../../../arangodb/providers/object-to-aql';
 import { IEdgeSearchInput } from '../../../shared/interfaces/edge.interface';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { DeleteRoleDto } from '../dto/delete-role.dto';
-import { FindRoleDto } from '../dto/find-role.dto';
+import { FindRoleInput } from '../dto/find-role.input';
 import { Role } from '../entities/role.entity';
 import { RolesRepository } from './roles.repository';
 
@@ -244,7 +244,7 @@ describe('RolesRepository', () => {
        */
       const name = 'Roles';
       const _key = faker.datatype.uuid();
-      const findRoleDto: FindRoleDto = { _key };
+      const findRoleDto: FindRoleInput = { _key };
       const resultExpected: Role = {
         _id: `Roles/${_key}`,
         _key,
@@ -288,7 +288,7 @@ describe('RolesRepository', () => {
        */
       const name = 'Roles';
       const _key = faker.datatype.uuid();
-      const findRoleDto: FindRoleDto = { _key };
+      const findRoleDto: FindRoleInput = { _key };
       const resultExpected: Role = {
         _id: `Roles/${_key}`,
         _key,

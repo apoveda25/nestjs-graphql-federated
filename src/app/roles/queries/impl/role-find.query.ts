@@ -1,6 +1,6 @@
 import { IQuery } from '@nestjs/cqrs';
-import { FindRoleDto } from '../../dto/find-role.dto';
+import { FindRoleInput } from '../../dto/find-role.input';
 
 export class RoleFindQuery implements IQuery {
-  constructor(public readonly input: FindRoleDto) {}
+  constructor(public readonly input: FindRoleInput) {}
 }

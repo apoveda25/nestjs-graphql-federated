@@ -9,7 +9,7 @@ import { RoleCreateCommand } from './commands/impl/role-create.command';
 import { RolesDeleteCommand } from './commands/impl/roles-delete.command';
 import { RolesUpdateCommand } from './commands/impl/roles-update.command';
 import { CreateRoleDto } from './dto/create-role.dto';
-import { FindRoleDto } from './dto/find-role.dto';
+import { FindRoleInput } from './dto/find-role.input';
 import { Role } from './entities/role.entity';
 import { CreateRolePipe } from './pipes/create-role.pipe';
 import { DeleteRolesPipe } from './pipes/delete-roles.pipe';
@@ -193,7 +193,7 @@ describe('RolesResolver', () => {
        * Arrange
        */
       const _key = faker.datatype.uuid();
-      const filters: FindRoleDto = { _key };
+      const filters: FindRoleInput = { _key };
       const roleFindQuery = new RoleFindQuery(filters);
       const resultExpected: Role = {
         _id: `Roles/${_key}`,

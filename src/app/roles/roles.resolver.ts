@@ -22,7 +22,6 @@ import { CreateRoleInput } from './dto/create-role.input';
 import { DeleteRoleDto } from './dto/delete-role.dto';
 import { DeleteRoleInput } from './dto/delete-role.input';
 import { FilterRoleInput } from './dto/filter-role.input';
-import { FindRoleDto } from './dto/find-role.dto';
 import { FindRoleInput } from './dto/find-role.input';
 import { SortRoleInput } from './dto/sort-role.input';
 import { UpdateRoleDto } from './dto/update-role.dto';
@@ -95,9 +94,9 @@ export class RolesResolver {
         name: 'filters',
         type: () => FindRoleInput,
       },
-      new ValidationPipe({ expectedType: FindRoleDto }),
+      new ValidationPipe({ expectedType: FindRoleInput }),
     )
-    findRoleDto: FindRoleDto,
+    findRoleDto: FindRoleInput,
   ) {
     return await this.queryBus.execute(new RoleFindQuery(findRoleDto));
   }
