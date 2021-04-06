@@ -50,12 +50,4 @@ export class Scope {
 
   @Field(() => [Role])
   roles?: Role[];
-
-  public static of(params: Partial<Scope>): Scope {
-    const entity = new Scope();
-
-    Object.assign(entity, params);
-
-    return entity;
-  }
 }

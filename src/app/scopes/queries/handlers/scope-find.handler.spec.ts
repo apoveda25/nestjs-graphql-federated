@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
-import { Scope } from '../../entities/scope.entity';
 import { ScopesRepository } from '../../repositories/scopes.repository';
 import { ScopeFindQuery } from '../impl/scope-find.query';
 import { ScopeFindQueryHandler } from './scope-find.handler';
@@ -39,7 +38,7 @@ describe('ScopeFindQueryHandler', () => {
       const createdBy = `Users/${faker.datatype.uuid()}`;
       const _key = faker.datatype.uuid();
       const _id = `Scopes/${_key}`;
-      const resource = Scope.of({
+      const resource = {
         _id,
         _key,
         name: faker.lorem.word(),
@@ -49,7 +48,7 @@ describe('ScopeFindQueryHandler', () => {
         updatedAt: 0,
         createdBy,
         updatedBy: '',
-      });
+      };
 
       const repositoryFindOrSpy = jest
         .spyOn(scopesRepository, 'findOr')
