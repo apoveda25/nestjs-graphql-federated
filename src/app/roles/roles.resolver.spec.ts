@@ -15,6 +15,7 @@ import { CreateRolePipe } from './pipes/create-role.pipe';
 import { DeleteRolesPipe } from './pipes/delete-roles.pipe';
 import { UpdateRolesPipe } from './pipes/update-roles.pipe';
 import { RoleFindQuery } from './queries/impl/role-find.query';
+import { RoleHasScopeSearchOutQuery } from './queries/impl/role-has-scope-search-out.query';
 import { RolesCountQuery } from './queries/impl/roles-count.query';
 import { RolesSearchQuery } from './queries/impl/roles-search.query';
 import { RolesResolver } from './roles.resolver';
@@ -293,6 +294,48 @@ describe('RolesResolver', () => {
        * Assert
        */
       expect(queryBusExecuteSpy).toHaveBeenCalledWith(rolesCountQuery);
+      expect(result).toEqual(resultExpected);
+    });
+  });
+
+  describe('hasScope', () => {
+    it('should search scopes of role', async () => {
+      /**
+       * Arrange
+       */
+      const _key = faker.datatype.uuid();
+      const filters = [];
+      const sort = [];
+      const pagination = { offset: 0, count: 1 };
+      const parent = {
+        _id: `Roles/${_key}`,
+        _key,
+        name: 'client',
+        description: '',
+        active: true,
+        default: false,
+        updatedAt: Date.now(),
+        updatedBy: `Users/${_key}`,
+        createdAt: Date.now(),
+        createdBy: `Users/${_key}`,
+      };
+      const input = { filters, sort, pagination, parentId: parent._id };
+      const roleHasScopeQuery = new RoleHasScopeSearchOutQuery(input);
+      const resultExpected = [];
+
+      const queryBusExecuteSpy = jest
+        .spyOn(queryBus, 'execute')
+        .mockResolvedValue(resultExpected);
+
+      /**
+       * Act
+       */
+      const result = await resolver.scopes(filters, sort, pagination, parent);
+
+      /**
+       * Assert
+       */
+      expect(queryBusExecuteSpy).toHaveBeenCalledWith(roleHasScopeQuery);
       expect(result).toEqual(resultExpected);
     });
   });

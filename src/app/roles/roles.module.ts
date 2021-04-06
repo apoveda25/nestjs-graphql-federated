@@ -6,6 +6,7 @@ import { RoleModel } from './models/role.model';
 import { RolesQueryHandlers } from './queries/handlers/index';
 import { RolesRepository } from './repositories/roles.repository';
 import { RolesResolver } from './roles.resolver';
+import { RolesHasScopeRepository } from './repositories/roles-has-scope.repository';
 
 @Module({
   imports: [CqrsModule],
@@ -16,6 +17,7 @@ import { RolesResolver } from './roles.resolver';
     ...RolesEventHandlers,
     RolesRepository,
     RoleModel,
+    RolesHasScopeRepository,
   ],
 })
 export class RolesModule {}

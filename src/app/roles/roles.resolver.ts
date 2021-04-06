@@ -1,6 +1,14 @@
 import { ParseArrayPipe, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Int,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import {
   IFilterToAQL,
   ISortToAQL,
@@ -31,6 +39,7 @@ import { CreateRolePipe } from './pipes/create-role.pipe';
 import { DeleteRolesPipe } from './pipes/delete-roles.pipe';
 import { UpdateRolesPipe } from './pipes/update-roles.pipe';
 import { RoleFindQuery } from './queries/impl/role-find.query';
+import { RoleHasScopeSearchOutQuery } from './queries/impl/role-has-scope-search-out.query';
 import { RolesCountQuery } from './queries/impl/roles-count.query';
 import { RolesSearchQuery } from './queries/impl/roles-search.query';
 
@@ -137,5 +146,37 @@ export class RolesResolver {
     filters: IFilterToAQL[] = FILTER_DEFAULT,
   ) {
     return await this.queryBus.execute(new RolesCountQuery(filters));
+  }
+
+  @ResolveField()
+  async scopes(
+    @Args('filters', {
+      type: () => FilterRoleInput,
+      nullable: true,
+    })
+    filters: IFilterToAQL[] = FILTER_DEFAULT,
+
+    @Args('sort', {
+      type: () => SortRoleInput,
+      nullable: true,
+    })
+    sort: ISortToAQL[] = SORT_DEFAULT,
+
+    @Args('pagination', {
+      type: () => PaginationInput,
+      nullable: true,
+    })
+    pagination: PaginationInput = PAGINATION_DEFAULT,
+
+    @Parent() { _id }: Role,
+  ) {
+    return await this.queryBus.execute(
+      new RoleHasScopeSearchOutQuery({
+        filters,
+        sort,
+        pagination,
+        parentId: _id,
+      }),
+    );
   }
 }
