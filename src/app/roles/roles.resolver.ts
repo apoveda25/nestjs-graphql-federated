@@ -1,11 +1,12 @@
 import { ParseArrayPipe, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
   IFilterToAQL,
   ISortToAQL,
 } from '../../arangodb/providers/object-to-aql.interface';
 import { PaginationInput } from '../../shared/dto/pagination.input';
+import { CountResourcesPipe } from '../../shared/pipes/count-resources.pipe';
 import { FindResourcePipe } from '../../shared/pipes/find-resource.pipe';
 import { SearchResourcesPipe } from '../../shared/pipes/search-resources.pipe';
 import {
@@ -31,6 +32,7 @@ import { CreateRolePipe } from './pipes/create-role.pipe';
 import { DeleteRolesPipe } from './pipes/delete-roles.pipe';
 import { UpdateRolesPipe } from './pipes/update-roles.pipe';
 import { RoleFindQuery } from './queries/impl/role-find.query';
+import { RolesCountQuery } from './queries/impl/roles-count.query';
 import { RolesSearchQuery } from './queries/impl/roles-search.query';
 
 @Resolver(() => Role)
@@ -126,8 +128,15 @@ export class RolesResolver {
     );
   }
 
-  // @Query(() => Role, { name: 'role' })
-  // findOne(@Args('id', { type: () => Int }) id: number) {
-  //   return this.rolesService.findOne(id);
-  // }
+  @UsePipes(CountResourcesPipe)
+  @Query(() => Int, { name: 'rolesCount' })
+  async count(
+    @Args('filters', {
+      type: () => FilterRoleInput,
+      nullable: true,
+    })
+    filters: IFilterToAQL[] = FILTER_DEFAULT,
+  ) {
+    return await this.queryBus.execute(new RolesCountQuery(filters));
+  }
 }

@@ -108,17 +108,17 @@ export class RolesRepository {
     return await cursor.map((el) => el);
   }
 
-  // async count(filters: IFilterToAQL[]): Promise<number> {
-  //   const cursor = await this.arangoService.query(aql`
-  //     RETURN COUNT(
-  //       FOR doc IN ${this.repository}
-  //       ${aql.join(this.objectToAQL.filtersToAql(filters, 'doc'))}
-  //       RETURN doc
-  //     )
-  //   `);
+  async count(filters: IFilterToAQL[]): Promise<number> {
+    const cursor = await this.arangoService.query(aql`
+      RETURN COUNT(
+        FOR doc IN ${this.arangoService.collection(this.name)}
+        ${aql.join(this.objectToAQL.filtersToAql(filters, 'doc'))}
+        RETURN doc
+      )
+    `);
 
-  //   return await cursor.reduce((acc: number, cur: number) => acc + cur, 0);
-  // }
+    return await cursor.reduce((acc: number, cur: number) => acc + cur, 0);
+  }
 
   async searchEdgeConnections(input: IEdgeSearchInput): Promise<IEdge[]> {
     const collections = input.collections.map((collection) =>

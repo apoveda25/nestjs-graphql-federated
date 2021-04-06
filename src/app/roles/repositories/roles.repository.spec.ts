@@ -373,4 +373,36 @@ describe('RolesRepository', () => {
       expect(result).toEqual(resultExpected);
     });
   });
+
+  describe('count', () => {
+    it('should count roles', async () => {
+      /**
+       * Arrange
+       */
+      const name = 'Roles';
+      const filters = [];
+      const resultExpected = faker.datatype.number(500);
+
+      const arangoServiceQuerySpy = jest
+        .spyOn(arangoService, 'query')
+        .mockImplementation(jest.fn().mockReturnValue([resultExpected]));
+
+      const arangoServiceCollectionSpy = jest.spyOn(
+        arangoService,
+        'collection',
+      );
+
+      /**
+       * Act
+       */
+      const result = await provider.count(filters);
+
+      /**
+       * Assert
+       */
+      expect(arangoServiceQuerySpy).toHaveBeenCalled();
+      expect(arangoServiceCollectionSpy).toHaveBeenCalledWith(name);
+      expect(result).toEqual(resultExpected);
+    });
+  });
 });

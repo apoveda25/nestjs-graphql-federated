@@ -2,6 +2,7 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { InputTransform } from '../../arangodb/providers/input-transform';
+import { CountResourcesPipe } from '../../shared/pipes/count-resources.pipe';
 import { FindResourcePipe } from '../../shared/pipes/find-resource.pipe';
 import { SearchResourcesPipe } from '../../shared/pipes/search-resources.pipe';
 import { RoleCreateCommand } from './commands/impl/role-create.command';
@@ -14,6 +15,7 @@ import { CreateRolePipe } from './pipes/create-role.pipe';
 import { DeleteRolesPipe } from './pipes/delete-roles.pipe';
 import { UpdateRolesPipe } from './pipes/update-roles.pipe';
 import { RoleFindQuery } from './queries/impl/role-find.query';
+import { RolesCountQuery } from './queries/impl/roles-count.query';
 import { RolesSearchQuery } from './queries/impl/roles-search.query';
 import { RolesResolver } from './roles.resolver';
 
@@ -52,6 +54,8 @@ describe('RolesResolver', () => {
       .overridePipe(FindResourcePipe)
       .useValue({})
       .overridePipe(SearchResourcesPipe)
+      .useValue({})
+      .overridePipe(CountResourcesPipe)
       .useValue({})
       .compile();
 
@@ -263,6 +267,32 @@ describe('RolesResolver', () => {
        * Assert
        */
       expect(queryBusExecuteSpy).toHaveBeenCalledWith(rolesSearchQuery);
+      expect(result).toEqual(resultExpected);
+    });
+  });
+
+  describe('count', () => {
+    it('should count roles', async () => {
+      /**
+       * Arrange
+       */
+      const filters = [];
+      const rolesCountQuery = new RolesCountQuery(filters);
+      const resultExpected = faker.datatype.number(500);
+
+      const queryBusExecuteSpy = jest
+        .spyOn(queryBus, 'execute')
+        .mockResolvedValue(resultExpected);
+
+      /**
+       * Act
+       */
+      const result = await resolver.count(filters);
+
+      /**
+       * Assert
+       */
+      expect(queryBusExecuteSpy).toHaveBeenCalledWith(rolesCountQuery);
       expect(result).toEqual(resultExpected);
     });
   });
