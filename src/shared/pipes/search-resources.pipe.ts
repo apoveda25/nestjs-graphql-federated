@@ -6,6 +6,8 @@ export class SearchResourcesPipe implements PipeTransform {
   constructor(private readonly inputTransform: InputTransform) {}
 
   transform(value: any) {
+    console.log(value);
+
     if (value?.separator) return this.inputTransform.filtersToArray(value);
 
     if (value?.sort) return this.inputTransform.sortToArray(value);

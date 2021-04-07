@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { aql } from 'arangojs/aql';
 import { ArangodbService } from '../../../arangodb/arangodb.service';
 import { InputTransform } from '../../../arangodb/providers/input-transform';
@@ -29,29 +29,44 @@ export class RolesRepository {
   ) {}
 
   async create(createRoleDto: CreateRoleDto) {
-    const cursor = await this.arangoService.query(aql`
+    try {
+      const cursor = await this.arangoService.query(aql`
       INSERT ${createRoleDto} INTO ${this.arangoService.collection(this.name)}
     `);
 
-    return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
+      return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
   }
 
   async update(updateRoleDto: UpdateRoleDto[]) {
-    const cursor = await this.arangoService.query(aql`
+    try {
+      const cursor = await this.arangoService.query(aql`
       FOR doc IN ${updateRoleDto}
       UPDATE doc IN ${this.arangoService.collection(this.name)}
     `);
 
-    return await cursor.map((doc) => doc);
+      return await cursor.map((doc) => doc);
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
   }
 
   async delete(deleteRoleDto: DeleteRoleDto[]) {
-    const cursor = await this.arangoService.query(aql`
+    try {
+      const cursor = await this.arangoService.query(aql`
       FOR doc IN ${deleteRoleDto}
       REMOVE doc IN ${this.arangoService.collection(this.name)}
     `);
 
-    return await cursor.map((doc) => doc);
+      return await cursor.map((doc) => doc);
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
   }
 
   async findAnd(filters: FindRoleInput): Promise<Role | null> {
@@ -61,14 +76,19 @@ export class RolesRepository {
       'AND',
     );
 
-    const cursor = await this.arangoService.query(aql`
+    try {
+      const cursor = await this.arangoService.query(aql`
       FOR doc IN ${this.arangoService.collection(this.name)}
       ${aql.join(this.objectToAQL.filtersToAql(_filters, 'doc'))}
       LIMIT 1
       RETURN doc
     `);
 
-    return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
+      return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
   }
 
   async findOr(filters: FindRoleInput): Promise<Role | null> {
@@ -78,14 +98,19 @@ export class RolesRepository {
       'OR',
     );
 
-    const cursor = await this.arangoService.query(aql`
+    try {
+      const cursor = await this.arangoService.query(aql`
       FOR doc IN ${this.arangoService.collection(this.name)}
       ${aql.join(this.objectToAQL.filtersToAql(_filters, 'doc'))}
       LIMIT 1
       RETURN doc
     `);
 
-    return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
+      return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
   }
 
   async search({
@@ -97,7 +122,8 @@ export class RolesRepository {
     sort: ISortToAQL[];
     pagination: PaginationInput;
   }): Promise<Role[]> {
-    const cursor = await this.arangoService.query(aql`
+    try {
+      const cursor = await this.arangoService.query(aql`
       FOR doc IN ${this.arangoService.collection(this.name)}
       ${aql.join(this.objectToAQL.filtersToAql(filters, 'doc'))}
       ${aql.join(this.objectToAQL.sortToAql(sort, 'doc'))}
@@ -105,11 +131,16 @@ export class RolesRepository {
       RETURN doc
     `);
 
-    return await cursor.map((el) => el);
+      return await cursor.map((el) => el);
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
   }
 
   async count(filters: IFilterToAQL[]): Promise<number> {
-    const cursor = await this.arangoService.query(aql`
+    try {
+      const cursor = await this.arangoService.query(aql`
       RETURN COUNT(
         FOR doc IN ${this.arangoService.collection(this.name)}
         ${aql.join(this.objectToAQL.filtersToAql(filters, 'doc'))}
@@ -117,22 +148,35 @@ export class RolesRepository {
       )
     `);
 
-    return await cursor.reduce((acc: number, cur: number) => acc + cur, 0);
+      return await cursor.reduce((acc: number, cur: number) => acc + cur, 0);
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
   }
 
-  async searchEdgeConnections(input: IEdgeSearchInput): Promise<IEdge[]> {
-    const collections = input.collections.map((collection) =>
+  async searchEdgeConnections({
+    collections,
+    direction,
+    startVertexId,
+  }: IEdgeSearchInput): Promise<IEdge[]> {
+    const _collections = collections.map((collection) =>
       this.arangoService.collection(collection),
     );
 
-    const cursor = await this.arangoService.query(aql`
-      WITH ${aql.join(collections)}
-      FOR vertex, edge IN ${input.direction} ${input.startVertexId} ${aql.join(
-      collections,
-    )}
+    try {
+      const cursor = await this.arangoService.query(aql`
+      WITH ${aql.join(_collections, ', ')}
+      FOR vertex, edge IN ${direction} ${startVertexId} ${aql.join(
+        _collections,
+      )}
       RETURN edge
     `);
 
-    return await cursor.map((el) => el);
+      return await cursor.map((el) => el);
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
   }
 }

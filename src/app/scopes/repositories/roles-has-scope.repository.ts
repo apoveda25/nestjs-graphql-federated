@@ -7,7 +7,7 @@ import {
   ISortToAQL,
 } from '../../../arangodb/providers/object-to-aql.interface';
 import { PaginationInput } from '../../../shared/dto/pagination.input';
-import { Scope } from '../../scopes/entities/scope.entity';
+import { Role } from '../../roles/entities/role.entity';
 
 @Injectable()
 export class RolesHasScopeRepository {
@@ -20,7 +20,7 @@ export class RolesHasScopeRepository {
     private readonly objectToAQL: ObjectToAQL,
   ) {}
 
-  async searchOut({
+  async searchIn({
     filters,
     sort,
     pagination,
@@ -30,7 +30,7 @@ export class RolesHasScopeRepository {
     sort: ISortToAQL[];
     pagination: PaginationInput;
     parentId: string;
-  }): Promise<Scope[]> {
+  }): Promise<Role[]> {
     const collections = [
       this.name,
       this.nameCollectionInput,
@@ -40,9 +40,9 @@ export class RolesHasScopeRepository {
     try {
       const cursor = await this.arangoService.query(aql`
       WITH ${aql.join(collections)}
-      FOR vertex, edge IN OUTBOUND ${parentId} ${collections[0]}
-      ${aql.join(this.objectToAQL.filtersToAql(filters, 'vertex'))}
-      ${aql.join(this.objectToAQL.sortToAql(sort, 'vertex'))}
+      FOR vertex, edge IN INBOUND ${parentId} ${collections[0]}
+      ${aql.join(this.objectToAQL.filtersToAql(filters, 'doc'))}
+      ${aql.join(this.objectToAQL.sortToAql(sort, 'doc'))}
       ${this.objectToAQL.paginationToAql(pagination)}
       RETURN vertex
     `);

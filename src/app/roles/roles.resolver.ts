@@ -22,6 +22,8 @@ import {
   PAGINATION_DEFAULT,
   SORT_DEFAULT,
 } from '../../shared/queries.constant';
+import { FilterScopeInput } from '../scopes/dto/filter-scope.input';
+import { SortScopeInput } from '../scopes/dto/sort-scope.input';
 import { RoleCreateCommand } from './commands/impl/role-create.command';
 import { RolesDeleteCommand } from './commands/impl/roles-delete.command';
 import { RolesUpdateCommand } from './commands/impl/roles-update.command';
@@ -148,16 +150,19 @@ export class RolesResolver {
     return await this.queryBus.execute(new RolesCountQuery(filters));
   }
 
+  @UsePipes(SearchResourcesPipe)
   @ResolveField()
   async scopes(
+    @Parent() { _id }: Role,
+
     @Args('filters', {
-      type: () => FilterRoleInput,
+      type: () => FilterScopeInput,
       nullable: true,
     })
     filters: IFilterToAQL[] = FILTER_DEFAULT,
 
     @Args('sort', {
-      type: () => SortRoleInput,
+      type: () => SortScopeInput,
       nullable: true,
     })
     sort: ISortToAQL[] = SORT_DEFAULT,
@@ -167,8 +172,6 @@ export class RolesResolver {
       nullable: true,
     })
     pagination: PaginationInput = PAGINATION_DEFAULT,
-
-    @Parent() { _id }: Role,
   ) {
     return await this.queryBus.execute(
       new RoleHasScopeSearchOutQuery({
