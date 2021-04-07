@@ -26,6 +26,7 @@ import { FilterScopeInput } from '../scopes/dto/filter-scope.input';
 import { SortScopeInput } from '../scopes/dto/sort-scope.input';
 import { RoleAddScopesCommand } from './commands/impl/role-add-scopes.command';
 import { RoleCreateCommand } from './commands/impl/role-create.command';
+import { RoleRemoveScopesCommand } from './commands/impl/role-remove-scopes.command';
 import { RolesDeleteCommand } from './commands/impl/roles-delete.command';
 import { RolesUpdateCommand } from './commands/impl/roles-update.command';
 import { AddScopesRoleDto } from './dto/add-scopes-role.dto';
@@ -36,6 +37,8 @@ import { DeleteRoleDto } from './dto/delete-role.dto';
 import { DeleteRoleInput } from './dto/delete-role.input';
 import { FilterRoleInput } from './dto/filter-role.input';
 import { FindRoleInput } from './dto/find-role.input';
+import { RemoveScopesRoleDto } from './dto/remove-scopes-role.dto';
+import { RemoveScopesRoleInput } from './dto/remove-scopes-role.input';
 import { SortRoleInput } from './dto/sort-role.input';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { UpdateRoleInput } from './dto/update-role.input';
@@ -43,6 +46,7 @@ import { Role } from './entities/role.entity';
 import { AddScopesRolePipe } from './pipes/add-scopes-role.pipe';
 import { CreateRolePipe } from './pipes/create-role.pipe';
 import { DeleteRolesPipe } from './pipes/delete-roles.pipe';
+import { RemoveScopesRolePipe } from './pipes/remove-scopes-role.pipe';
 import { UpdateRolesPipe } from './pipes/update-roles.pipe';
 import { RoleFindQuery } from './queries/impl/role-find.query';
 import { RoleHasScopeSearchOutQuery } from './queries/impl/role-has-scope-search-out.query';
@@ -198,23 +202,26 @@ export class RolesResolver {
       new ParseArrayPipe({ items: AddScopesRoleDto }),
     )
     addScopesRoleDto: AddScopesRoleDto[],
-  ) {
+  ): Promise<boolean> {
     return await this.commandBus.execute(
       new RoleAddScopesCommand(addScopesRoleDto),
     );
   }
 
+  @UsePipes(RemoveScopesRolePipe)
   @Mutation(() => Boolean, { name: 'roleRemoveScopes' })
   async removeScopes(
     @Args(
       {
         name: 'role',
-        type: () => CreateRoleInput,
+        type: () => RemoveScopesRoleInput,
       },
-      new ValidationPipe({ expectedType: CreateRoleDto }),
+      new ValidationPipe({ expectedType: RemoveScopesRoleDto }),
     )
-    createRoleDto: CreateRoleDto,
+    removeScopesRoleDto: RemoveScopesRoleDto[],
   ) {
-    return await this.commandBus.execute(new RoleCreateCommand(createRoleDto));
+    return await this.commandBus.execute(
+      new RoleRemoveScopesCommand(removeScopesRoleDto),
+    );
   }
 }

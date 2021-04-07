@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Edge } from 'arangojs/documents';
 import * as faker from 'faker';
 import { IRoleUpdateConflits } from '../../../../dist/app/roles/interfaces/role.interfaces';
 import { CreateScopeDto } from '../../scopes/dto/create-scope.dto';
@@ -10,6 +11,7 @@ import { Role } from '../entities/role.entity';
 import {
   IRoleAddScopesConflicts,
   IRoleDeleteConflits,
+  IRoleRemoveScopesConflicts,
 } from '../interfaces/role.interfaces';
 import { RoleModel } from './role.model';
 
@@ -188,6 +190,34 @@ describe('RoleModel', () => {
        * Act
        */
       const result = model.addScope(edge, roleConflicts);
+
+      /**
+       * Assert
+       */
+      expect(result).toEqual(resultExpected);
+    });
+  });
+
+  describe('removeScope', () => {
+    it('should remove a scope to role', async () => {
+      /**
+       * Arrange
+       */
+      const _key = faker.datatype.uuid();
+      const createdBy = `Users/${_key}`;
+      const edge: Edge = {
+        _from: `Roles/${_key}`,
+        _to: `Scopes/${_key}`,
+        createdAt: Date.now(),
+        createdBy,
+      };
+      const roleConflicts: IRoleRemoveScopesConflicts = { withFromTo: edge };
+      const resultExpected = { ...edge };
+
+      /**
+       * Act
+       */
+      const result = model.removeScope(edge, roleConflicts);
 
       /**
        * Assert

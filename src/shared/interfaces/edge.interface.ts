@@ -5,6 +5,11 @@ export interface IEdge {
   _to: string;
 }
 
+export interface IEdgeFilter {
+  _from?: string;
+  _to?: string;
+}
+
 export interface IEdgeSearchInput {
   direction: 'ANY' | 'INBOUNT' | 'OUTBOUNT';
   startVertexId: string;

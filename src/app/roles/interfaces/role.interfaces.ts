@@ -1,3 +1,4 @@
+import { Edge } from 'arangojs/documents';
 import { IEdge } from '../../../shared/interfaces/edge.interface';
 import { Scope } from '../../scopes/entities/scope.entity';
 import { Role } from '../entities/role.entity';
@@ -31,4 +32,8 @@ export interface IRoleDeleteConflits {
 export interface IRoleAddScopesConflicts {
   withFrom: Role;
   withTo: Scope;
+}
+
+export interface IRoleRemoveScopesConflicts {
+  withFromTo: Edge;
 }

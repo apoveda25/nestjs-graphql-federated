@@ -1,16 +1,22 @@
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
+import { IFilterToAQL } from '../../../dist/arangodb/providers/object-to-aql.interface';
 import { InputTransform } from '../../arangodb/providers/input-transform';
 import { CountResourcesPipe } from '../../shared/pipes/count-resources.pipe';
 import { FindResourcePipe } from '../../shared/pipes/find-resource.pipe';
 import { SearchResourcesPipe } from '../../shared/pipes/search-resources.pipe';
+import { RoleAddScopesCommand } from './commands/impl/role-add-scopes.command';
 import { RoleCreateCommand } from './commands/impl/role-create.command';
+import { RoleRemoveScopesCommand } from './commands/impl/role-remove-scopes.command';
 import { RolesDeleteCommand } from './commands/impl/roles-delete.command';
 import { RolesUpdateCommand } from './commands/impl/roles-update.command';
+import { AddScopesRoleDto } from './dto/add-scopes-role.dto';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { FindRoleInput } from './dto/find-role.input';
+import { RemoveScopesRoleDto } from './dto/remove-scopes-role.dto';
 import { Role } from './entities/role.entity';
+import { AddScopesRolePipe } from './pipes/add-scopes-role.pipe';
 import { CreateRolePipe } from './pipes/create-role.pipe';
 import { DeleteRolesPipe } from './pipes/delete-roles.pipe';
 import { UpdateRolesPipe } from './pipes/update-roles.pipe';
@@ -57,6 +63,8 @@ describe('RolesResolver', () => {
       .overridePipe(SearchResourcesPipe)
       .useValue({})
       .overridePipe(CountResourcesPipe)
+      .useValue({})
+      .overridePipe(AddScopesRolePipe)
       .useValue({})
       .compile();
 
@@ -298,13 +306,13 @@ describe('RolesResolver', () => {
     });
   });
 
-  describe('hasScope', () => {
+  describe('scopes', () => {
     it('should search scopes of role', async () => {
       /**
        * Arrange
        */
       const _key = faker.datatype.uuid();
-      const filters = [];
+      const filters: IFilterToAQL[] = [];
       const sort = [];
       const pagination = { offset: 0, count: 1 };
       const parent = {
@@ -330,12 +338,82 @@ describe('RolesResolver', () => {
       /**
        * Act
        */
-      const result = await resolver.scopes(filters, sort, pagination, parent);
+      const result = await resolver.scopes(parent, filters, sort, pagination);
 
       /**
        * Assert
        */
       expect(queryBusExecuteSpy).toHaveBeenCalledWith(roleHasScopeQuery);
+      expect(result).toEqual(resultExpected);
+    });
+  });
+
+  describe('addScopes', () => {
+    it('should add scopes to role', async () => {
+      /**
+       * Arrange
+       */
+      const _key = faker.datatype.uuid();
+      const addScopesRoleDto: AddScopesRoleDto[] = [
+        {
+          _from: `Roles/${_key}`,
+          _to: `Scopes/${_key}`,
+          createdAt: Date.now(),
+          createdBy: `Users/${_key}`,
+        },
+      ];
+      const roleAddScopesCommand = new RoleAddScopesCommand(addScopesRoleDto);
+      const resultExpected = true;
+
+      const commandBusExecuteSpy = jest
+        .spyOn(commandBus, 'execute')
+        .mockResolvedValue(resultExpected);
+
+      /**
+       * Act
+       */
+      const result = await resolver.addScopes(addScopesRoleDto);
+
+      /**
+       * Assert
+       */
+      expect(commandBusExecuteSpy).toHaveBeenCalledWith(roleAddScopesCommand);
+      expect(result).toEqual(resultExpected);
+    });
+  });
+
+  describe('removeScopes', () => {
+    it('should remove scopes to role', async () => {
+      /**
+       * Arrange
+       */
+      const _key = faker.datatype.uuid();
+      const removeScopesRoleDto: RemoveScopesRoleDto[] = [
+        {
+          _from: `Roles/${_key}`,
+          _to: `Scopes/${_key}`,
+        },
+      ];
+      const roleRemoveScopesCommand = new RoleRemoveScopesCommand(
+        removeScopesRoleDto,
+      );
+      const resultExpected = true;
+
+      const commandBusExecuteSpy = jest
+        .spyOn(commandBus, 'execute')
+        .mockResolvedValue(resultExpected);
+
+      /**
+       * Act
+       */
+      const result = await resolver.removeScopes(removeScopesRoleDto);
+
+      /**
+       * Assert
+       */
+      expect(commandBusExecuteSpy).toHaveBeenCalledWith(
+        roleRemoveScopesCommand,
+      );
       expect(result).toEqual(resultExpected);
     });
   });

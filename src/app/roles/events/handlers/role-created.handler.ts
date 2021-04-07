@@ -1,15 +1,13 @@
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { RolesHasScopeRepository } from '../../repositories/roles-has-scope.repository';
-import { RoleAddedScopesEvent } from '../impl/role-added-scopes.event';
+import { RolesRepository } from '../../repositories/roles.repository';
+import { RoleCreatedEvent } from '../impl/role-created.event';
 
-@EventsHandler(RoleAddedScopesEvent)
-export class RoleAddedScopesEventHandler
-  implements IEventHandler<RoleAddedScopesEvent> {
-  constructor(
-    private readonly rolesHasScopeRepository: RolesHasScopeRepository,
-  ) {}
+@EventsHandler(RoleCreatedEvent)
+export class RoleCreatedEventHandler
+  implements IEventHandler<RoleCreatedEvent> {
+  constructor(private readonly rolesRepository: RolesRepository) {}
 
-  async handle(event: RoleAddedScopesEvent) {
-    return await this.rolesHasScopeRepository.create(event.input);
+  async handle(event: RoleCreatedEvent) {
+    return await this.rolesRepository.create(event.role);
   }
 }

@@ -3,17 +3,20 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { Edge } from 'arangojs/documents';
 import { IEdge } from '../../../shared/interfaces/edge.interface';
 import { Scope } from '../../scopes/entities/scope.entity';
 import { AddScopesRoleDto } from '../dto/add-scopes-role.dto';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { DeleteRoleDto } from '../dto/delete-role.dto';
+import { RemoveScopesRoleDto } from '../dto/remove-scopes-role.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
 import { Role } from '../entities/role.entity';
 import {
   IRoleAddScopesConflicts,
   IRoleCreateConflits,
   IRoleDeleteConflits,
+  IRoleRemoveScopesConflicts,
   IRoleUpdateConflits,
 } from '../interfaces/role.interfaces';
 
@@ -62,8 +65,21 @@ export class RoleModel {
     return edge;
   }
 
+  removeScope(
+    edge: RemoveScopesRoleDto,
+    { withFromTo }: IRoleRemoveScopesConflicts,
+  ): RemoveScopesRoleDto {
+    if (this.isNotRoleHasScopeExist(withFromTo)) throw new NotFoundException();
+
+    return edge;
+  }
+
   private isRoleExist(role: Role): boolean {
     return role ? true : false;
+  }
+
+  private isNotRoleHasScopeExist(edge: Edge): boolean {
+    return !edge;
   }
 
   private isNotRoleExist(role: Role): boolean {
