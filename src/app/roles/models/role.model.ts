@@ -4,48 +4,74 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { IEdge } from '../../../shared/interfaces/edge.interface';
+import { Scope } from '../../scopes/entities/scope.entity';
+import { AddScopesRoleDto } from '../dto/add-scopes-role.dto';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { DeleteRoleDto } from '../dto/delete-role.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
 import { Role } from '../entities/role.entity';
 import {
+  IRoleAddScopesConflicts,
+  IRoleCreateConflits,
   IRoleDeleteConflits,
   IRoleUpdateConflits,
 } from '../interfaces/role.interfaces';
 
 @Injectable()
 export class RoleModel {
-  create(role: CreateRoleDto, roleConflict: Role): Role {
-    if (roleConflict) throw new ConflictException();
+  create(role: CreateRoleDto, { withKey }: IRoleCreateConflits): Role {
+    if (this.isRoleExist(withKey)) throw new ConflictException();
 
     return role;
   }
 
-  update(role: UpdateRoleDto, roleConflicts: IRoleUpdateConflits): Role {
-    if (this.isNotRoleExist(roleConflicts.withKey))
-      throw new NotFoundException();
+  update(
+    role: UpdateRoleDto,
+    { withKey, withName, withDefault }: IRoleUpdateConflits,
+  ): Role {
+    if (this.isNotRoleExist(withKey)) throw new NotFoundException();
 
-    if (this.isThereAnotherRoleWithTheSameName(roleConflicts.withName, role))
+    if (this.isThereAnotherRoleWithTheSameName(withName, role))
       throw new ConflictException();
 
-    if (this.isThereAnotherDefaultRole(roleConflicts.withDefault))
+    if (this.isThereAnotherDefaultRole(withDefault))
       throw new ConflictException();
 
-    return { ...roleConflicts.withKey, ...role };
+    return { ...withKey, ...role };
   }
 
-  delete(role: DeleteRoleDto, roleConflicts: IRoleDeleteConflits): Role {
-    if (this.isNotRoleExist(roleConflicts.withKey))
-      throw new NotFoundException();
+  delete(
+    role: DeleteRoleDto,
+    { withKey, withEdges }: IRoleDeleteConflits,
+  ): Role {
+    if (this.isNotRoleExist(withKey)) throw new NotFoundException();
 
-    if (this.haveEdgeConnections(roleConflicts.withEdges))
-      throw new ConflictException();
+    if (this.haveEdgeConnections(withEdges)) throw new ConflictException();
 
-    return { ...roleConflicts.withKey, ...role };
+    return { ...withKey, ...role };
   }
 
-  private isNotRoleExist(roleConflict: Role): boolean {
-    return !roleConflict;
+  addScope(
+    edge: AddScopesRoleDto,
+    { withFrom, withTo }: IRoleAddScopesConflicts,
+  ): AddScopesRoleDto {
+    if (this.isNotRoleExist(withFrom)) throw new NotFoundException();
+
+    if (this.isNotScopeExist(withTo)) throw new NotFoundException();
+
+    return edge;
+  }
+
+  private isRoleExist(role: Role): boolean {
+    return role ? true : false;
+  }
+
+  private isNotRoleExist(role: Role): boolean {
+    return !role;
+  }
+
+  private isNotScopeExist(scope: Scope): boolean {
+    return !scope;
   }
 
   private isThereAnotherRoleWithTheSameName(

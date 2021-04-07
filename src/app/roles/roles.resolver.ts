@@ -24,9 +24,12 @@ import {
 } from '../../shared/queries.constant';
 import { FilterScopeInput } from '../scopes/dto/filter-scope.input';
 import { SortScopeInput } from '../scopes/dto/sort-scope.input';
+import { RoleAddScopesCommand } from './commands/impl/role-add-scopes.command';
 import { RoleCreateCommand } from './commands/impl/role-create.command';
 import { RolesDeleteCommand } from './commands/impl/roles-delete.command';
 import { RolesUpdateCommand } from './commands/impl/roles-update.command';
+import { AddScopesRoleDto } from './dto/add-scopes-role.dto';
+import { AddScopesRoleInput } from './dto/add-scopes-role.input';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { CreateRoleInput } from './dto/create-role.input';
 import { DeleteRoleDto } from './dto/delete-role.dto';
@@ -37,6 +40,7 @@ import { SortRoleInput } from './dto/sort-role.input';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { UpdateRoleInput } from './dto/update-role.input';
 import { Role } from './entities/role.entity';
+import { AddScopesRolePipe } from './pipes/add-scopes-role.pipe';
 import { CreateRolePipe } from './pipes/create-role.pipe';
 import { DeleteRolesPipe } from './pipes/delete-roles.pipe';
 import { UpdateRolesPipe } from './pipes/update-roles.pipe';
@@ -181,5 +185,36 @@ export class RolesResolver {
         parentId: _id,
       }),
     );
+  }
+
+  @UsePipes(AddScopesRolePipe)
+  @Mutation(() => Boolean, { name: 'roleAddScopes' })
+  async addScopes(
+    @Args(
+      {
+        name: 'role',
+        type: () => AddScopesRoleInput,
+      },
+      new ParseArrayPipe({ items: AddScopesRoleDto }),
+    )
+    addScopesRoleDto: AddScopesRoleDto[],
+  ) {
+    return await this.commandBus.execute(
+      new RoleAddScopesCommand(addScopesRoleDto),
+    );
+  }
+
+  @Mutation(() => Boolean, { name: 'roleRemoveScopes' })
+  async removeScopes(
+    @Args(
+      {
+        name: 'role',
+        type: () => CreateRoleInput,
+      },
+      new ValidationPipe({ expectedType: CreateRoleDto }),
+    )
+    createRoleDto: CreateRoleDto,
+  ) {
+    return await this.commandBus.execute(new RoleCreateCommand(createRoleDto));
   }
 }

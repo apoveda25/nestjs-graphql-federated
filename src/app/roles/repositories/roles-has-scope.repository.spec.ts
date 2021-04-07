@@ -3,6 +3,7 @@ import { aql } from 'arangojs/aql';
 import * as faker from 'faker';
 import { ArangodbService } from '../../../arangodb/arangodb.service';
 import { ObjectToAQL } from '../../../arangodb/providers/object-to-aql';
+import { AddScopesRoleDto } from '../dto/add-scopes-role.dto';
 import { RolesHasScopeRepository } from './roles-has-scope.repository';
 
 describe('RolesHasScopeRepository', () => {
@@ -41,6 +42,46 @@ describe('RolesHasScopeRepository', () => {
     expect(provider).toBeDefined();
     expect(arangoService).toBeDefined();
     expect(objectToAQL).toBeDefined();
+  });
+
+  describe('create', () => {
+    it('should create edge has_role', async () => {
+      /**
+       * Arrange
+       */
+      const name = 'RolesHasScope';
+      const _key = faker.datatype.uuid();
+      const addScopesRoleDto: AddScopesRoleDto[] = [
+        {
+          _from: `Roles/${_key}`,
+          _to: `Scopes/${_key}`,
+          createdAt: Date.now(),
+          createdBy: `Users/${_key}`,
+        },
+      ];
+      const resultExpected = [addScopesRoleDto];
+
+      const arangoServiceQuerySpy = jest
+        .spyOn(arangoService, 'query')
+        .mockImplementation(jest.fn().mockReturnValue([addScopesRoleDto]));
+
+      const arangoServiceCollectionSpy = jest.spyOn(
+        arangoService,
+        'collection',
+      );
+
+      /**
+       * Act
+       */
+      const result = await provider.create(addScopesRoleDto);
+
+      /**
+       * Assert
+       */
+      expect(arangoServiceQuerySpy).toHaveBeenCalled();
+      expect(arangoServiceCollectionSpy).toHaveBeenCalledWith(name);
+      expect(result).toEqual(resultExpected);
+    });
   });
 
   describe('hasScope', () => {

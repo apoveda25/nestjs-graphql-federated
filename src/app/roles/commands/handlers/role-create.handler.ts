@@ -16,11 +16,11 @@ export class RoleCreateCommandHandler
 
   async execute(command: RoleCreateCommand): Promise<Role> {
     const { _key, name } = command.role;
-    const roleConflict = await this.rolesRepository.findOr({
+    const withKey = await this.rolesRepository.findOr({
       _key,
       name,
     });
-    const roleCreated = this.roleModel.create(command.role, roleConflict);
+    const roleCreated = this.roleModel.create(command.role, { withKey });
 
     this.eventBus.publish(new RoleCreatedEvent(roleCreated));
 

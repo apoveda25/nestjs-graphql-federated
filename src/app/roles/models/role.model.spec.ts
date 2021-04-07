@@ -1,11 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { IRoleUpdateConflits } from '../../../../dist/app/roles/interfaces/role.interfaces';
+import { CreateScopeDto } from '../../scopes/dto/create-scope.dto';
+import { AddScopesRoleDto } from '../dto/add-scopes-role.dto';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { DeleteRoleDto } from '../dto/delete-role.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
 import { Role } from '../entities/role.entity';
-import { IRoleDeleteConflits } from '../interfaces/role.interfaces';
+import {
+  IRoleAddScopesConflicts,
+  IRoleDeleteConflits,
+} from '../interfaces/role.interfaces';
 import { RoleModel } from './role.model';
 
 describe('RoleModel', () => {
@@ -41,13 +46,13 @@ describe('RoleModel', () => {
         createdBy: `Users/${_key}`,
         updatedBy: '',
       };
-      const roleConflict = null;
+      const roleConflicts = { withKey: null };
       const resultExpected = { ...role };
 
       /**
        * Act
        */
-      const result = model.create(role, roleConflict);
+      const result = model.create(role, roleConflicts);
 
       /**
        * Assert
@@ -129,6 +134,60 @@ describe('RoleModel', () => {
        * Act
        */
       const result = model.delete(deleteRoleDto, roleConflicts);
+
+      /**
+       * Assert
+       */
+      expect(result).toEqual(resultExpected);
+    });
+  });
+
+  describe('addScope', () => {
+    it('should add a scope to role', async () => {
+      /**
+       * Arrange
+       */
+      const _key = faker.datatype.uuid();
+      const createdBy = `Users/${_key}`;
+      const role: CreateRoleDto = {
+        _id: `Roles/${_key}`,
+        _key,
+        name: faker.random.word(),
+        description: faker.random.words(10),
+        active: true,
+        default: false,
+        createdAt: Date.now(),
+        updatedAt: 0,
+        createdBy,
+        updatedBy: '',
+      };
+      const scope: CreateScopeDto = {
+        _id: `Roles/${_key}`,
+        _key,
+        name: faker.random.word(),
+        action: faker.random.word(),
+        collection: faker.random.word(),
+        createdAt: Date.now(),
+        updatedAt: 0,
+        createdBy,
+        updatedBy: '',
+      };
+      const edge: AddScopesRoleDto = {
+        _from: role._id,
+        _to: scope._id,
+        createdBy,
+        createdAt: Date.now(),
+      };
+      const roleConflicts: IRoleAddScopesConflicts = {
+        withFrom: role,
+        withTo: scope,
+      };
+      const resultExpected = { ...edge };
+
+      /**
+       * Act
+       */
+      const result = model.addScope(edge, roleConflicts);
 
       /**
        * Assert

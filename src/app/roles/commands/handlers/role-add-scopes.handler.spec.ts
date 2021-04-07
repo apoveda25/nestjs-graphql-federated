@@ -96,9 +96,10 @@ describe('RoleCreateCommandHandler', () => {
         _key: command.role._key,
         name: command.role.name,
       });
-      expect(roleModelCreateSpy).toHaveBeenCalledWith(command.role, {
-        withKey: roleConflict,
-      });
+      expect(roleModelCreateSpy).toHaveBeenCalledWith(
+        command.role,
+        roleConflict,
+      );
       expect(eventBusPublishSpy).toHaveBeenCalledWith(roleCreatedEvent);
       expect(result).toEqual(resultExpected);
     });

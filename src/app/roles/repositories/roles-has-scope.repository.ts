@@ -8,6 +8,7 @@ import {
 } from '../../../arangodb/providers/object-to-aql.interface';
 import { PaginationInput } from '../../../shared/dto/pagination.input';
 import { Scope } from '../../scopes/entities/scope.entity';
+import { AddScopesRoleDto } from '../dto/add-scopes-role.dto';
 
 @Injectable()
 export class RolesHasScopeRepository {
@@ -19,6 +20,20 @@ export class RolesHasScopeRepository {
     private readonly arangoService: ArangodbService,
     private readonly objectToAQL: ObjectToAQL,
   ) {}
+
+  async create(addScopesRoleDto: AddScopesRoleDto[]) {
+    try {
+      const cursor = await this.arangoService.query(aql`
+      FOR vertex IN ${addScopesRoleDto}
+      INSERT vertex INTO ${this.arangoService.collection(this.name)}
+    `);
+
+      return await cursor.map((doc) => doc);
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
+  }
 
   async searchOut({
     filters,
