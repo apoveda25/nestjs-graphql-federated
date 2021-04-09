@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-<<<<<<< HEAD
 import { CqrsModule } from '@nestjs/cqrs';
 import { ScopesModule } from '../scopes/scopes.module';
 import { RolesCommandHandlers } from './commands/handlers/index';
@@ -22,13 +21,5 @@ import { RolesResolver } from './roles.resolver';
     RolesHasScopeRepository,
   ],
   exports: [RolesRepository],
-=======
-import { RolesRepository } from './repositories/roles.repository';
-import { RolesResolver } from './roles.resolver';
-import { RolesService } from './services/roles.service';
-
-@Module({
-  providers: [RolesResolver, RolesService, RolesRepository],
->>>>>>> parent of e706196... Merge branch 'release/v0.2.0'
 })
 export class RolesModule {}

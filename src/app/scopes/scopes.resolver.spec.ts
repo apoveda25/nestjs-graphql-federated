@@ -1,7 +1,7 @@
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InputTransform } from '../../arangodb/providers/input-transform';
-import { ContextGraphQL } from '../../shared/interfaces/context-graphql.interface';
+import { IContextGraphQL } from '../../shared/interfaces/context-graphql.interface';
 import { ScopesCreateCommand } from './commands/impl/scopes-create.command';
 import { ScopeFindQuery } from './queries/impl/scope-find.query';
 import { ScopesCountQuery } from './queries/impl/scopes-count.query';
@@ -51,11 +51,13 @@ describe('ScopesResolver', () => {
       /**
        * Arrange
        */
-      const context: ContextGraphQL = {
-        _id: 'Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d',
-        role: 'client',
+      const context: IContextGraphQL = {
+        user: {
+          _id: 'Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d',
+          roleId: 'client',
+        },
       };
-      const scopesCreateCommand = new ScopesCreateCommand(context._id);
+      const scopesCreateCommand = new ScopesCreateCommand(context.user._id);
 
       const resultExpected = [
         {
@@ -66,7 +68,7 @@ describe('ScopesResolver', () => {
           collection: 'Scopes',
           createdAt: Date.now(),
           updatedAt: 0,
-          createdBy: context._id,
+          createdBy: context.user._id,
           updatedBy: '',
         },
       ];

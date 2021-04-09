@@ -1,4 +1,8 @@
-export interface ContextGraphQL {
+export interface IContextGraphQL {
+  user: IContextUser;
+}
+
+interface IContextUser {
   _id: string;
-  role: string;
+  roleId: string;
 }

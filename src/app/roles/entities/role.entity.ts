@@ -1,4 +1,5 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
+import { Scope } from '../../scopes/entities/scope.entity';
 
 @ObjectType()
 export class Role {
@@ -27,6 +28,11 @@ export class Role {
   })
   active: boolean;
 
+  @Field(() => Boolean, {
+    description: 'Example field (false)',
+  })
+  default: boolean;
+
   @Field(() => String, {
     description: `Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)`,
   })
@@ -37,13 +43,16 @@ export class Role {
   })
   updatedBy: string;
 
-  @Field(() => Number, {
+  @Field(() => Int, {
     description: `Example field (${Date.now()})`,
   })
   createdAt: number;
 
-  @Field(() => Number, {
+  @Field(() => Int, {
     description: `Example field (${Date.now()})`,
   })
   updatedAt: number;
+
+  @Field(() => [Scope])
+  scopes?: Scope[];
 }

@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
-import { Scope } from '../entities/scope.entity';
 import { ScopeModel } from './scope.model';
 
 describe('ScopeModel', () => {
@@ -24,7 +23,7 @@ describe('ScopeModel', () => {
        * Arrange
        */
       const _key = faker.datatype.uuid();
-      const scope = Scope.of({
+      const scope = {
         _id: `Scopes/${_key}`,
         _key,
         name: faker.lorem.word(),
@@ -34,7 +33,7 @@ describe('ScopeModel', () => {
         updatedAt: 0,
         createdBy: `Users/${faker.datatype.uuid()}`,
         updatedBy: '',
-      });
+      };
       const scopeConflict = null;
       const scopeCreated = { ...scope };
 
@@ -54,7 +53,7 @@ describe('ScopeModel', () => {
        * Arrange
        */
       const _key = faker.datatype.uuid();
-      const scope = Scope.of({
+      const scope = {
         _id: `Scopes/${_key}`,
         _key,
         name: faker.lorem.word(),
@@ -64,7 +63,7 @@ describe('ScopeModel', () => {
         updatedAt: 0,
         createdBy: `Users/${faker.datatype.uuid()}`,
         updatedBy: '',
-      });
+      };
       const scopeConflict = { ...scope };
       const scopeCreated = null;
 

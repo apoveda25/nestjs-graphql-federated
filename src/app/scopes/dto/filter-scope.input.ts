@@ -1,6 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { IsArray, IsOptional, IsString } from 'class-validator';
-import { FilterBooleanInput } from '../../../shared/dto/filter-boolean.input';
 import { FilterIntInput } from '../../../shared/dto/filter-int.input';
 import { FilterKeyInput } from '../../../shared/dto/filter-key.input';
 import { FilterStringInput } from '../../../shared/dto/filter-string.input';
@@ -23,10 +22,10 @@ export class FilterScopeInput {
   @IsOptional()
   action?: FilterStringInput[];
 
-  @Field(() => [FilterBooleanInput], { nullable: true })
+  @Field(() => [FilterStringInput], { nullable: true })
   @IsArray()
   @IsOptional()
-  collection?: FilterBooleanInput[];
+  collection?: FilterStringInput[];
 
   @Field(() => [FilterStringInput], { nullable: true })
   @IsArray()
