@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { RolesRepository } from './roles.repository';
+import { PaginationInput } from './pagination.input';
 
-describe('RolesRepository', () => {
-  let provider: RolesRepository;
+describe('PaginationInput', () => {
+  let provider: PaginationInput;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [RolesRepository],
+      providers: [PaginationInput],
     }).compile();
 
-    provider = module.get<RolesRepository>(RolesRepository);
+    provider = module.get<PaginationInput>(PaginationInput);
   });
 
   it('should be defined', () => {

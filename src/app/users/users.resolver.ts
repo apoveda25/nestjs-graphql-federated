@@ -1,47 +1,51 @@
-import { ParseArrayPipe, UsePipes } from '@nestjs/common';
-import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { UsePipes, ValidationPipe } from '@nestjs/common';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { UserCreateCommand } from './commands/impl/user-create.command';
+import { CreateUserDto } from './dto/create-user.dto';
 import { CreateUserInput } from './dto/create-user.input';
-import { UpdateUserInput } from './dto/update-user.input';
 import { User } from './entities/user.entity';
-import { CreateUsersPipe } from './pipes/create-users.pipe';
-import { UsersService } from './services/users.service';
+import { CreateUserPipe } from './pipes/create-user.pipe';
 
 @Resolver(() => User)
 export class UsersResolver {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+  ) {}
 
-  @UsePipes(CreateUsersPipe)
-  @Mutation(() => [User], { name: 'usersCreate' })
+  @UsePipes(CreateUserPipe)
+  @Mutation(() => User, { name: 'userCreate' })
   async create(
     @Args(
       {
-        name: 'create',
-        type: () => [CreateUserInput],
+        name: 'user',
+        type: () => CreateUserInput,
       },
-      new ParseArrayPipe({ items: CreateUserInput }),
+      new ValidationPipe({ expectedType: CreateUserDto }),
     )
-    createUserInput: CreateUserInput[],
+    createUserDto: CreateUserDto,
   ) {
-    return this.usersService.create(createUserInput);
+    return await this.commandBus.execute(new UserCreateCommand(createUserDto));
   }
 
-  @Query(() => [User], { name: 'users' })
-  findAll() {
-    return this.usersService.findAll();
-  }
+  // @Query(() => [User], { name: 'users' })
+  // findAll() {
+  //   return this.usersService.findAll();
+  // }
 
-  @Query(() => User, { name: 'user' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.usersService.findOne(id);
-  }
+  // @Query(() => User, { name: 'user' })
+  // findOne(@Args('id', { type: () => Int }) id: number) {
+  //   return this.usersService.findOne(id);
+  // }
 
-  @Mutation(() => User)
-  updateUser(@Args('updateUserInput') updateUserInput: UpdateUserInput) {
-    return this.usersService.update(updateUserInput.id, updateUserInput);
-  }
+  // @Mutation(() => User)
+  // updateUser(@Args('updateUserInput') updateUserInput: UpdateUserInput) {
+  //   return this.usersService.update(updateUserInput.id, updateUserInput);
+  // }
 
-  @Mutation(() => User)
-  removeUser(@Args('id', { type: () => Int }) id: number) {
-    return this.usersService.remove(id);
-  }
+  // @Mutation(() => User)
+  // removeUser(@Args('id', { type: () => Int }) id: number) {
+  //   return this.usersService.remove(id);
+  // }
 }

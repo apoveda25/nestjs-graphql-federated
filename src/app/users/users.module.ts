@@ -1,17 +1,24 @@
 import { Module } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
+import { RolesModule } from '../roles/roles.module';
+import { ScopesModule } from '../scopes/scopes.module';
+import { UsersCommandHandlers } from './commands/handlers/index';
+import { UsersEventHandlers } from './events/handlers/index';
+import { UserModel } from './models/user.model';
 import { CredentialsRepository } from './repositories/credentials.repository';
-import { RolesRepository } from './repositories/roles.repository';
 import { UsersRepository } from './repositories/users.repository';
-import { UsersService } from './services/users.service';
 import { UsersResolver } from './users.resolver';
 
 @Module({
+  imports: [CqrsModule, RolesModule, ScopesModule],
   providers: [
     UsersResolver,
-    UsersService,
+    // ...UsersQueryHandlers,
+    ...UsersCommandHandlers,
+    ...UsersEventHandlers,
     UsersRepository,
+    UserModel,
     CredentialsRepository,
-    RolesRepository,
   ],
 })
 export class UsersModule {}
