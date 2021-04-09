@@ -8,6 +8,7 @@ import { UserModel } from './models/user.model';
 import { CredentialsRepository } from './repositories/credentials.repository';
 import { UsersRepository } from './repositories/users.repository';
 import { UsersResolver } from './users.resolver';
+import { UsersHasRoleRepository } from './repositories/users-has-role.repository';
 
 @Module({
   imports: [CqrsModule, RolesModule, ScopesModule],
@@ -19,6 +20,7 @@ import { UsersResolver } from './users.resolver';
     UsersRepository,
     UserModel,
     CredentialsRepository,
+    UsersHasRoleRepository,
   ],
 })
 export class UsersModule {}
