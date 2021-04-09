@@ -48,9 +48,19 @@ export class User {
   birthday: number;
 
   @Field(() => String, {
-    description: `Example field (MALE | FEMALE)`,
+    description: `Example field (MALE | FEMALE | UNDEFINED)`,
   })
   gender: string;
+
+  @Field(() => String, {
+    description: `Example field (prefix)`,
+  })
+  prefix: string;
+
+  @Field(() => String, {
+    description: `Example field (https://domian.com)`,
+  })
+  urlImage: string;
 
   @Field(() => String, {
     description: `Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)`,

@@ -15,7 +15,7 @@ import {
   ISortToAQL,
 } from '../../arangodb/providers/object-to-aql.interface';
 import { PaginationInput } from '../../shared/dto/pagination.input';
-import { ContextGraphQL } from '../../shared/interfaces/context-graphql.interface';
+import { IContextGraphQL } from '../../shared/interfaces/context-graphql.interface';
 import { CountResourcesPipe } from '../../shared/pipes/count-resources.pipe';
 import { FindResourcePipe } from '../../shared/pipes/find-resource.pipe';
 import { SearchResourcesPipe } from '../../shared/pipes/search-resources.pipe';
@@ -47,8 +47,10 @@ export class ScopesResolver {
   @Mutation(() => [Scope], {
     name: 'scopesCreate',
   })
-  async create(@Context('user') user: ContextGraphQL) {
-    return await this.commandBus.execute(new ScopesCreateCommand(user._id));
+  async create(@Context() context: IContextGraphQL) {
+    return await this.commandBus.execute(
+      new ScopesCreateCommand(context.user._id),
+    );
   }
 
   @UsePipes(FindResourcePipe)

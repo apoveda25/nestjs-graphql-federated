@@ -19,5 +19,6 @@ import { ScopesResolver } from './scopes.resolver';
     RolesHasScopeRepository,
     ScopeModel,
   ],
+  exports: [ScopesRepository],
 })
 export class ScopesModule {}
