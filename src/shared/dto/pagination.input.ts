@@ -1,8 +1,6 @@
-import { Injectable } from '@nestjs/common';
 import { Field, InputType, Int } from '@nestjs/graphql';
 import { IsInt, Max, Min } from 'class-validator';
 
-@Injectable()
 @InputType()
 export class PaginationInput {
   @Min(0)

@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
-import { Scope } from '../../entities/scope.entity';
 import { ScopesRepository } from '../../repositories/scopes.repository';
 import { ScopeCreatedEventHandler } from './scope-created.handler';
 
@@ -36,7 +35,7 @@ describe('ScopeCreatedEventHandler', () => {
        * Arrange
        */
       const _key = faker.datatype.uuid();
-      const createScope = Scope.of({
+      const createScope = {
         _id: `Scopes/${_key}`,
         _key,
         name: faker.lorem.word(),
@@ -46,7 +45,7 @@ describe('ScopeCreatedEventHandler', () => {
         updatedAt: 0,
         createdBy: `Users/${faker.datatype.uuid()}`,
         updatedBy: '',
-      });
+      };
       const event = { input: createScope };
 
       const scopesRepositoryHandleSpy = jest
