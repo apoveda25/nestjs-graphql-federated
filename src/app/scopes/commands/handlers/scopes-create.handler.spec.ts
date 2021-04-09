@@ -83,7 +83,7 @@ describe('ScopesCreateCommandHandler', () => {
       const createScopes: Scope[] = SCOPES_ACTIONS.map((action) => {
         const _key = faker.datatype.uuid();
 
-        return {
+        return Scope.of({
           _id: `${nameCollection}/${_key}`,
           _key,
           name: `${nameCollection.toLowerCase()}_${action.toLowerCase()}`,
@@ -93,7 +93,7 @@ describe('ScopesCreateCommandHandler', () => {
           updatedAt: 0,
           createdBy,
           updatedBy: '',
-        };
+        });
       });
       const scopesCreatedEvent = createScopes.map(
         (scope) => new ScopeCreatedEvent(scope),

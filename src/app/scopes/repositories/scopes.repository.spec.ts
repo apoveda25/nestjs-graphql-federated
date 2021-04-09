@@ -4,6 +4,7 @@ import * as faker from 'faker';
 import { ArangodbService } from '../../../arangodb/arangodb.service';
 import { InputTransform } from '../../../arangodb/providers/input-transform';
 import { ObjectToAQL } from '../../../arangodb/providers/object-to-aql';
+import { Scope } from '../entities/scope.entity';
 import { ScopesRepository } from './scopes.repository';
 
 describe('ScopesRepository', () => {
@@ -92,7 +93,7 @@ describe('ScopesRepository', () => {
       ];
       const nameDocument = 'doc';
       const _key = faker.datatype.uuid();
-      const resultExpected = {
+      const resultExpected = Scope.of({
         _id: `${name}/${_key}`,
         _key,
         name: faker.random.word(),
@@ -102,7 +103,7 @@ describe('ScopesRepository', () => {
         updatedAt: faker.datatype.datetime().getMilliseconds(),
         createdBy: `Users/${faker.datatype.uuid()}`,
         updatedBy: '',
-      };
+      });
 
       const inputTransformResourceToArraySpy = jest
         .spyOn(inputTransform, 'resourceToArray')
@@ -217,7 +218,7 @@ describe('ScopesRepository', () => {
       ];
       const nameDocument = 'doc';
       const _key = faker.datatype.uuid();
-      const resultExpected = {
+      const resultExpected = Scope.of({
         _id: `${name}/${_key}`,
         _key,
         name: faker.random.word(),
@@ -227,7 +228,7 @@ describe('ScopesRepository', () => {
         updatedAt: faker.datatype.datetime().getMilliseconds(),
         createdBy: `Users/${faker.datatype.uuid()}`,
         updatedBy: '',
-      };
+      });
 
       const inputTransformResourceToArraySpy = jest
         .spyOn(inputTransform, 'resourceToArray')

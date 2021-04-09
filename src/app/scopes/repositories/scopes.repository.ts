@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { aql } from 'arangojs/aql';
 import { IScope } from '../../../app/scopes/interfaces/scope.interfaces';
 import { ArangodbService } from '../../../arangodb/arangodb.service';
@@ -20,7 +20,7 @@ import { ICollection } from '../interfaces/scopes-command-handlers.interface';
 
 @Injectable()
 export class ScopesRepository {
-  readonly name = 'Scopes';
+  private readonly name = 'Scopes';
 
   constructor(
     private readonly arangoService: ArangodbService,
@@ -33,19 +33,14 @@ export class ScopesRepository {
   }
 
   async create(createScopeDto: CreateScopeDto[]): Promise<Scope[]> {
-    try {
-      const cursor = await this.arangoService.query(aql`
+    const cursor = await this.arangoService.query(aql`
       FOR doc IN ${createScopeDto}
       INSERT doc INTO ${this.arangoService.collection(this.name)}
       OPTIONS { waitForSync: true }
       RETURN doc
     `);
 
-      return await cursor.map((doc) => doc);
-    } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException();
-    }
+    return await cursor.map((doc) => doc);
   }
 
   async findAnd(filters: IScope): Promise<Scope | null> {
@@ -55,18 +50,13 @@ export class ScopesRepository {
       'AND',
     );
 
-    try {
-      const cursor = await this.arangoService.query(aql`
+    const cursor = await this.arangoService.query(aql`
       FOR doc IN ${this.arangoService.collection(this.name)}
       ${aql.join(this.objectToAQL.filtersToAql(_filters, 'doc'))}
       RETURN doc
     `);
 
-      return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
-    } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException();
-    }
+    return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
   }
 
   async findOr(filters: IScope): Promise<Scope | null> {
@@ -76,18 +66,13 @@ export class ScopesRepository {
       'OR',
     );
 
-    try {
-      const cursor = await this.arangoService.query(aql`
+    const cursor = await this.arangoService.query(aql`
       FOR doc IN ${this.arangoService.collection(this.name)}
       ${aql.join(this.objectToAQL.filtersToAql(_filters, 'doc'))}
       RETURN doc
     `);
 
-      return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
-    } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException();
-    }
+    return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
   }
 
   async count({
@@ -95,8 +80,7 @@ export class ScopesRepository {
   }: {
     filters?: IFilterToAQL[];
   }): Promise<number> {
-    try {
-      const cursor = await this.arangoService.query(aql`
+    const cursor = await this.arangoService.query(aql`
       RETURN COUNT (
         FOR doc IN ${this.arangoService.collection(this.name)}
         ${aql.join(this.objectToAQL.filtersToAql(filters, 'doc'))}
@@ -104,11 +88,7 @@ export class ScopesRepository {
       )
     `);
 
-      return await cursor.reduce((acc: any, cur: any) => cur || acc, 0);
-    } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException();
-    }
+    return await cursor.reduce((acc: any, cur: any) => cur || acc, 0);
   }
 
   async search({
@@ -120,8 +100,7 @@ export class ScopesRepository {
     sort?: ISortToAQL[];
     pagination?: PaginationInput;
   }): Promise<Scope[]> {
-    try {
-      const cursor = await this.arangoService.query(aql`
+    const cursor = await this.arangoService.query(aql`
       FOR doc IN ${this.arangoService.collection(this.name)}
       ${aql.join(this.objectToAQL.filtersToAql(filters, 'doc'))}
       ${aql.join(this.objectToAQL.sortToAql(sort, 'doc'))}
@@ -129,10 +108,6 @@ export class ScopesRepository {
       RETURN doc
     `);
 
-      return await cursor.map((doc) => doc);
-    } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException();
-    }
+    return await cursor.map((doc) => doc);
   }
 }

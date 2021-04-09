@@ -1,15 +1,6 @@
 import { UsePipes, ValidationPipe } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import {
-  Args,
-  Context,
-  Int,
-  Mutation,
-  Parent,
-  Query,
-  ResolveField,
-  Resolver,
-} from '@nestjs/graphql';
+import { Args, Context, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
   IFilterToAQL,
   ISortToAQL,
@@ -24,15 +15,11 @@ import {
   PAGINATION_DEFAULT,
   SORT_DEFAULT,
 } from '../../shared/queries.constant';
-import { FilterRoleInput } from '../roles/dto/filter-role.input';
-import { SortRoleInput } from '../roles/dto/sort-role.input';
-import { Role } from '../roles/entities/role.entity';
 import { ScopesCreateCommand } from './commands/impl/scopes-create.command';
 import { FilterScopeInput } from './dto/filter-scope.input';
 import { FindScopeInput } from './dto/find-scope.input';
 import { SortScopeInput } from './dto/sort-scope.input';
 import { Scope } from './entities/scope.entity';
-import { RoleHasScopeSearchInQuery } from './queries/impl/role-has-scope-search-in.query';
 import { ScopeFindQuery } from './queries/impl/scope-find.query';
 import { ScopesCountQuery } from './queries/impl/scopes-count.query';
 import { ScopesSearchQuery } from './queries/impl/scopes-search.query';
@@ -104,38 +91,5 @@ export class ScopesResolver {
     filters: IFilterToAQL[] = FILTER_DEFAULT,
   ) {
     return await this.queryBus.execute(new ScopesCountQuery({ filters }));
-  }
-
-  @UsePipes(SearchResourcesPipe)
-  @ResolveField()
-  async roles(
-    @Parent() { _id }: Role,
-
-    @Args('filters', {
-      type: () => FilterRoleInput,
-      nullable: true,
-    })
-    filters: IFilterToAQL[] = FILTER_DEFAULT,
-
-    @Args('sort', {
-      type: () => SortRoleInput,
-      nullable: true,
-    })
-    sort: ISortToAQL[] = SORT_DEFAULT,
-
-    @Args('pagination', {
-      type: () => PaginationInput,
-      nullable: true,
-    })
-    pagination: PaginationInput = PAGINATION_DEFAULT,
-  ) {
-    return await this.queryBus.execute(
-      new RoleHasScopeSearchInQuery({
-        filters,
-        sort,
-        pagination,
-        parentId: _id,
-      }),
-    );
   }
 }
