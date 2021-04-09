@@ -5,10 +5,10 @@ import { ScopesModule } from '../scopes/scopes.module';
 import { UsersCommandHandlers } from './commands/handlers/index';
 import { UsersEventHandlers } from './events/handlers/index';
 import { UserModel } from './models/user.model';
-import { CredentialsRepository } from './repositories/credentials.repository';
-import { UsersRepository } from './repositories/users.repository';
-import { UsersResolver } from './users.resolver';
 import { UsersHasRoleRepository } from './repositories/users-has-role.repository';
+import { UsersRepository } from './repositories/users.repository';
+import { UsersSagas } from './sagas/users.saga';
+import { UsersResolver } from './users.resolver';
 
 @Module({
   imports: [CqrsModule, RolesModule, ScopesModule],
@@ -17,9 +17,9 @@ import { UsersHasRoleRepository } from './repositories/users-has-role.repository
     // ...UsersQueryHandlers,
     ...UsersCommandHandlers,
     ...UsersEventHandlers,
+    UsersSagas,
     UsersRepository,
     UserModel,
-    CredentialsRepository,
     UsersHasRoleRepository,
   ],
 })
