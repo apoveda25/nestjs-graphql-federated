@@ -24,6 +24,8 @@ import {
 } from '../../shared/queries.constant';
 import { FilterScopeInput } from '../scopes/dto/filter-scope.input';
 import { SortScopeInput } from '../scopes/dto/sort-scope.input';
+import { FilterUserInput } from '../users/dto/filter-user.input';
+import { SortUserInput } from '../users/dto/sort-user.input';
 import { RoleAddScopesCommand } from './commands/impl/role-add-scopes.command';
 import { RoleCreateCommand } from './commands/impl/role-create.command';
 import { RoleRemoveScopesCommand } from './commands/impl/role-remove-scopes.command';
@@ -52,6 +54,7 @@ import { RoleFindQuery } from './queries/impl/role-find.query';
 import { RoleHasScopeSearchOutQuery } from './queries/impl/role-has-scope-search-out.query';
 import { RolesCountQuery } from './queries/impl/roles-count.query';
 import { RolesSearchQuery } from './queries/impl/roles-search.query';
+import { UserHasRoleSearchInQuery } from './queries/impl/user-has-role-search-in.query';
 
 @Resolver(() => Role)
 export class RolesResolver {
@@ -156,6 +159,39 @@ export class RolesResolver {
     filters: IFilterToAQL[] = FILTER_DEFAULT,
   ) {
     return await this.queryBus.execute(new RolesCountQuery(filters));
+  }
+
+  @UsePipes(SearchResourcesPipe)
+  @ResolveField()
+  async users(
+    @Parent() { _id }: Role,
+
+    @Args('filters', {
+      type: () => FilterUserInput,
+      nullable: true,
+    })
+    filters: IFilterToAQL[] = FILTER_DEFAULT,
+
+    @Args('sort', {
+      type: () => SortUserInput,
+      nullable: true,
+    })
+    sort: ISortToAQL[] = SORT_DEFAULT,
+
+    @Args('pagination', {
+      type: () => PaginationInput,
+      nullable: true,
+    })
+    pagination: PaginationInput = PAGINATION_DEFAULT,
+  ) {
+    return await this.queryBus.execute(
+      new UserHasRoleSearchInQuery({
+        filters,
+        sort,
+        pagination,
+        parentId: _id,
+      }),
+    );
   }
 
   @UsePipes(SearchResourcesPipe)
