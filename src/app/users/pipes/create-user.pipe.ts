@@ -10,10 +10,10 @@ import { CreateUserInput } from '../dto/create-user.input';
 export class CreateUserPipe implements PipeTransform {
   constructor(@Inject(CONTEXT) private readonly context: IContextGraphQL) {}
 
-  transform(value: CreateUserInput): CreateUserDto {
+  transform(createUserInput: CreateUserInput): CreateUserDto {
     return {
-      _id: `Users/${value._key}`,
-      ...value,
+      _id: `Users/${createUserInput._key}`,
+      ...createUserInput,
       active: true,
       emailActive: false,
       emailCode: codeDigitsGenerate(6),

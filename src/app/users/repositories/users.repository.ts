@@ -31,6 +31,20 @@ export class UsersRepository {
     }
   }
 
+  async update(users: User[]) {
+    try {
+      const cursor = await this.arangoService.query(aql`
+        FOR doc IN ${users}
+        UPDATE doc IN ${this.arangoService.collection(this.name)}
+      `);
+
+      return await cursor.map((user) => user);
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
+  }
+
   async findOr(filters: FindUserInput): Promise<User | null> {
     const _filters: IFilterToAQL[] = this.inputTransform.resourceToArray(
       filters,
