@@ -3,7 +3,11 @@ import { aql } from 'arangojs/aql';
 import { ArangodbService } from '../../../arangodb/arangodb.service';
 import { InputTransform } from '../../../arangodb/providers/input-transform';
 import { ObjectToAQL } from '../../../arangodb/providers/object-to-aql';
-import { IFilterToAQL } from '../../../arangodb/providers/object-to-aql.interface';
+import {
+  IFilterToAQL,
+  ISortToAQL,
+} from '../../../arangodb/providers/object-to-aql.interface';
+import { PaginationInput } from '../../../shared/dto/pagination.input';
 import { FindUserInput } from '../dto/find-user.input';
 import { User } from '../entities/user.entity';
 
@@ -66,25 +70,25 @@ export class UsersRepository {
     }
   }
 
-  // async search({
-  //   filters,
-  //   sort,
-  //   pagination,
-  // }: {
-  //   filters: IFilterToAQL[];
-  //   sort: ISortToAQL[];
-  //   pagination: PaginationInput;
-  // }): Promise<User[]> {
-  //   const cursor = await this.arangoService.query(aql`
-  //     FOR doc IN ${this.repository}
-  //     ${aql.join(this.objectToAQL.filtersToAql(filters, 'doc'))}
-  //     ${aql.join(this.objectToAQL.sortToAql(sort, 'doc'))}
-  //     ${this.objectToAQL.paginationToAql(pagination)}
-  //     RETURN doc
-  //   `);
+  async search({
+    filters,
+    sort,
+    pagination,
+  }: {
+    filters: IFilterToAQL[];
+    sort: ISortToAQL[];
+    pagination: PaginationInput;
+  }): Promise<User[]> {
+    const cursor = await this.arangoService.query(aql`
+      FOR doc IN ${this.arangoService.collection(this.name)}
+      ${aql.join(this.objectToAQL.filtersToAql(filters, 'doc'))}
+      ${aql.join(this.objectToAQL.sortToAql(sort, 'doc'))}
+      ${this.objectToAQL.paginationToAql(pagination)}
+      RETURN doc
+    `);
 
-  //   return await cursor.map((el) => el);
-  // }
+    return await cursor.map((el) => el);
+  }
 
   // async find(_id: string): Promise<User> {
   //   const cursor = await this.arangoService.query(aql`
