@@ -4,7 +4,6 @@ import { ArangodbService } from '../../../arangodb/arangodb.service';
 import { InputTransform } from '../../../arangodb/providers/input-transform';
 import { ObjectToAQL } from '../../../arangodb/providers/object-to-aql';
 import { IFilterToAQL } from '../../../arangodb/providers/object-to-aql.interface';
-import { CreateUserDao } from '../dto/create-user.dao';
 import { FindUserInput } from '../dto/find-role.input';
 import { User } from '../entities/user.entity';
 
@@ -18,10 +17,10 @@ export class UsersRepository {
     private readonly inputTransform: InputTransform,
   ) {}
 
-  async create(createUserDao: CreateUserDao) {
+  async create(user: User) {
     try {
       const cursor = await this.arangoService.query(aql`
-        INSERT ${createUserDao} INTO ${this.arangoService.collection(this.name)}
+        INSERT ${user} INTO ${this.arangoService.collection(this.name)}
       `);
 
       return await cursor.reduce((acc: any, cur: any) => cur || acc, null);

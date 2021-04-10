@@ -22,6 +22,8 @@ export class User {
   })
   email: string;
 
+  password?: string;
+
   @Field(() => String, {
     description: 'Example field (name)',
   })
@@ -41,6 +43,8 @@ export class User {
     description: 'Example field (true)',
   })
   emailActive: boolean;
+
+  emailCodeExpire?: number;
 
   @Field(() => Number, {
     description: `Example field (${Date.now()})`,

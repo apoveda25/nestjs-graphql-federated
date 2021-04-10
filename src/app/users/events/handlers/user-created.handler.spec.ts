@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { delta } from '../../../../shared/helpers/delta';
-import { CreateUserDao } from '../../dto/create-user.dao';
 import { CreateUserDto } from '../../dto/create-user.dto';
 import { UsersRepository } from '../../repositories/users.repository';
 import { UserCreatedEvent } from '../impl/user-created.event';
@@ -37,7 +36,7 @@ describe('UserCreatedEventHandler', () => {
        * Arrange
        */
       const _key = faker.datatype.uuid();
-      const createUserDao: CreateUserDao = {
+      const createUserDto: CreateUserDto = {
         _id: `Users/${_key}`,
         _key,
         password: 'secret123456',
@@ -57,17 +56,14 @@ describe('UserCreatedEventHandler', () => {
         createdBy: `Users/${_key}`,
         updatedAt: 0,
         updatedBy: '',
-      };
-      const createUserDto: CreateUserDto = {
-        ...createUserDao,
         roleId: `Users/${_key}`,
       };
       const event = new UserCreatedEvent(createUserDto);
-      const resultExpected = { ...createUserDao };
+      const resultExpected = { ...createUserDto };
 
       const usersRepositoryHandleSpy = jest
         .spyOn(usersRepository, 'create')
-        .mockResolvedValue(createUserDao);
+        .mockResolvedValue(createUserDto);
 
       /**
        * Act
@@ -77,7 +73,7 @@ describe('UserCreatedEventHandler', () => {
       /**
        * Assert
        */
-      expect(usersRepositoryHandleSpy).toHaveBeenCalledWith(createUserDao);
+      expect(usersRepositoryHandleSpy).toHaveBeenCalledWith(createUserDto);
       expect(result).toStrictEqual(resultExpected);
     });
   });
