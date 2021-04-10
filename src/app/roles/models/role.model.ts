@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -6,72 +7,131 @@ import {
 import { Edge } from 'arangojs/documents';
 import { IEdge } from '../../../shared/interfaces/edge.interface';
 import { Scope } from '../../scopes/entities/scope.entity';
+import { ScopesRepository } from '../../scopes/repositories/scopes.repository';
 import { AddScopesRoleDto } from '../dto/add-scopes-role.dto';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { DeleteRoleDto } from '../dto/delete-role.dto';
 import { RemoveScopesRoleDto } from '../dto/remove-scopes-role.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
 import { Role } from '../entities/role.entity';
-import {
-  IRoleAddScopesConflicts,
-  IRoleCreateConflits,
-  IRoleDeleteConflits,
-  IRoleRemoveScopesConflicts,
-  IRoleUpdateConflits,
-} from '../interfaces/role.interfaces';
+import { RolesHasScopeRepository } from '../repositories/roles-has-scope.repository';
+import { RolesRepository } from '../repositories/roles.repository';
 
 @Injectable()
 export class RoleModel {
-  create(role: CreateRoleDto, { withKey }: IRoleCreateConflits): Role {
-    if (this.isRoleExist(withKey)) throw new ConflictException();
+  constructor(
+    private readonly rolesRepository: RolesRepository,
+    private readonly rolesHasScopeRepository: RolesHasScopeRepository,
+    private readonly scopesRepository: ScopesRepository,
+  ) {}
+
+  async create(role: CreateRoleDto): Promise<Role> {
+    const conflictKey = await this.rolesRepository.findOr({ _key: role._key });
+
+    if (this.isRoleExist(conflictKey)) throw new ConflictException();
+
+    const conflictName = await this.rolesRepository.findOr({ _key: role.name });
+
+    if (this.isThereAnotherRoleWithTheSame(conflictName, role))
+      throw new ConflictException();
 
     return role;
   }
 
-  update(
-    role: UpdateRoleDto,
-    { withKey, withName, withDefault }: IRoleUpdateConflits,
-  ): Role {
-    if (this.isNotRoleExist(withKey)) throw new NotFoundException();
+  async update(roles: UpdateRoleDto[]): Promise<Role[]> {
+    const rolesUpdated: Role[] = [];
 
-    if (this.isThereAnotherRoleWithTheSameName(withName, role))
-      throw new ConflictException();
+    for (const role of roles) {
+      const conflictKey = await this.rolesRepository.findOr({
+        _key: role._key,
+      });
 
-    if (this.isThereAnotherDefaultRole(withDefault))
-      throw new ConflictException();
+      if (this.isNotRoleExist(conflictKey)) throw new NotFoundException();
 
-    return { ...withKey, ...role };
+      const conflictName = role.name
+        ? await this.rolesRepository.findOr({ name: role.name })
+        : null;
+
+      if (this.isThereAnotherRoleWithTheSame(conflictName, role))
+        throw new ConflictException();
+
+      const conflictDefault = role.default
+        ? await this.rolesRepository.findOr({ default: role.default })
+        : null;
+
+      if (this.isThereAnotherRoleWithTheSame(conflictDefault, role))
+        throw new ConflictException();
+
+      rolesUpdated.push({ ...conflictKey, ...role });
+    }
+
+    return rolesUpdated;
   }
 
-  delete(
-    role: DeleteRoleDto,
-    { withKey, withEdges }: IRoleDeleteConflits,
-  ): Role {
-    if (this.isNotRoleExist(withKey)) throw new NotFoundException();
+  async delete(roles: DeleteRoleDto[]): Promise<Role[]> {
+    const rolesDeleted: Role[] = [];
 
-    if (this.haveEdgeConnections(withEdges)) throw new ConflictException();
+    for (const role of roles) {
+      const conflictKey = await this.rolesRepository.findOr({
+        _key: role._key,
+      });
 
-    return { ...withKey, ...role };
+      if (this.isNotRoleExist(conflictKey)) throw new NotFoundException();
+
+      const conflictEdgeConnections = await this.rolesRepository.searchEdgeConnections(
+        {
+          direction: 'ANY',
+          startVertexId: role._id,
+          collections: ['UsersHasRole', 'RolesHasScope'],
+        },
+      );
+
+      if (this.haveEdgeConnections(conflictEdgeConnections))
+        throw new BadRequestException();
+
+      rolesDeleted.push(conflictKey);
+    }
+
+    return rolesDeleted;
   }
 
-  addScope(
-    edge: AddScopesRoleDto,
-    { withFrom, withTo }: IRoleAddScopesConflicts,
-  ): AddScopesRoleDto {
-    if (this.isNotRoleExist(withFrom)) throw new NotFoundException();
+  async addScopes(edges: AddScopesRoleDto[]): Promise<AddScopesRoleDto[]> {
+    const addedScopesToRole: AddScopesRoleDto[] = [];
 
-    if (this.isNotScopeExist(withTo)) throw new NotFoundException();
+    for (const edge of edges) {
+      const conflictFrom = await this.rolesRepository.findOr({
+        _id: edge._from,
+      });
 
-    return edge;
+      if (this.isNotRoleExist(conflictFrom)) throw new NotFoundException();
+
+      const conflictTo = await this.scopesRepository.findOr({ _id: edge._to });
+
+      if (this.isNotScopeExist(conflictTo)) throw new NotFoundException();
+
+      addedScopesToRole.push(edge);
+    }
+
+    return addedScopesToRole;
   }
 
-  removeScope(
-    edge: RemoveScopesRoleDto,
-    { withFromTo }: IRoleRemoveScopesConflicts,
-  ): RemoveScopesRoleDto {
-    if (this.isNotRoleHasScopeExist(withFromTo)) throw new NotFoundException();
+  async removeScopes(
+    edges: RemoveScopesRoleDto[],
+  ): Promise<RemoveScopesRoleDto[]> {
+    const removedScopesToRole: RemoveScopesRoleDto[] = [];
 
-    return edge;
+    for (const edge of edges) {
+      const conflictEdge = await this.rolesHasScopeRepository.findAnd({
+        ...edge,
+      });
+
+      if (this.isNotRoleHasScopeExist(conflictEdge))
+        throw new NotFoundException();
+
+      removedScopesToRole.push(conflictEdge);
+    }
+
+    return removedScopesToRole;
   }
 
   private isRoleExist(role: Role): boolean {
@@ -90,15 +150,11 @@ export class RoleModel {
     return !scope;
   }
 
-  private isThereAnotherRoleWithTheSameName(
+  private isThereAnotherRoleWithTheSame(
     roleConflict: Role,
-    role: UpdateRoleDto,
+    role: CreateRoleDto | UpdateRoleDto,
   ): boolean {
     return roleConflict && roleConflict._key !== role._key;
-  }
-
-  private isThereAnotherDefaultRole(roleConflict: Role): boolean {
-    return roleConflict ? true : false;
   }
 
   private haveEdgeConnections(roleConflict: IEdge[]): boolean {
