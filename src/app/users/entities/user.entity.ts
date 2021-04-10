@@ -1,4 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Role } from '../../roles/entities/role.entity';
 
 @ObjectType()
 export class User {
@@ -87,4 +88,7 @@ export class User {
     description: `Example field (${Date.now()})`,
   })
   updatedAt: number;
+
+  @Field(() => Role)
+  role?: Role;
 }
