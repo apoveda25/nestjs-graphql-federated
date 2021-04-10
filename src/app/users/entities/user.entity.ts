@@ -44,6 +44,8 @@ export class User {
   })
   emailActive: boolean;
 
+  emailCode?: string;
+
   emailCodeExpire?: number;
 
   @Field(() => Number, {

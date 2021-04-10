@@ -4,7 +4,7 @@ import { ArangodbService } from '../../../arangodb/arangodb.service';
 import { InputTransform } from '../../../arangodb/providers/input-transform';
 import { ObjectToAQL } from '../../../arangodb/providers/object-to-aql';
 import { IFilterToAQL } from '../../../arangodb/providers/object-to-aql.interface';
-import { FindUserInput } from '../dto/find-role.input';
+import { FindUserInput } from '../dto/find-user.input';
 import { User } from '../entities/user.entity';
 
 @Injectable()

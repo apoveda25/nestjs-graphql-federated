@@ -1,15 +1,18 @@
 import { ParseArrayPipe, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { FindResourcePipe } from '../../shared/pipes/find-resource.pipe';
 import { UserCreateCommand } from './commands/impl/user-create.command';
 import { UsersUpdateCommand } from './commands/impl/users-update.command';
 import { CreateUserDto } from './dto/create-user.dto';
 import { CreateUserInput } from './dto/create-user.input';
+import { FindUserInput } from './dto/find-user.input';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateUserInput } from './dto/update-user.input';
 import { User } from './entities/user.entity';
 import { CreateUserPipe } from './pipes/create-user.pipe';
 import { UpdateUsersPipe } from './pipes/update-users.pipe';
+import { UserFindQuery } from './queries/impl/user-find.query';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -48,38 +51,44 @@ export class UsersResolver {
     return await this.commandBus.execute(new UsersUpdateCommand(updateUserDto));
   }
 
-  // @UsePipes(UpdateUsersPipe)
-  // @Mutation(() => [User], { name: 'usersDelete' })
-  // async delete(
-  //   @Args(
-  //     {
-  //       name: 'users',
-  //       type: () => [UpdateUserInput],
-  //     },
-  //     new ParseArrayPipe({ items: UpdateUserDto }),
-  //   )
-  //   updateUserDto: UpdateUserDto[],
+  @UsePipes(FindResourcePipe)
+  @Query(() => User, { name: 'userFind' })
+  async find(
+    @Args(
+      {
+        name: 'filters',
+        type: () => FindUserInput,
+      },
+      new ValidationPipe({ expectedType: FindUserInput }),
+    )
+    findUserInput: FindUserInput,
+  ) {
+    return await this.queryBus.execute(new UserFindQuery(findUserInput));
+  }
+
+  // @UsePipes(SearchResourcesPipe)
+  // @Query(() => [Role], { name: 'rolesSearch' })
+  // async search(
+  //   @Args('filters', {
+  //     type: () => FilterRoleInput,
+  //     nullable: true,
+  //   })
+  //   filters: IFilterToAQL[] = FILTER_DEFAULT,
+
+  //   @Args('sort', {
+  //     type: () => SortRoleInput,
+  //     nullable: true,
+  //   })
+  //   sort: ISortToAQL[] = SORT_DEFAULT,
+
+  //   @Args('pagination', {
+  //     type: () => PaginationInput,
+  //     nullable: true,
+  //   })
+  //   pagination: PaginationInput = PAGINATION_DEFAULT,
   // ) {
-  //   return await this.commandBus.execute(new UsersUpdateCommand(updateUserDto));
-  // }
-
-  // @Query(() => [User], { name: 'users' })
-  // findAll() {
-  //   return this.usersService.findAll();
-  // }
-
-  // @Query(() => User, { name: 'user' })
-  // findOne(@Args('id', { type: () => Int }) id: number) {
-  //   return this.usersService.findOne(id);
-  // }
-
-  // @Mutation(() => User)
-  // updateUser(@Args('updateUserInput') updateUserInput: UpdateUserInput) {
-  //   return this.usersService.update(updateUserInput.id, updateUserInput);
-  // }
-
-  // @Mutation(() => User)
-  // removeUser(@Args('id', { type: () => Int }) id: number) {
-  //   return this.usersService.remove(id);
+  //   return await this.queryBus.execute(
+  //     new RolesSearchQuery({ filters, sort, pagination }),
+  //   );
   // }
 }
