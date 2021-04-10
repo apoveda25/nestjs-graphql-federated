@@ -1,11 +1,12 @@
 import { ParseArrayPipe, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
   IFilterToAQL,
   ISortToAQL,
 } from '../../arangodb/providers/object-to-aql.interface';
 import { PaginationInput } from '../../shared/dto/pagination.input';
+import { CountResourcesPipe } from '../../shared/pipes/count-resources.pipe';
 import { FindResourcePipe } from '../../shared/pipes/find-resource.pipe';
 import { SearchResourcesPipe } from '../../shared/pipes/search-resources.pipe';
 import {
@@ -26,6 +27,7 @@ import { User } from './entities/user.entity';
 import { CreateUserPipe } from './pipes/create-user.pipe';
 import { UpdateUsersPipe } from './pipes/update-users.pipe';
 import { UserFindQuery } from './queries/impl/user-find.query';
+import { UsersCountQuery } from './queries/impl/users-count.query';
 import { UsersSearchQuery } from './queries/impl/users-search.query';
 
 @Resolver(() => User)
@@ -104,5 +106,17 @@ export class UsersResolver {
     return await this.queryBus.execute(
       new UsersSearchQuery({ filters, sort, pagination }),
     );
+  }
+
+  @UsePipes(CountResourcesPipe)
+  @Query(() => Int, { name: 'usersCount' })
+  async count(
+    @Args('filters', {
+      type: () => FilterUserInput,
+      nullable: true,
+    })
+    filters: IFilterToAQL[] = FILTER_DEFAULT,
+  ) {
+    return await this.queryBus.execute(new UsersCountQuery(filters));
   }
 }

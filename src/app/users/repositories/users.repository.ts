@@ -90,25 +90,15 @@ export class UsersRepository {
     return await cursor.map((el) => el);
   }
 
-  // async find(_id: string): Promise<User> {
-  //   const cursor = await this.arangoService.query(aql`
-  //     FOR doc IN ${this.repository}
-  //     FILTER doc._key == ${_id} || doc._id == ${_id}
-  //     RETURN doc
-  //   `);
+  async count(filters: IFilterToAQL[]): Promise<number> {
+    const cursor = await this.arangoService.query(aql`
+      RETURN COUNT(
+        FOR doc IN ${this.arangoService.collection(this.name)}
+        ${aql.join(this.objectToAQL.filtersToAql(filters, 'doc'))}
+        RETURN doc
+      )
+    `);
 
-  //   return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
-  // }
-
-  // async count(filters: IFilterToAQL[]): Promise<number> {
-  //   const cursor = await this.arangoService.query(aql`
-  //     RETURN COUNT(
-  //       FOR doc IN ${this.repository}
-  //       ${aql.join(this.objectToAQL.filtersToAql(filters, 'doc'))}
-  //       RETURN doc
-  //     )
-  //   `);
-
-  //   return await cursor.reduce((acc: number, cur: number) => acc + cur, 0);
-  // }
+    return await cursor.reduce((acc: number, cur: number) => acc + cur, 0);
+  }
 }
