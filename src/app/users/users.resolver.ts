@@ -48,6 +48,21 @@ export class UsersResolver {
     return await this.commandBus.execute(new UsersUpdateCommand(updateUserDto));
   }
 
+  // @UsePipes(UpdateUsersPipe)
+  // @Mutation(() => [User], { name: 'usersDelete' })
+  // async delete(
+  //   @Args(
+  //     {
+  //       name: 'users',
+  //       type: () => [UpdateUserInput],
+  //     },
+  //     new ParseArrayPipe({ items: UpdateUserDto }),
+  //   )
+  //   updateUserDto: UpdateUserDto[],
+  // ) {
+  //   return await this.commandBus.execute(new UsersUpdateCommand(updateUserDto));
+  // }
+
   // @Query(() => [User], { name: 'users' })
   // findAll() {
   //   return this.usersService.findAll();
