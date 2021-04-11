@@ -23,6 +23,7 @@ import {
   SORT_DEFAULT,
 } from '../../shared/queries.constant';
 import { SortRoleInput } from '../roles/dto/sort-role.input';
+import { UserHasRoleOutQuery } from '../users-has-role/queries/impl/user-has-role-out.query';
 import { UserCreateCommand } from './commands/impl/user-create.command';
 import { UsersUpdateCommand } from './commands/impl/users-update.command';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -35,7 +36,6 @@ import { User } from './entities/user.entity';
 import { CreateUserPipe } from './pipes/create-user.pipe';
 import { UpdateUsersPipe } from './pipes/update-users.pipe';
 import { UserFindQuery } from './queries/impl/user-find.query';
-import { UserHasRoleSearchOutQuery } from './queries/impl/user-has-role-search-out.query';
 import { UsersCountQuery } from './queries/impl/users-count.query';
 import { UsersSearchQuery } from './queries/impl/users-search.query';
 
@@ -132,7 +132,7 @@ export class UsersResolver {
   @ResolveField()
   async role(@Parent() { _id }: User) {
     return await this.queryBus.execute(
-      new UserHasRoleSearchOutQuery({ parentId: _id }),
+      new UserHasRoleOutQuery({ parentId: _id }),
     );
   }
 }

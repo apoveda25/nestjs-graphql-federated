@@ -10,6 +10,6 @@ export class UserAddedRoleEventHandler
   ) {}
 
   async handle(event: UserAddedRoleEvent) {
-    return await this.usersHasRoleRepository.create(event.edge);
+    return await this.usersHasRoleRepository.create(event.input);
   }
 }

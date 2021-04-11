@@ -5,7 +5,7 @@ import {
 } from '../../../../arangodb/providers/object-to-aql.interface';
 import { PaginationInput } from '../../../../shared/dto/pagination.input';
 
-export class UserHasRoleSearchInQuery implements IQuery {
+export class UserHasRoleInQuery implements IQuery {
   constructor(
     public readonly input: {
       filters: IFilterToAQL[];

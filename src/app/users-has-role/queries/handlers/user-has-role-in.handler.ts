@@ -1,13 +1,13 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { UsersHasRoleRepository } from '../../repositories/users-has-role.repository';
-import { UserHasRoleSearchInQuery } from '../impl/user-has-role-search-in.query';
+import { UserHasRoleInQuery } from '../impl/user-has-role-in.query';
 
-@QueryHandler(UserHasRoleSearchInQuery)
-export class UserHasRoleSearchInQueryHandler
-  implements IQueryHandler<UserHasRoleSearchInQuery> {
+@QueryHandler(UserHasRoleInQuery)
+export class UserHasRoleInQueryHandler
+  implements IQueryHandler<UserHasRoleInQuery> {
   constructor(private readonly repository: UsersHasRoleRepository) {}
 
-  async execute(query: UserHasRoleSearchInQuery) {
+  async execute(query: UserHasRoleInQuery) {
     return await this.repository.searchIn(query.input);
   }
 }

@@ -1,13 +1,16 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { aql } from 'arangojs/aql';
-import { ArangodbService } from '../../../arangodb/arangodb.service';
-import { ObjectToAQL } from '../../../arangodb/providers/object-to-aql';
 import {
   IFilterToAQL,
   ISortToAQL,
-} from '../../../arangodb/providers/object-to-aql.interface';
+} from '../../../../dist/arangodb/providers/object-to-aql.interface';
+import { ArangodbService } from '../../../arangodb/arangodb.service';
+import { InputTransform } from '../../../arangodb/providers/input-transform';
+import { ObjectToAQL } from '../../../arangodb/providers/object-to-aql';
 import { PaginationInput } from '../../../shared/dto/pagination.input';
+import { Role } from '../../roles/entities/role.entity';
 import { User } from '../../users/entities/user.entity';
+import { AddRoleUserDto } from '../dto/add-role-user.dto';
 
 @Injectable()
 export class UsersHasRoleRepository {
@@ -18,7 +21,44 @@ export class UsersHasRoleRepository {
   constructor(
     private readonly arangoService: ArangodbService,
     private readonly objectToAQL: ObjectToAQL,
+    private readonly inputTransform: InputTransform,
   ) {}
+
+  async create(addRoleUserDto: AddRoleUserDto) {
+    try {
+      const cursor = await this.arangoService.query(aql`
+        INSERT ${addRoleUserDto} INTO ${this.arangoService.collection(
+        this.name,
+      )}
+      `);
+
+      return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async findOut({ parentId }: { parentId: string }): Promise<Role> {
+    const collections = [
+      this.name,
+      this.nameCollectionInput,
+      this.nameCollectionOutput,
+    ].map((collection) => this.arangoService.collection(collection));
+
+    try {
+      const cursor = await this.arangoService.query(aql`
+        WITH ${aql.join(collections)}
+        FOR vertex, edge IN OUTBOUND ${parentId} ${collections[0]}
+        RETURN vertex
+      `);
+
+      return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
+  }
 
   async searchIn({
     filters,

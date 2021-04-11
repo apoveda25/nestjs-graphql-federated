@@ -24,6 +24,7 @@ import {
 } from '../../shared/queries.constant';
 import { FilterScopeInput } from '../scopes/dto/filter-scope.input';
 import { SortScopeInput } from '../scopes/dto/sort-scope.input';
+import { UserHasRoleInQuery } from '../users-has-role/queries/impl/user-has-role-in.query';
 import { FilterUserInput } from '../users/dto/filter-user.input';
 import { SortUserInput } from '../users/dto/sort-user.input';
 import { RoleAddScopesCommand } from './commands/impl/role-add-scopes.command';
@@ -54,7 +55,6 @@ import { RoleFindQuery } from './queries/impl/role-find.query';
 import { RoleHasScopeSearchOutQuery } from './queries/impl/role-has-scope-search-out.query';
 import { RolesCountQuery } from './queries/impl/roles-count.query';
 import { RolesSearchQuery } from './queries/impl/roles-search.query';
-import { UserHasRoleSearchInQuery } from './queries/impl/user-has-role-search-in.query';
 
 @Resolver(() => Role)
 export class RolesResolver {
@@ -185,7 +185,7 @@ export class RolesResolver {
     pagination: PaginationInput = PAGINATION_DEFAULT,
   ) {
     return await this.queryBus.execute(
-      new UserHasRoleSearchInQuery({
+      new UserHasRoleInQuery({
         filters,
         sort,
         pagination,
