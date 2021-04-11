@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { ScopesModule } from '../scopes/scopes.module';
 import { RolesCommandHandlers } from './commands/handlers/index';
 import { RolesEventHandlers } from './events/handlers/index';
 import { RoleModel } from './models/role.model';
@@ -11,7 +10,7 @@ import { UsersHasRoleRepository } from './repositories/users-has-role.repository
 import { RolesResolver } from './roles.resolver';
 
 @Module({
-  imports: [CqrsModule, ScopesModule],
+  imports: [CqrsModule],
   providers: [
     RolesResolver,
     ...RolesQueryHandlers,

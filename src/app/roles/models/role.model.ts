@@ -4,16 +4,18 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { QueryBus } from '@nestjs/cqrs';
 import { Edge } from 'arangojs/documents';
 import { IEdge } from '../../../shared/interfaces/edge.interface';
 import { Scope } from '../../scopes/entities/scope.entity';
-import { ScopesRepository } from '../../scopes/repositories/scopes.repository';
+import { ScopeFindQuery } from '../../scopes/queries/impl/scope-find.query';
 import { AddScopesRoleDto } from '../dto/add-scopes-role.dto';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { DeleteRoleDto } from '../dto/delete-role.dto';
 import { RemoveScopesRoleDto } from '../dto/remove-scopes-role.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
 import { Role } from '../entities/role.entity';
+import { RoleFindQuery } from '../queries/impl/role-find.query';
 import { RolesHasScopeRepository } from '../repositories/roles-has-scope.repository';
 import { RolesRepository } from '../repositories/roles.repository';
 
@@ -22,15 +24,19 @@ export class RoleModel {
   constructor(
     private readonly rolesRepository: RolesRepository,
     private readonly rolesHasScopeRepository: RolesHasScopeRepository,
-    private readonly scopesRepository: ScopesRepository,
+    private readonly queryBus: QueryBus,
   ) {}
 
   async create(role: CreateRoleDto): Promise<Role> {
-    const conflictKey = await this.rolesRepository.findOr({ _key: role._key });
+    const conflictKey = await this.queryBus.execute(
+      new RoleFindQuery({ _key: role._key }),
+    );
 
     if (this.isRoleExist(conflictKey)) throw new ConflictException();
 
-    const conflictName = await this.rolesRepository.findOr({ _key: role.name });
+    const conflictName = await this.queryBus.execute(
+      new RoleFindQuery({ name: role.name }),
+    );
 
     if (this.isThereAnotherRoleWithTheSame(conflictName, role))
       throw new ConflictException();
@@ -42,21 +48,23 @@ export class RoleModel {
     const rolesUpdated: Role[] = [];
 
     for (const role of roles) {
-      const conflictKey = await this.rolesRepository.findOr({
-        _key: role._key,
-      });
+      const conflictKey = await this.queryBus.execute(
+        new RoleFindQuery({ _key: role._key }),
+      );
 
       if (this.isNotRoleExist(conflictKey)) throw new NotFoundException();
 
       const conflictName = role.name
-        ? await this.rolesRepository.findOr({ name: role.name })
+        ? await this.queryBus.execute(new RoleFindQuery({ name: role.name }))
         : null;
 
       if (this.isThereAnotherRoleWithTheSame(conflictName, role))
         throw new ConflictException();
 
       const conflictDefault = role.default
-        ? await this.rolesRepository.findOr({ default: role.default })
+        ? await this.queryBus.execute(
+            new RoleFindQuery({ default: role.default }),
+          )
         : null;
 
       if (this.isThereAnotherRoleWithTheSame(conflictDefault, role))
@@ -72,9 +80,9 @@ export class RoleModel {
     const rolesDeleted: Role[] = [];
 
     for (const role of roles) {
-      const conflictKey = await this.rolesRepository.findOr({
-        _key: role._key,
-      });
+      const conflictKey = await this.queryBus.execute(
+        new RoleFindQuery({ _key: role._key }),
+      );
 
       if (this.isNotRoleExist(conflictKey)) throw new NotFoundException();
 
@@ -99,13 +107,15 @@ export class RoleModel {
     const addedScopesToRole: AddScopesRoleDto[] = [];
 
     for (const edge of edges) {
-      const conflictFrom = await this.rolesRepository.findOr({
-        _id: edge._from,
-      });
+      const conflictFrom = await this.queryBus.execute(
+        new RoleFindQuery({ _id: edge._from }),
+      );
 
       if (this.isNotRoleExist(conflictFrom)) throw new NotFoundException();
 
-      const conflictTo = await this.scopesRepository.findOr({ _id: edge._to });
+      const conflictTo = await this.queryBus.execute(
+        new ScopeFindQuery({ _id: edge._to }),
+      );
 
       if (this.isNotScopeExist(conflictTo)) throw new NotFoundException();
 
