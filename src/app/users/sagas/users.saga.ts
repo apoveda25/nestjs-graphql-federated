@@ -18,6 +18,8 @@ export class UsersSagas {
             _to: user.roleId,
             createdAt: user.createdAt,
             createdBy: user.createdBy,
+            updatedAt: user.updatedAt,
+            updatedBy: user.updatedBy,
           }),
       ),
     );

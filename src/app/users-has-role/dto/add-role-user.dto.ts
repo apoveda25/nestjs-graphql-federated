@@ -3,4 +3,6 @@ export class AddRoleUserDto {
   _to: string;
   createdBy: string;
   createdAt: number;
+  updatedBy: string;
+  updatedAt: number;
 }

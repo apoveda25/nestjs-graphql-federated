@@ -8,7 +8,7 @@ export class UserAddRoleCommandHandler
   constructor(private readonly eventBus: EventBus) {}
 
   async execute(command: UserAddRoleCommand): Promise<boolean> {
-    this.eventBus.publish(new UserAddedRoleEvent(command.edge));
+    this.eventBus.publish(new UserAddedRoleEvent(command.input));
 
     return true;
   }

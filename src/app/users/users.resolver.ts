@@ -23,6 +23,10 @@ import {
   SORT_DEFAULT,
 } from '../../shared/queries.constant';
 import { SortRoleInput } from '../roles/dto/sort-role.input';
+import { UserChangeRoleCommand } from '../users-has-role/commands/impl/user-change-role.command';
+import { ChangeRoleUserDto } from '../users-has-role/dto/change-role-user.dto';
+import { ChangeRoleUserInput } from '../users-has-role/dto/change-role-user.input';
+import { ChangeRoleUserPipe } from '../users-has-role/pipes/change-role-user.pipe';
 import { UserHasRoleOutQuery } from '../users-has-role/queries/impl/user-has-role-out.query';
 import { UserCreateCommand } from './commands/impl/user-create.command';
 import { UsersUpdateCommand } from './commands/impl/users-update.command';
@@ -133,6 +137,23 @@ export class UsersResolver {
   async role(@Parent() { _id }: User) {
     return await this.queryBus.execute(
       new UserHasRoleOutQuery({ parentId: _id }),
+    );
+  }
+
+  @UsePipes(ChangeRoleUserPipe)
+  @Mutation(() => Boolean, { name: 'userChangeRole' })
+  async changeRole(
+    @Args(
+      {
+        name: 'role',
+        type: () => ChangeRoleUserInput,
+      },
+      new ValidationPipe({ expectedType: ChangeRoleUserDto }),
+    )
+    changeRoleUserDto: ChangeRoleUserDto,
+  ) {
+    return await this.commandBus.execute(
+      new UserChangeRoleCommand(changeRoleUserDto),
     );
   }
 }

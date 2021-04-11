@@ -8,9 +8,11 @@ import {
   ISortToAQL,
 } from '../../../arangodb/providers/object-to-aql.interface';
 import { PaginationInput } from '../../../shared/dto/pagination.input';
+import { IEdge } from '../../../shared/interfaces/edge.interface';
 import { Role } from '../../roles/entities/role.entity';
 import { User } from '../../users/entities/user.entity';
 import { AddRoleUserDto } from '../dto/add-role-user.dto';
+import { ChangeRoleUserDto } from '../dto/change-role-user.dto';
 
 @Injectable()
 export class UsersHasRoleRepository {
@@ -39,6 +41,21 @@ export class UsersHasRoleRepository {
     }
   }
 
+  async update(changeRoleUserDto: ChangeRoleUserDto) {
+    try {
+      const cursor = await this.arangoService.query(aql`
+        UPDATE ${changeRoleUserDto} IN ${this.arangoService.collection(
+        this.name,
+      )}
+      `);
+
+      return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
+  }
+
   async findOut({ parentId }: { parentId: string }): Promise<Role> {
     const collections = [
       this.name,
@@ -51,6 +68,27 @@ export class UsersHasRoleRepository {
         WITH ${aql.join(collections)}
         FOR vertex, edge IN OUTBOUND ${parentId} ${collections[0]}
         RETURN vertex
+      `);
+
+      return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async findOutEdge({ parentId }: { parentId: string }): Promise<IEdge> {
+    const collections = [
+      this.name,
+      this.nameCollectionInput,
+      this.nameCollectionOutput,
+    ].map((collection) => this.arangoService.collection(collection));
+
+    try {
+      const cursor = await this.arangoService.query(aql`
+        WITH ${aql.join(collections)}
+        FOR vertex, edge IN OUTBOUND ${parentId} ${collections[0]}
+        RETURN edge
       `);
 
       return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
