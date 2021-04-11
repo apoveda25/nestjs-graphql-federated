@@ -11,6 +11,7 @@ import { graphqlFederatedConfig } from './config/graphql-federated.config';
 import { SharedModule } from './shared/shared.module';
 import { UsersHasRoleModule } from './app/users-has-role/users-has-role.module';
 import { RolesHasScopeModule } from './app/roles-has-scope/roles-has-scope.module';
+import { AuthModule } from './app/auth/auth.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { RolesHasScopeModule } from './app/roles-has-scope/roles-has-scope.modul
     ScopesModule,
     UsersHasRoleModule,
     RolesHasScopeModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
