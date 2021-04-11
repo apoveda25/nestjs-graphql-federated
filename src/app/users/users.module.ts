@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { RolesModule } from '../roles/roles.module';
-import { ScopesModule } from '../scopes/scopes.module';
 import { UsersCommandHandlers } from './commands/handlers/index';
 import { UsersEventHandlers } from './events/handlers/index';
 import { UserModel } from './models/user.model';
@@ -12,7 +10,7 @@ import { UsersSagas } from './sagas/users.saga';
 import { UsersResolver } from './users.resolver';
 
 @Module({
-  imports: [CqrsModule, RolesModule, ScopesModule],
+  imports: [CqrsModule],
   providers: [
     UsersResolver,
     ...UsersQueryHandlers,
