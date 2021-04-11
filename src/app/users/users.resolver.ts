@@ -77,7 +77,7 @@ export class UsersResolver {
   }
 
   @UsePipes(FindResourcePipe)
-  @Query(() => User, { name: 'userFind' })
+  @Query(() => User, { name: 'userFind', nullable: true })
   async find(
     @Args(
       {

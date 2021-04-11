@@ -1,26 +1,26 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { RolesHasScopeRepository } from '../../repositories/roles-has-scope.repository';
-import { RoleHasScopeSearchOutQuery } from '../impl/role-has-scope-search-out.query';
-import { RoleHasScopeSearchOutQueryHandler } from './role-has-scope-search-out.handler';
+import { RoleHasScopeInQuery } from '../impl/role-has-scope-search-in.query';
+import { RoleHasScopeInQueryHandler } from './role-has-scope-in.handler';
 
-describe('RoleHasScopeSearchOutQueryHandler', () => {
-  let queryHandler: RoleHasScopeSearchOutQueryHandler;
+describe('RoleHasScopeInQueryHandler', () => {
+  let queryHandler: RoleHasScopeInQueryHandler;
   let rolesHasScopeRepository: RolesHasScopeRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        RoleHasScopeSearchOutQueryHandler,
+        RoleHasScopeInQueryHandler,
         {
           provide: RolesHasScopeRepository,
-          useFactory: () => ({ searchOut: jest.fn() }),
+          useFactory: () => ({ searchIn: jest.fn() }),
         },
       ],
     }).compile();
 
-    queryHandler = module.get<RoleHasScopeSearchOutQueryHandler>(
-      RoleHasScopeSearchOutQueryHandler,
+    queryHandler = module.get<RoleHasScopeInQueryHandler>(
+      RoleHasScopeInQueryHandler,
     );
     rolesHasScopeRepository = module.get<RolesHasScopeRepository>(
       RolesHasScopeRepository,
@@ -42,7 +42,7 @@ describe('RoleHasScopeSearchOutQueryHandler', () => {
       const sort = [];
       const pagination = { offset: 0, count: 1 };
       const parentId = `Roles/${_key}`;
-      const query = new RoleHasScopeSearchOutQuery({
+      const query = new RoleHasScopeInQuery({
         filters,
         sort,
         pagination,
@@ -51,7 +51,7 @@ describe('RoleHasScopeSearchOutQueryHandler', () => {
       const resultExpected = [];
 
       const repositoryHasScopeSpy = jest
-        .spyOn(rolesHasScopeRepository, 'searchOut')
+        .spyOn(rolesHasScopeRepository, 'searchIn')
         .mockResolvedValue(resultExpected);
 
       /**

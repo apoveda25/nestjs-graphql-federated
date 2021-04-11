@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { CreateRoleDto } from '../../dto/create-role.dto';
 import { RoleCreatedEvent } from '../../events/impl/role-created.event';
-import { RoleModel } from '../../models/role.model';
+import { RoleModel } from '../../models/roles-has-scope.model';
 import { RolesRepository } from '../../repositories/roles.repository';
 import { RoleCreateCommand } from '../impl/role-create.command';
 import { RoleCreateCommandHandler } from './role-create.handler';

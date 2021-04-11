@@ -24,6 +24,7 @@ import {
   PAGINATION_DEFAULT,
   SORT_DEFAULT,
 } from '../../shared/queries.constant';
+import { RoleHasScopeInQuery } from '../roles-has-scope/queries/impl/role-has-scope-in.query';
 import { FilterRoleInput } from '../roles/dto/filter-role.input';
 import { SortRoleInput } from '../roles/dto/sort-role.input';
 import { Role } from '../roles/entities/role.entity';
@@ -32,7 +33,6 @@ import { FilterScopeInput } from './dto/filter-scope.input';
 import { FindScopeInput } from './dto/find-scope.input';
 import { SortScopeInput } from './dto/sort-scope.input';
 import { Scope } from './entities/scope.entity';
-import { RoleHasScopeSearchInQuery } from './queries/impl/role-has-scope-search-in.query';
 import { ScopeFindQuery } from './queries/impl/scope-find.query';
 import { ScopesCountQuery } from './queries/impl/scopes-count.query';
 import { ScopesSearchQuery } from './queries/impl/scopes-search.query';
@@ -54,7 +54,7 @@ export class ScopesResolver {
   }
 
   @UsePipes(FindResourcePipe)
-  @Query(() => Scope, { name: 'scopeFind' })
+  @Query(() => Scope, { name: 'scopeFind', nullable: true })
   async find(
     @Args(
       {
@@ -132,7 +132,7 @@ export class ScopesResolver {
     pagination: PaginationInput = PAGINATION_DEFAULT,
   ) {
     return await this.queryBus.execute(
-      new RoleHasScopeSearchInQuery({
+      new RoleHasScopeInQuery({
         filters,
         sort,
         pagination,
