@@ -1,12 +1,12 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { aql } from 'arangojs/aql';
-import {
-  IFilterToAQL,
-  ISortToAQL,
-} from '../../../../dist/arangodb/providers/object-to-aql.interface';
 import { ArangodbService } from '../../../arangodb/arangodb.service';
 import { InputTransform } from '../../../arangodb/providers/input-transform';
 import { ObjectToAQL } from '../../../arangodb/providers/object-to-aql';
+import {
+  IFilterToAQL,
+  ISortToAQL,
+} from '../../../arangodb/providers/object-to-aql.interface';
 import { PaginationInput } from '../../../shared/dto/pagination.input';
 import { Role } from '../../roles/entities/role.entity';
 import { User } from '../../users/entities/user.entity';

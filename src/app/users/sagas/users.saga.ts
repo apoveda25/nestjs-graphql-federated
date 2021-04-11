@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ICommand, ofType, Saga } from '@nestjs/cqrs';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { UserAddRoleCommand } from '../commands/impl/user-add-role.command';
+import { UserAddRoleCommand } from '../../users-has-role/commands/impl/user-add-role.command';
 import { UserCreatedEvent } from '../events/impl/user-created.event';
 
 @Injectable()
