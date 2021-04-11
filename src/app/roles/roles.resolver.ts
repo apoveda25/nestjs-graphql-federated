@@ -22,8 +22,16 @@ import {
   PAGINATION_DEFAULT,
   SORT_DEFAULT,
 } from '../../shared/queries.constant';
+import { AddScopesRoleDto } from '../roles-has-scope/dto/add-scopes-role.dto';
+import { AddScopesRoleInput } from '../roles-has-scope/dto/add-scopes-role.input';
+import { RemoveScopesRoleDto } from '../roles-has-scope/dto/remove-scopes-role.dto';
+import { RemoveScopesRoleInput } from '../roles-has-scope/dto/remove-scopes-role.input';
+import { AddScopesRolePipe } from '../roles-has-scope/pipes/add-scopes-role.pipe';
+import { RemoveScopesRolePipe } from '../roles-has-scope/pipes/remove-scopes-role.pipe';
+import { RoleHasScopeOutQuery } from '../roles-has-scope/queries/impl/role-has-scope-out.query';
 import { FilterScopeInput } from '../scopes/dto/filter-scope.input';
 import { SortScopeInput } from '../scopes/dto/sort-scope.input';
+import { UserHasRoleInQuery } from '../users-has-role/queries/impl/user-has-role-in.query';
 import { FilterUserInput } from '../users/dto/filter-user.input';
 import { SortUserInput } from '../users/dto/sort-user.input';
 import { RoleAddScopesCommand } from './commands/impl/role-add-scopes.command';
@@ -31,30 +39,22 @@ import { RoleCreateCommand } from './commands/impl/role-create.command';
 import { RoleRemoveScopesCommand } from './commands/impl/role-remove-scopes.command';
 import { RolesDeleteCommand } from './commands/impl/roles-delete.command';
 import { RolesUpdateCommand } from './commands/impl/roles-update.command';
-import { AddScopesRoleDto } from './dto/add-scopes-role.dto';
-import { AddScopesRoleInput } from './dto/add-scopes-role.input';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { CreateRoleInput } from './dto/create-role.input';
 import { DeleteRoleDto } from './dto/delete-role.dto';
 import { DeleteRoleInput } from './dto/delete-role.input';
 import { FilterRoleInput } from './dto/filter-role.input';
 import { FindRoleInput } from './dto/find-role.input';
-import { RemoveScopesRoleDto } from './dto/remove-scopes-role.dto';
-import { RemoveScopesRoleInput } from './dto/remove-scopes-role.input';
 import { SortRoleInput } from './dto/sort-role.input';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { UpdateRoleInput } from './dto/update-role.input';
 import { Role } from './entities/role.entity';
-import { AddScopesRolePipe } from './pipes/add-scopes-role.pipe';
 import { CreateRolePipe } from './pipes/create-role.pipe';
 import { DeleteRolesPipe } from './pipes/delete-roles.pipe';
-import { RemoveScopesRolePipe } from './pipes/remove-scopes-role.pipe';
 import { UpdateRolesPipe } from './pipes/update-roles.pipe';
 import { RoleFindQuery } from './queries/impl/role-find.query';
-import { RoleHasScopeSearchOutQuery } from './queries/impl/role-has-scope-search-out.query';
 import { RolesCountQuery } from './queries/impl/roles-count.query';
 import { RolesSearchQuery } from './queries/impl/roles-search.query';
-import { UserHasRoleSearchInQuery } from './queries/impl/user-has-role-search-in.query';
 
 @Resolver(() => Role)
 export class RolesResolver {
@@ -185,7 +185,7 @@ export class RolesResolver {
     pagination: PaginationInput = PAGINATION_DEFAULT,
   ) {
     return await this.queryBus.execute(
-      new UserHasRoleSearchInQuery({
+      new UserHasRoleInQuery({
         filters,
         sort,
         pagination,
@@ -218,7 +218,7 @@ export class RolesResolver {
     pagination: PaginationInput = PAGINATION_DEFAULT,
   ) {
     return await this.queryBus.execute(
-      new RoleHasScopeSearchOutQuery({
+      new RoleHasScopeOutQuery({
         filters,
         sort,
         pagination,

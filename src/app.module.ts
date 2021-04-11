@@ -9,6 +9,8 @@ import { appConfig } from './config/app.config';
 import { arangodbConfig } from './config/arangodb.config';
 import { graphqlFederatedConfig } from './config/graphql-federated.config';
 import { SharedModule } from './shared/shared.module';
+import { UsersHasRoleModule } from './app/users-has-role/users-has-role.module';
+import { RolesHasScopeModule } from './app/roles-has-scope/roles-has-scope.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { SharedModule } from './shared/shared.module';
     UsersModule,
     RolesModule,
     ScopesModule,
+    UsersHasRoleModule,
+    RolesHasScopeModule,
   ],
 })
 export class AppModule {}

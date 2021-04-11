@@ -23,19 +23,9 @@ export class ScopesCreateCommandHandler
     const collections = await this.scopesRepository.getCollections();
     const createScopes = this.buildData(collections, command.createdBy);
 
-    for (const scope of createScopes) {
-      const { _key, name } = scope;
-      const scopeConflict: Scope = await this.scopesRepository.findOr({
-        _key,
-        name,
-      });
+    const scopesCreated = await this.scopeModel.create(createScopes);
 
-      const scopeCreated = this.scopeModel.create(scope, scopeConflict);
-
-      if (scopeCreated) results.push(scopeCreated);
-    }
-
-    results.map((result) =>
+    scopesCreated.map((result) =>
       this.eventBus.publish(new ScopeCreatedEvent(result)),
     );
 

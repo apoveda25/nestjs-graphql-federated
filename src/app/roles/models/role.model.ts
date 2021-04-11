@@ -5,27 +5,18 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
-import { Edge } from 'arangojs/documents';
+import { RoleHasScopeOutQuery } from 'src/app/roles-has-scope/queries/impl/role-has-scope-out.query';
 import { IEdge } from '../../../shared/interfaces/edge.interface';
-import { Scope } from '../../scopes/entities/scope.entity';
-import { ScopeFindQuery } from '../../scopes/queries/impl/scope-find.query';
-import { AddScopesRoleDto } from '../dto/add-scopes-role.dto';
+import { UserHasRoleInQuery } from '../../users-has-role/queries/impl/user-has-role-in.query';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { DeleteRoleDto } from '../dto/delete-role.dto';
-import { RemoveScopesRoleDto } from '../dto/remove-scopes-role.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
 import { Role } from '../entities/role.entity';
 import { RoleFindQuery } from '../queries/impl/role-find.query';
-import { RolesHasScopeRepository } from '../repositories/roles-has-scope.repository';
-import { RolesRepository } from '../repositories/roles.repository';
 
 @Injectable()
 export class RoleModel {
-  constructor(
-    private readonly rolesRepository: RolesRepository,
-    private readonly rolesHasScopeRepository: RolesHasScopeRepository,
-    private readonly queryBus: QueryBus,
-  ) {}
+  constructor(private readonly queryBus: QueryBus) {}
 
   async create(role: CreateRoleDto): Promise<Role> {
     const conflictKey = await this.queryBus.execute(
@@ -86,15 +77,28 @@ export class RoleModel {
 
       if (this.isNotRoleExist(conflictKey)) throw new NotFoundException();
 
-      const conflictEdgeConnections = await this.rolesRepository.searchEdgeConnections(
-        {
-          direction: 'ANY',
-          startVertexId: role._id,
-          collections: ['UsersHasRole', 'RolesHasScope'],
-        },
+      const conflictEdgeOut = await this.queryBus.execute(
+        new RoleHasScopeOutQuery({
+          filters: [],
+          sort: [],
+          pagination: { offset: 0, count: 1 },
+          parentId: role._id,
+        }),
       );
 
-      if (this.haveEdgeConnections(conflictEdgeConnections))
+      if (this.haveEdgeConnections(conflictEdgeOut))
+        throw new BadRequestException();
+
+      const conflictEdgeIn = await this.queryBus.execute(
+        new UserHasRoleInQuery({
+          filters: [],
+          sort: [],
+          pagination: { offset: 0, count: 1 },
+          parentId: role._id,
+        }),
+      );
+
+      if (this.haveEdgeConnections(conflictEdgeIn))
         throw new BadRequestException();
 
       rolesDeleted.push(conflictKey);
@@ -103,61 +107,12 @@ export class RoleModel {
     return rolesDeleted;
   }
 
-  async addScopes(edges: AddScopesRoleDto[]): Promise<AddScopesRoleDto[]> {
-    const addedScopesToRole: AddScopesRoleDto[] = [];
-
-    for (const edge of edges) {
-      const conflictFrom = await this.queryBus.execute(
-        new RoleFindQuery({ _id: edge._from }),
-      );
-
-      if (this.isNotRoleExist(conflictFrom)) throw new NotFoundException();
-
-      const conflictTo = await this.queryBus.execute(
-        new ScopeFindQuery({ _id: edge._to }),
-      );
-
-      if (this.isNotScopeExist(conflictTo)) throw new NotFoundException();
-
-      addedScopesToRole.push(edge);
-    }
-
-    return addedScopesToRole;
-  }
-
-  async removeScopes(
-    edges: RemoveScopesRoleDto[],
-  ): Promise<RemoveScopesRoleDto[]> {
-    const removedScopesToRole: RemoveScopesRoleDto[] = [];
-
-    for (const edge of edges) {
-      const conflictEdge = await this.rolesHasScopeRepository.findAnd({
-        ...edge,
-      });
-
-      if (this.isNotRoleHasScopeExist(conflictEdge))
-        throw new NotFoundException();
-
-      removedScopesToRole.push(conflictEdge);
-    }
-
-    return removedScopesToRole;
-  }
-
   private isRoleExist(role: Role): boolean {
     return role ? true : false;
   }
 
-  private isNotRoleHasScopeExist(edge: Edge): boolean {
-    return !edge;
-  }
-
   private isNotRoleExist(role: Role): boolean {
     return !role;
-  }
-
-  private isNotScopeExist(scope: Scope): boolean {
-    return !scope;
   }
 
   private isThereAnotherRoleWithTheSame(

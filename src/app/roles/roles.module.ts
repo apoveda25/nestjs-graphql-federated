@@ -4,9 +4,7 @@ import { RolesCommandHandlers } from './commands/handlers/index';
 import { RolesEventHandlers } from './events/handlers/index';
 import { RoleModel } from './models/role.model';
 import { RolesQueryHandlers } from './queries/handlers/index';
-import { RolesHasScopeRepository } from './repositories/roles-has-scope.repository';
 import { RolesRepository } from './repositories/roles.repository';
-import { UsersHasRoleRepository } from './repositories/users-has-role.repository';
 import { RolesResolver } from './roles.resolver';
 
 @Module({
@@ -18,9 +16,6 @@ import { RolesResolver } from './roles.resolver';
     ...RolesEventHandlers,
     RolesRepository,
     RoleModel,
-    RolesHasScopeRepository,
-    UsersHasRoleRepository,
   ],
-  exports: [RolesRepository],
 })
 export class RolesModule {}
