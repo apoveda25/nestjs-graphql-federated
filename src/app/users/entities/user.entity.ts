@@ -1,4 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Role } from '../../roles/entities/role.entity';
 
 @ObjectType()
 export class User {
@@ -22,6 +23,8 @@ export class User {
   })
   email: string;
 
+  password?: string;
+
   @Field(() => String, {
     description: 'Example field (name)',
   })
@@ -41,6 +44,10 @@ export class User {
     description: 'Example field (true)',
   })
   emailActive: boolean;
+
+  emailCode?: string;
+
+  emailCodeExpire?: number;
 
   @Field(() => Number, {
     description: `Example field (${Date.now()})`,
@@ -81,4 +88,7 @@ export class User {
     description: `Example field (${Date.now()})`,
   })
   updatedAt: number;
+
+  @Field(() => Role)
+  role?: Role;
 }

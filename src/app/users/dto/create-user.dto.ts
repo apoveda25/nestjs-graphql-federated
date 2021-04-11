@@ -3,6 +3,7 @@ import {
   IsBoolean,
   IsEmail,
   IsEnum,
+  IsInt,
   IsNumber,
   IsString,
   IsUUID,
@@ -69,10 +70,10 @@ export class CreateUserDto {
   @IsString()
   updatedBy: string;
 
-  @IsNumber()
+  @IsInt()
   createdAt: number;
 
-  @IsNumber()
+  @IsInt()
   updatedAt: number;
 
   @Matches(ROLE_ID)

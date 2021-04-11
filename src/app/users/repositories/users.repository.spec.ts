@@ -5,7 +5,7 @@ import { ArangodbService } from '../../../arangodb/arangodb.service';
 import { InputTransform } from '../../../arangodb/providers/input-transform';
 import { ObjectToAQL } from '../../../arangodb/providers/object-to-aql';
 import { delta } from '../../../shared/helpers/delta';
-import { CreateUserDao } from '../dto/create-user.dao';
+import { CreateUserDto } from '../dto/create-user.dto';
 import { FindUserInput } from '../dto/find-role.input';
 import { User } from '../entities/user.entity';
 import { UsersRepository } from './users.repository';
@@ -64,7 +64,7 @@ describe('UsersRepository', () => {
        */
       const name = 'Users';
       const _key = faker.datatype.uuid();
-      const createUserDao: CreateUserDao = {
+      const createUserDto: CreateUserDto = {
         _id: `Users/${_key}`,
         _key,
         password: 'secret123456',
@@ -85,8 +85,8 @@ describe('UsersRepository', () => {
         updatedAt: 0,
         updatedBy: '',
       };
-      const cursor = [createUserDao];
-      const resultExpected = { ...createUserDao };
+      const cursor = [createUserDto];
+      const resultExpected = { ...createUserDto };
 
       const arangoServiceQuerySpy = jest
         .spyOn(arangoService, 'query')
@@ -100,7 +100,7 @@ describe('UsersRepository', () => {
       /**
        * Act
        */
-      const result = await provider.create(createUserDao);
+      const result = await provider.create(createUserDto);
 
       /**
        * Assert
