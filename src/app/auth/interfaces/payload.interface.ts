@@ -1,6 +1,6 @@
-import { SignUpAuthDto } from '../dto/sign-up-auth.dto';
+import { User } from '../../users/entities/user.entity';
 
 export interface IPayload {
-  user: SignUpAuthDto;
+  user: User;
   token: string;
 }

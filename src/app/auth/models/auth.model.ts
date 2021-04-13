@@ -2,25 +2,27 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
-import { genSalt, hash } from 'bcrypt';
+import { compare, genSalt, hash } from 'bcrypt';
 import { Role } from '../../roles/entities/role.entity';
 import { RoleFindQuery } from '../../roles/queries/impl/role-find.query';
 import { User } from '../../users/entities/user.entity';
 import { UserFindQuery } from '../../users/queries/impl/user-find.query';
+import { SignInAuthDto } from '../dto/sign-in-auth.dto';
 import { SignUpAuthDto } from '../dto/sign-up-auth.dto';
 
 @Injectable()
 export class AuthModel {
   constructor(private readonly queryBus: QueryBus) {}
 
-  async signUp(user: SignUpAuthDto): Promise<SignUpAuthDto> {
+  async signUp(payload: SignUpAuthDto): Promise<SignUpAuthDto> {
     const conflictKeyUsernameEmail = await this.queryBus.execute(
       new UserFindQuery({
-        _key: user._key,
-        username: user.username,
-        email: user.email,
+        _key: payload._key,
+        username: payload.username,
+        email: payload.email,
       }),
     );
 
@@ -33,15 +35,43 @@ export class AuthModel {
 
     if (this.isNotRoleExist(conflictRole)) throw new NotFoundException();
 
-    user.password = await hash(user.password, await genSalt(10));
+    payload.password = await hash(payload.password, await genSalt(10));
 
-    user.roleId = conflictRole._id;
+    payload.roleId = conflictRole._id;
 
-    return user;
+    return payload;
+  }
+
+  async signIn(payload: SignInAuthDto): Promise<User> {
+    const conflictUsernameEmail = await this.queryBus.execute<
+      UserFindQuery,
+      User
+    >(
+      new UserFindQuery({
+        username: payload.usernameOrEmail,
+        email: payload.usernameOrEmail,
+      }),
+    );
+
+    if (this.isNoUserExist(conflictUsernameEmail))
+      throw new UnauthorizedException();
+
+    const isPasswordMatch = await compare(
+      payload.password,
+      conflictUsernameEmail.password,
+    );
+
+    if (isPasswordMatch) return conflictUsernameEmail;
+
+    throw new UnauthorizedException();
   }
 
   private isUserExist(user: User): boolean {
     return user ? true : false;
+  }
+
+  private isNoUserExist(user: User): boolean {
+    return !user ? true : false;
   }
 
   private isNotRoleExist(role: Role): boolean {
