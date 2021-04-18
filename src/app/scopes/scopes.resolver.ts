@@ -14,7 +14,9 @@ import {
   IFilterToAQL,
   ISortToAQL,
 } from '../../arangodb/providers/object-to-aql.interface';
+import { Authorization } from '../../shared/decorators/authorization.decorator';
 import { PaginationInput } from '../../shared/dto/pagination.input';
+import { AuthorizationEnum } from '../../shared/enums/authorization';
 import { IContextGraphQL } from '../../shared/interfaces/context-graphql.interface';
 import { CountResourcesPipe } from '../../shared/pipes/count-resources.pipe';
 import { FindResourcePipe } from '../../shared/pipes/find-resource.pipe';
@@ -47,6 +49,7 @@ export class ScopesResolver {
   @Mutation(() => [Scope], {
     name: 'scopesCreate',
   })
+  @Authorization(AuthorizationEnum.scopesCreate)
   async create(@Context() context: IContextGraphQL) {
     return await this.commandBus.execute(
       new ScopesCreateCommand(context.user._id),
@@ -55,6 +58,7 @@ export class ScopesResolver {
 
   @UsePipes(FindResourcePipe)
   @Query(() => Scope, { name: 'scopeFind', nullable: true })
+  @Authorization(AuthorizationEnum.scopesFind)
   async find(
     @Args(
       {
@@ -68,9 +72,9 @@ export class ScopesResolver {
     return await this.queryBus.execute(new ScopeFindQuery(findScopeInput));
   }
 
-  // @Authorization(Permission.UsersSearch)
   @UsePipes(SearchResourcesPipe)
   @Query(() => [Scope], { name: 'scopesSearch' })
+  @Authorization(AuthorizationEnum.scopesSearch)
   async search(
     @Args('filters', {
       type: () => FilterScopeInput,
@@ -95,9 +99,9 @@ export class ScopesResolver {
     );
   }
 
-  // @Authorization(Permission.UsersSearch)
   @UsePipes(CountResourcesPipe)
   @Query(() => Int, { name: 'scopesCount' })
+  @Authorization(AuthorizationEnum.scopesCount)
   async count(
     @Args('filters', {
       type: () => FilterScopeInput,
@@ -110,6 +114,7 @@ export class ScopesResolver {
 
   @UsePipes(SearchResourcesPipe)
   @ResolveField()
+  @Authorization(AuthorizationEnum.rolesHasScopeRead)
   async roles(
     @Parent() { _id }: Role,
 

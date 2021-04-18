@@ -10,8 +10,6 @@ const YAML_CONFIG_FILENAME =
     : 'config.development.yaml';
 
 export const appConfig: any = () => {
-  console.log(`Environtment: ${YAML_CONFIG_FILENAME.split('.')[1]}`);
-
   return load(
     readFileSync(join(`${__dirname}/../../`, YAML_CONFIG_FILENAME), 'utf8'),
   );

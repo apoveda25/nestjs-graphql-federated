@@ -4,5 +4,5 @@ export interface IContextGraphQL {
 
 interface IContextUser {
   _id: string;
-  roleId: string;
+  scopes: string[];
 }
