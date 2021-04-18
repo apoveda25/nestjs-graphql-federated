@@ -1,13 +1,13 @@
 app:
   name: 'users-graphql'
   host: 'http://localhost'
-  port: 5000
+  port: 3010
 
 arangodb:
   urls:
     - 'http://localhost:8529'
-  name: 'farmaco_test'
-  username: 'farmaco_test'
+  name: 'farmaco_dev'
+  username: 'farmaco_dev'
   password: 'secret'
   certs: []
 

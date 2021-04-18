@@ -1,7 +1,7 @@
 app:
   name: 'users-graphql'
   host: 'http://localhost'
-  port: 5000
+  port: 3010
 
 arangodb:
   urls:

@@ -16,6 +16,9 @@ export class SignInAuthCommandHandler
 
     // this.eventBus.publish(new AuthSignInEvent(userCreated));
 
-    return { user: userValidated, token: '' };
+    return {
+      user: userValidated,
+      token: JSON.stringify({ sub: userValidated._id }),
+    };
   }
 }

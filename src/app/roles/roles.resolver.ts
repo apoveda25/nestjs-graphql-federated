@@ -13,7 +13,9 @@ import {
   IFilterToAQL,
   ISortToAQL,
 } from '../../arangodb/providers/object-to-aql.interface';
+import { Authorization } from '../../shared/decorators/authorization.decorator';
 import { PaginationInput } from '../../shared/dto/pagination.input';
+import { AuthorizationEnum } from '../../shared/enums/authorization';
 import { CountResourcesPipe } from '../../shared/pipes/count-resources.pipe';
 import { FindResourcePipe } from '../../shared/pipes/find-resource.pipe';
 import { SearchResourcesPipe } from '../../shared/pipes/search-resources.pipe';
@@ -65,6 +67,7 @@ export class RolesResolver {
 
   @UsePipes(CreateRolePipe)
   @Mutation(() => Role, { name: 'roleCreate' })
+  @Authorization(AuthorizationEnum.rolesCreate)
   async create(
     @Args(
       {
@@ -80,6 +83,7 @@ export class RolesResolver {
 
   @UsePipes(UpdateRolesPipe)
   @Mutation(() => [Role], { name: 'rolesUpdate' })
+  @Authorization(AuthorizationEnum.rolesUpdate)
   async update(
     @Args(
       {
@@ -95,6 +99,7 @@ export class RolesResolver {
 
   @UsePipes(DeleteRolesPipe)
   @Mutation(() => [Role], { name: 'rolesDelete' })
+  @Authorization(AuthorizationEnum.rolesDelete)
   async delete(
     @Args(
       {
@@ -110,6 +115,7 @@ export class RolesResolver {
 
   @UsePipes(FindResourcePipe)
   @Query(() => Role, { name: 'roleFind' })
+  @Authorization(AuthorizationEnum.rolesFind)
   async find(
     @Args(
       {
@@ -125,6 +131,7 @@ export class RolesResolver {
 
   @UsePipes(SearchResourcesPipe)
   @Query(() => [Role], { name: 'rolesSearch' })
+  @Authorization(AuthorizationEnum.rolesSearch)
   async search(
     @Args('filters', {
       type: () => FilterRoleInput,
@@ -151,6 +158,7 @@ export class RolesResolver {
 
   @UsePipes(CountResourcesPipe)
   @Query(() => Int, { name: 'rolesCount' })
+  @Authorization(AuthorizationEnum.rolesCount)
   async count(
     @Args('filters', {
       type: () => FilterRoleInput,
@@ -163,6 +171,7 @@ export class RolesResolver {
 
   @UsePipes(SearchResourcesPipe)
   @ResolveField()
+  @Authorization(AuthorizationEnum.usersHasRoleRead)
   async users(
     @Parent() { _id }: Role,
 
@@ -196,6 +205,7 @@ export class RolesResolver {
 
   @UsePipes(SearchResourcesPipe)
   @ResolveField()
+  @Authorization(AuthorizationEnum.rolesHasScopeRead)
   async scopes(
     @Parent() { _id }: Role,
 
@@ -229,6 +239,7 @@ export class RolesResolver {
 
   @UsePipes(AddScopesRolePipe)
   @Mutation(() => Boolean, { name: 'roleAddScopes' })
+  @Authorization(AuthorizationEnum.rolesHasScopeAdd)
   async addScopes(
     @Args(
       {
@@ -246,6 +257,7 @@ export class RolesResolver {
 
   @UsePipes(RemoveScopesRolePipe)
   @Mutation(() => Boolean, { name: 'roleRemoveScopes' })
+  @Authorization(AuthorizationEnum.rolesHasScopeRemove)
   async removeScopes(
     @Args(
       {

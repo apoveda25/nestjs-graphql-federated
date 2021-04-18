@@ -9,10 +9,12 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
+import { AuthorizationEnum } from 'src/shared/enums/authorization';
 import {
   IFilterToAQL,
   ISortToAQL,
 } from '../../arangodb/providers/object-to-aql.interface';
+import { Authorization } from '../../shared/decorators/authorization.decorator';
 import { PaginationInput } from '../../shared/dto/pagination.input';
 import { CountResourcesPipe } from '../../shared/pipes/count-resources.pipe';
 import { FindResourcePipe } from '../../shared/pipes/find-resource.pipe';
@@ -52,6 +54,10 @@ export class UsersResolver {
 
   @UsePipes(CreateUserPipe)
   @Mutation(() => User, { name: 'userCreate' })
+  @Authorization(
+    AuthorizationEnum.usersCreate,
+    AuthorizationEnum.usersHasRoleAdd,
+  )
   async create(
     @Args(
       {
@@ -67,6 +73,7 @@ export class UsersResolver {
 
   @UsePipes(UpdateUsersPipe)
   @Mutation(() => [User], { name: 'usersUpdate' })
+  @Authorization(AuthorizationEnum.usersUpdate)
   async update(
     @Args(
       {
@@ -82,6 +89,7 @@ export class UsersResolver {
 
   @UsePipes(FindResourcePipe)
   @Query(() => User, { name: 'userFind', nullable: true })
+  @Authorization(AuthorizationEnum.usersFind)
   async find(
     @Args(
       {
@@ -97,6 +105,7 @@ export class UsersResolver {
 
   @UsePipes(SearchResourcesPipe)
   @Query(() => [User], { name: 'usersSearch' })
+  @Authorization(AuthorizationEnum.usersSearch)
   async search(
     @Args('filters', {
       type: () => FilterUserInput,
@@ -123,6 +132,7 @@ export class UsersResolver {
 
   @UsePipes(CountResourcesPipe)
   @Query(() => Int, { name: 'usersCount' })
+  @Authorization(AuthorizationEnum.usersCount)
   async count(
     @Args('filters', {
       type: () => FilterUserInput,
@@ -134,6 +144,7 @@ export class UsersResolver {
   }
 
   @ResolveField()
+  @Authorization(AuthorizationEnum.usersHasRoleRead)
   async role(@Parent() { _id }: User) {
     return await this.queryBus.execute(
       new UserHasRoleOutQuery({ parentId: _id }),
@@ -142,6 +153,7 @@ export class UsersResolver {
 
   @UsePipes(ChangeRoleUserPipe)
   @Mutation(() => Boolean, { name: 'userChangeRole' })
+  @Authorization(AuthorizationEnum.usersHasRoleChange)
   async changeRole(
     @Args(
       {
