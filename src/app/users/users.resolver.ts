@@ -24,7 +24,7 @@ import {
   PAGINATION_DEFAULT,
   SORT_DEFAULT,
 } from '../../shared/queries.constant';
-import { SortRoleInput } from '../roles/dto/sort-role.input';
+import { SortRoleInput } from '../roles/domain/dto/sort-role.input';
 import { UserChangeRoleCommand } from '../users-has-role/commands/impl/user-change-role.command';
 import { ChangeRoleUserDto } from '../users-has-role/dto/change-role-user.dto';
 import { ChangeRoleUserInput } from '../users-has-role/dto/change-role-user.input';

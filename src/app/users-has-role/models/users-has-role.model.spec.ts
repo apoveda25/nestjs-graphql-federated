@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { delta } from '../../../shared/helpers/delta';
-import { Role } from '../../roles/entities/role.entity';
+import { Role } from '../../roles/domain/entities/role.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { IUserCreateConflits } from '../interfaces/user.interfaces';
 import { UserModel } from './users-has-role.model';

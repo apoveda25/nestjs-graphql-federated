@@ -9,7 +9,7 @@ import {
 } from '../../../arangodb/providers/object-to-aql.interface';
 import { PaginationInput } from '../../../shared/dto/pagination.input';
 import { IEdge } from '../../../shared/interfaces/edge.interface';
-import { Role } from '../../roles/entities/role.entity';
+import { Role } from '../../roles/domain/entities/role.entity';
 import { User } from '../../users/entities/user.entity';
 import { AddRoleUserDto } from '../dto/add-role-user.dto';
 import { ChangeRoleUserDto } from '../dto/change-role-user.dto';

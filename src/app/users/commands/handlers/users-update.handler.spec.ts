@@ -2,7 +2,7 @@ import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { delta } from '../../../../shared/helpers/delta';
-import { RolesRepository } from '../../../roles/repositories/roles.repository';
+import { RolesRepository } from '../../../roles/infrastructure/repositories/roles.repository';
 import { CreateUserDto } from '../../dto/create-user.dto';
 import { UserCreatedEvent } from '../../events/impl/user-created.event';
 import { UserModel } from '../../models/user.model';

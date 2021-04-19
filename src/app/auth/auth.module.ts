@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { AuthResolver } from './auth.resolver';
-import { AuthCommandHandlers } from './commands/handlers/index';
-import { AuthEventHandlers } from './events/handlers/index';
-import { AuthModel } from './models/auth.model';
-import { AuthRepository } from './repositories/auth.repository';
+import { AuthCommandHandlers } from './application/commands/handlers/index';
+import { AuthEventHandlers } from './application/events/index';
+import { AuthModel } from './domain/models/auth.model';
+import { AuthResolver } from './infrastructure/auth.resolver';
+import { AuthRepository } from './infrastructure/repositories/auth.repository';
 
 @Module({
   imports: [CqrsModule],

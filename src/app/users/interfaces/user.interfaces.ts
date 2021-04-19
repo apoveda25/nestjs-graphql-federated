@@ -1,4 +1,4 @@
-import { Role } from '../../roles/entities/role.entity';
+import { Role } from '../../roles/domain/entities/role.entity';
 import { User } from '../entities/user.entity';
 
 // export interface IRole {

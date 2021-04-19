@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
-import { RoleFindQuery } from 'src/app/roles/queries/impl/role-find.query';
+import { RoleFindQuery } from 'src/app/roles/application/queries/impl/role-find.query';
 import { UserFindQuery } from 'src/app/users/queries/impl/user-find.query';
-import { Role } from '../../roles/entities/role.entity';
+import { Role } from '../../roles/domain/entities/role.entity';
 import { User } from '../../users/entities/user.entity';
 import { ChangeRoleUserDto } from '../dto/change-role-user.dto';
 import { UserHasRoleOutEdgeQuery } from '../queries/impl/user-has-role-out-edge.query';

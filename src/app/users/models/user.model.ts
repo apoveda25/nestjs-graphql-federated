@@ -5,8 +5,8 @@ import {
 } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { genSalt, hash } from 'bcrypt';
-import { Role } from '../../roles/entities/role.entity';
-import { RoleFindQuery } from '../../roles/queries/impl/role-find.query';
+import { RoleFindQuery } from '../../roles/application/queries/impl/role-find.query';
+import { Role } from '../../roles/domain/entities/role.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { User } from '../entities/user.entity';

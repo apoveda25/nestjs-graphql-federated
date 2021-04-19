@@ -26,10 +26,10 @@ import {
   PAGINATION_DEFAULT,
   SORT_DEFAULT,
 } from '../../shared/queries.constant';
-import { RoleHasScopeInQuery } from '../roles-has-scope/queries/impl/role-has-scope-in.query';
-import { FilterRoleInput } from '../roles/dto/filter-role.input';
-import { SortRoleInput } from '../roles/dto/sort-role.input';
-import { Role } from '../roles/entities/role.entity';
+import { RoleHasScopeInQuery } from '../roles-has-scope/application/queries/impl/role-has-scope-in.query';
+import { FilterRoleInput } from '../roles/domain/dto/filter-role.input';
+import { SortRoleInput } from '../roles/domain/dto/sort-role.input';
+import { Role } from '../roles/domain/entities/role.entity';
 import { ScopesCreateCommand } from './commands/impl/scopes-create.command';
 import { FilterScopeInput } from './dto/filter-scope.input';
 import { FindScopeInput } from './dto/find-scope.input';
