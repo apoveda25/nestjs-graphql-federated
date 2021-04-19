@@ -31,11 +31,11 @@ import { AddScopesRoleDto } from '../../roles-has-scope/domain/dto/add-scopes-ro
 import { AddScopesRoleInput } from '../../roles-has-scope/domain/dto/add-scopes-role.input';
 import { RemoveScopesRoleDto } from '../../roles-has-scope/domain/dto/remove-scopes-role.dto';
 import { RemoveScopesRoleInput } from '../../roles-has-scope/domain/dto/remove-scopes-role.input';
-import { FilterScopeInput } from '../../scopes/dto/filter-scope.input';
-import { SortScopeInput } from '../../scopes/dto/sort-scope.input';
-import { UserHasRoleInQuery } from '../../users-has-role/queries/impl/user-has-role-in.query';
-import { FilterUserInput } from '../../users/dto/filter-user.input';
-import { SortUserInput } from '../../users/dto/sort-user.input';
+import { FilterScopeInput } from '../../scopes/domain/dto/filter-scope.input';
+import { SortScopeInput } from '../../scopes/domain/dto/sort-scope.input';
+import { UserHasRoleInQuery } from '../../users-has-role/application/queries/impl/user-has-role-in.query';
+import { FilterUserInput } from '../../users/domain/dto/filter-user.input';
+import { SortUserInput } from '../../users/domain/dto/sort-user.input';
 import { RoleAddScopesCommand } from '../application/commands/impl/role-add-scopes.command';
 import { RoleCreateCommand } from '../application/commands/impl/role-create.command';
 import { RoleRemoveScopesCommand } from '../application/commands/impl/role-remove-scopes.command';

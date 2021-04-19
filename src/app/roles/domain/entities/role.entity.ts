@@ -1,6 +1,6 @@
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
-import { Scope } from '../../../scopes/entities/scope.entity';
-import { User } from '../../../users/entities/user.entity';
+import { Scope } from '../../../scopes/domain/entities/scope.entity';
+import { User } from '../../../users/domain/entities/user.entity';
 
 @ObjectType()
 export class Role {

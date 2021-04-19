@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Edge } from 'arangojs/documents';
 import * as faker from 'faker';
-import { CreateScopeDto } from '../../../scopes/dto/create-scope.dto';
+import { CreateScopeDto } from '../../../scopes/domain/dto/create-scope.dto';
 import { IRoleUpdateConflits } from '../../dist/app/roles/interfaces/role.interfaces';
 import { AddScopesRoleDto } from '../dto/add-scopes-role.dto';
 import { CreateRoleDto } from '../dto/create-role.dto';

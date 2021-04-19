@@ -1,4 +1,4 @@
-import { User } from '../../../users/entities/user.entity';
+import { User } from '../../../users/domain/entities/user.entity';
 
 export interface IPayload {
   user: User;

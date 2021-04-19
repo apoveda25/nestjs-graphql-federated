@@ -5,7 +5,7 @@ import {
   QueryBus,
 } from '@nestjs/cqrs';
 import { RoleFindQuery } from '../../../../roles/application/queries/impl/role-find.query';
-import { ScopeFindQuery } from '../../../../scopes/queries/impl/scope-find.query';
+import { ScopeFindQuery } from '../../../../scopes/application/queries/impl/scope-find.query';
 import { AddScopesRoleDto } from '../../../domain/dto/add-scopes-role.dto';
 import { RoleAddedScopesEvent } from '../../../domain/events/role-added-scopes.event';
 import { RolesHasScopeModel } from '../../../domain/models/roles-has-scope.model';

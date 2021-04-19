@@ -5,7 +5,7 @@ import {
   QueryBus,
 } from '@nestjs/cqrs';
 import { RoleHasScopeOutQuery } from '../../../../roles-has-scope/application/queries/impl/role-has-scope-out.query';
-import { UserHasRoleInQuery } from '../../../../users-has-role/queries/impl/user-has-role-in.query';
+import { UserHasRoleInQuery } from '../../../../users-has-role/application/queries/impl/user-has-role-in.query';
 import { Role } from '../../../domain/entities/role.entity';
 import { RolesDeletedEvent } from '../../../domain/events/roles-deleted.event';
 import { RoleModel } from '../../../domain/models/role.model';

@@ -3,7 +3,7 @@ import { aql } from 'arangojs';
 import { ArangodbService } from '../../../../arangodb/arangodb.service';
 import { InputTransform } from '../../../../arangodb/providers/input-transform';
 import { ObjectToAQL } from '../../../../arangodb/providers/object-to-aql';
-import { User } from '../../../users/entities/user.entity';
+import { User } from '../../../users/domain/entities/user.entity';
 
 @Injectable()
 export class AuthRepository {

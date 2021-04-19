@@ -10,7 +10,7 @@ import {
   Matches,
 } from 'class-validator';
 import { PASSWORD, USER_ID, WORD } from '../../../../shared/helpers/regex';
-import { Gender } from '../../../users/dto/gender.enum';
+import { Gender } from '../../../users/domain/dto/gender.enum';
 
 @InputType()
 export class SignUpAuthDto {

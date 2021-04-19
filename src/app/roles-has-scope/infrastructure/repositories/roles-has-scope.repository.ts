@@ -11,7 +11,7 @@ import {
 import { PaginationInput } from '../../../../shared/dto/pagination.input';
 import { IEdgeFilter } from '../../../../shared/interfaces/edge.interface';
 import { Role } from '../../../roles/domain/entities/role.entity';
-import { Scope } from '../../../scopes/entities/scope.entity';
+import { Scope } from '../../../scopes/domain/entities/scope.entity';
 import { AddScopesRoleDto } from '../../domain/dto/add-scopes-role.dto';
 import { RemoveScopesRoleDto } from '../../domain/dto/remove-scopes-role.dto';
 

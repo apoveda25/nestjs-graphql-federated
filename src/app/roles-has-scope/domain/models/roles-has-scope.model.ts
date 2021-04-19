@@ -6,7 +6,7 @@ import {
 import { QueryBus } from '@nestjs/cqrs';
 import { Edge } from 'arangojs/documents';
 import { Role } from '../../../roles/domain/entities/role.entity';
-import { Scope } from '../../../scopes/entities/scope.entity';
+import { Scope } from '../../../scopes/domain/entities/scope.entity';
 import { AddScopesRoleDto } from '../dto/add-scopes-role.dto';
 import { RemoveScopesRoleDto } from '../dto/remove-scopes-role.dto';
 import {

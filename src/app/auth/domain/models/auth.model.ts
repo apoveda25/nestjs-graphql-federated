@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { compare, genSalt, hash } from 'bcrypt';
 import { Role } from '../../../roles/domain/entities/role.entity';
-import { User } from '../../../users/entities/user.entity';
+import { User } from '../../../users/domain/entities/user.entity';
 import { SignInAuthDto } from '../dto/sign-in-auth.dto';
 import { SignUpAuthDto } from '../dto/sign-up-auth.dto';
 

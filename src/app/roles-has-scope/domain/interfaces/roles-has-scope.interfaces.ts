@@ -1,6 +1,6 @@
 import { Edge } from 'arangojs/documents';
 import { Role } from '../../../roles/domain/entities/role.entity';
-import { Scope } from '../../../scopes/entities/scope.entity';
+import { Scope } from '../../../scopes/domain/entities/scope.entity';
 
 export interface IRoleAddScopesConflicts {
   conflictEdge: Edge;
