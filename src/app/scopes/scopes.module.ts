@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { ScopesCommandHandlers } from './commands/handlers/index';
-import { ScopesEventHandlers } from './events/handlers/index';
-import { ScopeModel } from './models/scope.model';
-import { ScopesQueryHandlers } from './queries/handlers/index';
-import { ScopesRepository } from './repositories/scopes.repository';
-import { ScopesResolver } from './scopes.resolver';
+import { ScopesCommandHandlers } from './application/commands/handlers/index';
+import { ScopesEventHandlers } from './application/events/index';
+import { ScopesQueryHandlers } from './application/queries/handlers/index';
+import { ScopeModel } from './domain/models/scope.model';
+import { ScopesRepository } from './infrastructure/repositories/scopes.repository';
+import { ScopesResolver } from './infrastructure/scopes.resolver';
 
 @Module({
   imports: [CqrsModule],

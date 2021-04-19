@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { RolesCommandHandlers } from './commands/handlers/index';
-import { RolesEventHandlers } from './events/handlers/index';
-import { RoleModel } from './models/role.model';
-import { RolesQueryHandlers } from './queries/handlers/index';
-import { RolesRepository } from './repositories/roles.repository';
-import { RolesResolver } from './roles.resolver';
+import { RolesCommandHandlers } from './application/commands/handlers/index';
+import { RolesEventHandlers } from './application/events/index';
+import { RolesQueryHandlers } from './application/queries/handlers/index';
+import { RoleModel } from './domain/models/role.model';
+import { RolesRepository } from './infrastructure/repositories/roles.repository';
+import { RolesResolver } from './infrastructure/roles.resolver';
 
 @Module({
   imports: [CqrsModule],
