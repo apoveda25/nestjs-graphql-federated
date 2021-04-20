@@ -2,6 +2,8 @@ app:
   name: 'users-graphql'
   host: 'http://localhost'
   port: 3010
+  referrerPolicy: false
+  contentSecurityPolicy: false
 
 arangodb:
   urls:
