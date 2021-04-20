@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs';
-import { load } from 'js-yaml';
+import * as yaml from 'js-yaml';
 import { join } from 'path';
+import { validate } from './app.validator';
 
 const YAML_CONFIG_FILENAME =
   process.env.NODE_ENV === 'production' ||
@@ -9,8 +10,12 @@ const YAML_CONFIG_FILENAME =
     ? `config.${process.env.NODE_ENV}.yaml`
     : 'config.development.yaml';
 
-export const appConfig: any = () => {
-  return load(
+export default () => {
+  const config = yaml.load(
     readFileSync(join(`${__dirname}/../../`, YAML_CONFIG_FILENAME), 'utf8'),
-  );
+  ) as Record<string, any>;
+
+  validate(config);
+
+  return config;
 };
