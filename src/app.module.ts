@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { GraphQLFederationModule } from '@nestjs/graphql';
 import { AuthModule } from './app/auth/auth.module';
 import { RolesHasScopeModule } from './app/roles-has-scope/roles-has-scope.module';
@@ -11,6 +12,7 @@ import { ArangodbModule } from './arangodb/arangodb.module';
 import appConfig from './config/app.config';
 import { arangodbConfig } from './config/arangodb.config';
 import { graphqlFederatedConfig } from './config/graphql-federated.config';
+import { AuthorizationGuard } from './shared/guards/authorization.guard';
 import { SharedModule } from './shared/shared.module';
 
 @Module({
@@ -37,6 +39,12 @@ import { SharedModule } from './shared/shared.module';
     UsersHasRoleModule,
     RolesHasScopeModule,
     AuthModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthorizationGuard,
+    },
   ],
 })
 export class AppModule {}
