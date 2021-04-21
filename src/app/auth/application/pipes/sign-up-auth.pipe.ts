@@ -1,15 +1,11 @@
-import { Inject, Injectable, PipeTransform, Scope } from '@nestjs/common';
-import { CONTEXT } from '@nestjs/graphql';
+import { Injectable, PipeTransform } from '@nestjs/common';
 import { delta } from '../../../../shared/helpers/delta';
 import { codeDigitsGenerate } from '../../../../shared/helpers/generate-code';
-import { IContextGraphQL } from '../../../../shared/interfaces/context-graphql.interface';
 import { SignUpAuthDto } from '../../domain/dto/sign-up-auth.dto';
 import { SignUpAuthInput } from '../../domain/dto/sign-up-auth.input';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class SignUpAuthPipe implements PipeTransform {
-  constructor(@Inject(CONTEXT) private readonly context: IContextGraphQL) {}
-
   transform(signUpAuthInput: SignUpAuthInput): SignUpAuthDto {
     return {
       _id: `Users/${signUpAuthInput._key}`,
@@ -24,7 +20,7 @@ export class SignUpAuthPipe implements PipeTransform {
       gender: 'UNDEFINED',
       prefix: '',
       urlImage: '',
-      createdBy: this.context.user._id,
+      createdBy: `Users/${signUpAuthInput._key}`,
       updatedBy: '',
       createdAt: Date.now(),
       updatedAt: 0,
