@@ -17,5 +17,5 @@ graphql:
   introspection: true
   playground: true
   subscriptions: false
-  autoSchemaFile: true
+  autoSchemaFile: 'src/schema.gql'
   sortSchema: true
