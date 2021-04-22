@@ -23,6 +23,9 @@ indent_size = 2
 [*.graphql]
 indent_size = 2
 
+[*.gql]
+indent_size = 2
+
 [*.sass]
 indent_size = 2
 

@@ -46,19 +46,19 @@ class ArangoDBVariables {
 
 class GraphQLVariables {
   @IsBoolean()
-  introspection: true;
+  introspection: boolean;
 
   @IsBoolean()
-  playground: true;
+  playground: boolean;
 
   @IsBoolean()
-  subscriptions: false;
+  subscriptions: boolean;
+
+  @IsString()
+  autoSchemaFile: string;
 
   @IsBoolean()
-  autoSchemaFile: true;
-
-  @IsBoolean()
-  sortSchema: true;
+  sortSchema: boolean;
 }
 
 class EnvironmentVariables {
