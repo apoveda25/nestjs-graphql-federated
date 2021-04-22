@@ -1,6 +1,5 @@
 import { ConfigService } from '@nestjs/config';
 import { GqlModuleOptions } from '@nestjs/graphql';
-import { GraphQLError } from 'graphql';
 
 export const graphqlFederatedConfig: (
   configService: ConfigService,
@@ -11,13 +10,12 @@ export const graphqlFederatedConfig: (
   autoSchemaFile: configService.get('graphql.autoSchemaFile'),
   sortSchema: configService.get('graphql.sortSchema'),
   context: ({ req }) => {
-    if (!req.headers['x-user-id'] || !req.headers['x-scopes'])
-      throw new GraphQLError('Bad request');
-
     return {
       user: {
-        _id: req.headers['x-user-id'],
-        scopes: req.headers['x-scopes'].split(','),
+        _id: req.headers['x-user-id'] ? req.headers['x-user-id'] : '',
+        scopes: req.headers['x-scopes']
+          ? req.headers['x-scopes'].split(',')
+          : [],
       },
     };
   },
