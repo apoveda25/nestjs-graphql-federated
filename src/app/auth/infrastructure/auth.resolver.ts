@@ -1,6 +1,7 @@
 import { UsePipes, ValidationPipe } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { LoginAuthCommand } from '../application/commands/impl/login-auth.command';
 import { SignInAuthCommand } from '../application/commands/impl/sign-in-auth.command';
 import { SignUpAuthCommand } from '../application/commands/impl/sign-up-auth.command';
 import { SignInAuthPipe } from '../application/pipes/sign-in-auth.pipe';
@@ -43,5 +44,20 @@ export class AuthResolver {
     payload: SignInAuthDto,
   ) {
     return await this.commandBus.execute(new SignInAuthCommand(payload));
+  }
+
+  @UsePipes(SignInAuthPipe)
+  @Mutation(() => Auth)
+  async login(
+    @Args(
+      {
+        name: 'payload',
+        type: () => SignInAuthInput,
+      },
+      new ValidationPipe({ expectedType: SignInAuthDto }),
+    )
+    payload: SignInAuthDto,
+  ) {
+    return await this.commandBus.execute(new LoginAuthCommand(payload));
   }
 }
