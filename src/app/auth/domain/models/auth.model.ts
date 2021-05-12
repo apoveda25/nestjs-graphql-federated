@@ -48,7 +48,7 @@ export class AuthModel {
     { conflictUsernameEmail, conflictRole }: IAuthLoginConflicts,
   ): Promise<User> {
     if (this.isRoleDefault(conflictRole))
-      throw new GraphQLError('Unauthorized');
+      throw new GraphQLError('Unauthorized, role default');
 
     if (this.isNoUserExist(conflictUsernameEmail))
       throw new GraphQLError('Unauthorized');
