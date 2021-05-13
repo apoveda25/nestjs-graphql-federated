@@ -7,6 +7,6 @@ export class ScopeFindQueryHandler implements IQueryHandler<ScopeFindQuery> {
   constructor(private readonly repository: ScopesRepository) {}
 
   async execute(query: ScopeFindQuery) {
-    return await this.repository.findOr(query.input);
+    return await this.repository.find(query.input);
   }
 }

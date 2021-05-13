@@ -1,11 +1,23 @@
+import { OperatorSort } from '../enums/operator-sort.enum';
+
 export interface IFilter {
   value: string | boolean | number;
+  matchMode: string;
   operator: string;
 }
 
 export interface IFilterToAQL extends IFilter {
   key: string;
-  separator: string;
+}
+
+export interface ISortToAQL {
+  keys: string[];
+  sortMode: OperatorSort;
+}
+
+export interface IPagination {
+  offset: number;
+  count: number;
 }
 
 export interface IContextFilterFirst extends IFilter {
@@ -17,16 +29,10 @@ export interface IContextFilterLast extends IFilterToAQL {
   node: string;
 }
 
-export interface ISortToAQL {
-  value: string;
-  sorting: boolean;
-}
-
 export interface IContextSort extends ISortToAQL {
   node: string;
 }
 
-export interface IPagination {
-  offset: number;
-  count: number;
+export interface ISort extends Record<string, boolean | any> {
+  sortMode: OperatorSort;
 }

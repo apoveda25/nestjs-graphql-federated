@@ -1,6 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsBoolean, IsOptional, IsString } from 'class-validator';
-import { OperatorSort } from '../../../../shared/enums/operator-sort.enum';
+import { IsBoolean, IsOptional } from 'class-validator';
+import { SortMode } from '../../../../shared/enums/sort-mode.enum';
 
 @InputType()
 export class SortScopeInput {
@@ -44,7 +44,6 @@ export class SortScopeInput {
   @Field(() => Boolean, { nullable: true })
   updatedAt?: boolean;
 
-  @IsString()
-  @Field(() => OperatorSort)
-  sort: OperatorSort;
+  @Field(() => SortMode)
+  sortMode: SortMode;
 }

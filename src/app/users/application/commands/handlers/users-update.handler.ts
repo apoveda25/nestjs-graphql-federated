@@ -4,6 +4,8 @@ import {
   ICommandHandler,
   QueryBus,
 } from '@nestjs/cqrs';
+import { OperatorBoolean } from 'src/shared/enums/operator-boolean.enum';
+import { QueryParseService } from '../../../../../shared/services/query-parse/query-parse.service';
 import { UpdateUserDto } from '../../../domain/dto/update-user.dto';
 import { User } from '../../../domain/entities/user.entity';
 import { UsersUpdatedEvent } from '../../../domain/events/users-updated.event';
@@ -18,6 +20,7 @@ export class UsersUpdateCommandHandler
     private readonly queryBus: QueryBus,
     private readonly eventBus: EventBus,
     private readonly userModel: UserModel,
+    private readonly queryParseService: QueryParseService,
   ) {}
 
   async execute({ users }: UsersUpdateCommand): Promise<UpdateUserDto[]> {
@@ -25,17 +28,34 @@ export class UsersUpdateCommandHandler
 
     for (const user of users) {
       const conflictKey = await this.queryBus.execute(
-        new UserFindQuery({ _key: user._key }),
+        new UserFindQuery(
+          this.queryParseService.parseOneFilterByKey(
+            { _key: user._key },
+            OperatorBoolean.AND,
+          ),
+        ),
       );
 
       const conflictUsername = user.username
         ? await this.queryBus.execute(
-            new UserFindQuery({ username: user.username }),
+            new UserFindQuery(
+              this.queryParseService.parseOneFilterByKey(
+                { username: user.username },
+                OperatorBoolean.AND,
+              ),
+            ),
           )
         : null;
 
       const conflictEmail = user.email
-        ? await this.queryBus.execute(new UserFindQuery({ email: user.email }))
+        ? await this.queryBus.execute(
+            new UserFindQuery(
+              this.queryParseService.parseOneFilterByKey(
+                { email: user.email },
+                OperatorBoolean.AND,
+              ),
+            ),
+          )
         : null;
 
       const userUpdated = await this.userModel.update(user, {

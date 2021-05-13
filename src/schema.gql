@@ -41,42 +41,6 @@ input ChangeRoleUserInput {
   userId: ID!
 }
 
-"""
-Comparison operators for boolean values.
-"""
-enum ComparisonOperatorBoolean {
-  DISTINCT
-  EQUAL
-}
-
-"""
-Comparison operators for number values.
-"""
-enum ComparisonOperatorNumber {
-  DISTINCT
-  EQUAL
-  GREATER
-  GREATER_EQUAL
-  LESS
-  LESS_EQUAL
-}
-
-"""
-Comparison operators for string values.
-"""
-enum ComparisonOperatorString {
-  DISTINCT
-  EQUAL
-  GREATER
-  GREATER_EQUAL
-  LESS
-  LESS_EQUAL
-  LIKE
-  NOT_LIKE
-  NOT_REGEX
-  REGEX
-}
-
 input CreateRoleInput {
   """
   Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)
@@ -106,7 +70,7 @@ input CreateUserInput {
   _key: ID!
 
   """
-  Example field (1619090996529)
+  Example field (1620911457187)
   """
   birthday: Float = 0
 
@@ -159,17 +123,20 @@ input DeleteRoleInput {
 }
 
 input FilterBooleanInput {
-  operator: ComparisonOperatorBoolean!
+  matchMode: MatchModeBoolean!
+  operator: Operators!
   value: Boolean!
 }
 
 input FilterIntInput {
-  operator: ComparisonOperatorNumber!
+  matchMode: MatchModeNumber!
+  operator: Operators!
   value: Int!
 }
 
 input FilterKeyInput {
-  operator: ComparisonOperatorBoolean!
+  matchMode: MatchModeID!
+  operator: Operators!
   value: ID!
 }
 
@@ -181,7 +148,6 @@ input FilterRoleInput {
   default: [FilterBooleanInput!]
   description: [FilterStringInput!]
   name: [FilterStringInput!]
-  separator: OperatorBoolean!
   updatedAt: [FilterIntInput!]
   updatedBy: [FilterStringInput!]
 }
@@ -193,13 +159,13 @@ input FilterScopeInput {
   createdAt: [FilterIntInput!]
   createdBy: [FilterStringInput!]
   name: [FilterStringInput!]
-  separator: OperatorBoolean!
   updatedAt: [FilterIntInput!]
   updatedBy: [FilterStringInput!]
 }
 
 input FilterStringInput {
-  operator: ComparisonOperatorString!
+  matchMode: MatchModeString!
+  operator: Operators!
   value: String!
 }
 
@@ -214,7 +180,6 @@ input FilterUserInput {
   gender: [FilterStringInput!]
   name: [FilterStringInput!]
   prefix: [FilterStringInput!]
-  separator: OperatorBoolean!
   surname: [FilterStringInput!]
   updatedAt: [FilterIntInput!]
   updatedBy: [FilterStringInput!]
@@ -298,7 +263,7 @@ input FindUserInput {
   active: Boolean
 
   """
-  Example field (1619090996529)
+  Example field (1620911457189)
   """
   birthday: Float
 
@@ -339,7 +304,52 @@ enum Gender {
   UNDEFINED
 }
 
+"""
+Match mode for boolean values.
+"""
+enum MatchModeBoolean {
+  DISTINCT
+  EQUAL
+}
+
+"""
+Match mode for ID values.
+"""
+enum MatchModeID {
+  DISTINCT
+  EQUAL
+}
+
+"""
+Match mode for number values.
+"""
+enum MatchModeNumber {
+  DISTINCT
+  EQUAL
+  GREATER
+  GREATER_EQUAL
+  LESS
+  LESS_EQUAL
+}
+
+"""
+Match mode for string values.
+"""
+enum MatchModeString {
+  DISTINCT
+  EQUAL
+  GREATER
+  GREATER_EQUAL
+  LESS
+  LESS_EQUAL
+  LIKE
+  NOT_LIKE
+  NOT_REGEX
+  REGEX
+}
+
 type Mutation {
+  login(payload: SignInAuthInput!): Auth!
   roleAddScopes(role: AddScopesRoleInput!): Boolean!
   roleCreate(role: CreateRoleInput!): Role!
   roleRemoveScopes(role: RemoveScopesRoleInput!): Boolean!
@@ -354,19 +364,11 @@ type Mutation {
 }
 
 """
-Support for boolean operators.
+Support for operators.
 """
-enum OperatorBoolean {
+enum Operators {
   AND
   OR
-}
-
-"""
-Support for sort operators.
-"""
-enum OperatorSort {
-  ASC
-  DESC
 }
 
 input PaginationInput {
@@ -427,7 +429,7 @@ type Role {
   active: Boolean!
 
   """
-  Example field (1619090996444)
+  Example field (1620911457063)
   """
   createdAt: Int!
 
@@ -457,7 +459,7 @@ type Role {
   ): [Scope!]!
 
   """
-  Example field (1619090996444)
+  Example field (1620911457063)
   """
   updatedAt: Int!
 
@@ -545,6 +547,14 @@ input SignUpAuthInput {
   username: String!
 }
 
+"""
+Sort mode support.
+"""
+enum SortMode {
+  ASC
+  DESC
+}
+
 input SortRoleInput {
   _key: Boolean
   active: Boolean
@@ -553,7 +563,7 @@ input SortRoleInput {
   default: Boolean
   description: Boolean
   name: Boolean
-  sort: OperatorSort!
+  sortMode: SortMode!
   updatedAt: Boolean
   updatedBy: Boolean
 }
@@ -565,7 +575,7 @@ input SortScopeInput {
   createdAt: Boolean
   createdBy: Boolean
   name: Boolean
-  sort: OperatorSort!
+  sortMode: SortMode!
   updatedAt: Boolean
   updatedBy: Boolean
 }
@@ -581,7 +591,7 @@ input SortUserInput {
   gender: Boolean
   name: Boolean
   prefix: Boolean
-  sort: OperatorSort!
+  sortMode: SortMode!
   surname: Boolean
   updatedAt: Boolean
   updatedBy: Boolean
@@ -628,7 +638,7 @@ input UpdateUserInput {
   active: Boolean
 
   """
-  Example field (1619090996531)
+  Example field (1620911457190)
   """
   birthday: Float
 
@@ -685,12 +695,12 @@ type User {
   active: Boolean!
 
   """
-  Example field (1619090996444)
+  Example field (1620911457064)
   """
   birthday: Float!
 
   """
-  Example field (1619090996444)
+  Example field (1620911457064)
   """
   createdAt: Float!
 
@@ -731,7 +741,7 @@ type User {
   surname: String!
 
   """
-  Example field (1619090996444)
+  Example field (1620911457064)
   """
   updatedAt: Float!
 

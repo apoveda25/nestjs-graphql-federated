@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Field, Float, InputType } from '@nestjs/graphql';
 import { IsEnum, IsNumber } from 'class-validator';
-import { ComparisonOperatorNumber } from '../enums/comparison-operator-number.enum';
+import { MatchModeNumber } from '../enums/match-mode-number.enum';
+import { Operators } from '../enums/operators.enum';
 
 @Injectable()
 @InputType()
@@ -10,7 +11,11 @@ export class FilterFloatInput {
   @Field(() => Float)
   value: number;
 
-  @IsEnum(ComparisonOperatorNumber)
-  @Field(() => ComparisonOperatorNumber)
+  @IsEnum(MatchModeNumber)
+  @Field(() => MatchModeNumber)
+  matchMode: string;
+
+  @IsEnum(Operators)
+  @Field(() => Operators)
   operator: string;
 }

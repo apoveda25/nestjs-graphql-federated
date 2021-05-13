@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Field, InputType } from '@nestjs/graphql';
-import { IsString } from 'class-validator';
-import { ComparisonOperatorString } from '../enums/comparison-operator-string.enum';
+import { IsEnum, IsString } from 'class-validator';
+import { MatchModeString } from '../enums/match-mode-string.enum';
+import { Operators } from '../enums/operators.enum';
 
 @Injectable()
 @InputType()
@@ -10,7 +11,11 @@ export class FilterStringInput {
   @Field(() => String)
   value: string;
 
-  @IsString()
-  @Field(() => ComparisonOperatorString)
+  @IsEnum(MatchModeString)
+  @Field(() => MatchModeString)
+  matchMode: string;
+
+  @IsEnum(Operators)
+  @Field(() => Operators)
   operator: string;
 }

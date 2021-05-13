@@ -1,20 +1,24 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { aql } from 'arangojs/aql';
+import { GraphQLError } from 'graphql';
 import { ArangodbService } from '../../../../arangodb/arangodb.service';
-import { InputTransform } from '../../../../arangodb/providers/input-transform';
-import { ObjectToAQL } from '../../../../arangodb/providers/object-to-aql';
-import {
-  IFilterToAQL,
-  ISortToAQL,
-} from '../../../../arangodb/providers/object-to-aql.interface';
 import { PaginationInput } from '../../../../shared/dto/pagination.input';
 import {
   IEdge,
   IEdgeSearchInput,
 } from '../../../../shared/interfaces/edge.interface';
+import {
+  IFilterToAQL,
+  ISortToAQL,
+} from '../../../../shared/interfaces/queries-resources.interface';
+import {
+  FILTER_DEFAULT,
+  PAGINATION_DEFAULT,
+  SORT_DEFAULT,
+} from '../../../../shared/queries.constant';
+import { QueryParseService } from '../../../../shared/services/query-parse/query-parse.service';
 import { CreateRoleDto } from '../../domain/dto/create-role.dto';
 import { DeleteRoleDto } from '../../domain/dto/delete-role.dto';
-import { FindRoleInput } from '../../domain/dto/find-role.input';
 import { UpdateRoleDto } from '../../domain/dto/update-role.dto';
 import { Role } from '../../domain/entities/role.entity';
 
@@ -24,8 +28,7 @@ export class RolesRepository {
 
   constructor(
     private readonly arangoService: ArangodbService,
-    private readonly objectToAQL: ObjectToAQL,
-    private readonly inputTransform: InputTransform,
+    private readonly queryParseService: QueryParseService,
   ) {}
 
   async create(createRoleDto: CreateRoleDto) {
@@ -37,7 +40,7 @@ export class RolesRepository {
       return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
@@ -51,7 +54,7 @@ export class RolesRepository {
       return await cursor.map((doc) => doc);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
@@ -65,21 +68,15 @@ export class RolesRepository {
       return await cursor.map((doc) => doc);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
-  async findAnd(filters: FindRoleInput): Promise<Role | null> {
-    const _filters: IFilterToAQL[] = this.inputTransform.resourceToArray(
-      filters,
-      '==',
-      'AND',
-    );
-
+  async find(filters: IFilterToAQL[]): Promise<Role | null> {
     try {
       const cursor = await this.arangoService.query(aql`
       FOR doc IN ${this.arangoService.collection(this.name)}
-      ${aql.join(this.objectToAQL.filtersToAql(_filters, 'doc'))}
+      ${aql.join(this.queryParseService.filtersToAql(filters, 'doc'))}
       LIMIT 1
       RETURN doc
     `);
@@ -87,63 +84,45 @@ export class RolesRepository {
       return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
-    }
-  }
-
-  async findOr(filters: FindRoleInput): Promise<Role | null> {
-    const _filters: IFilterToAQL[] = this.inputTransform.resourceToArray(
-      filters,
-      '==',
-      'OR',
-    );
-
-    try {
-      const cursor = await this.arangoService.query(aql`
-      FOR doc IN ${this.arangoService.collection(this.name)}
-      ${aql.join(this.objectToAQL.filtersToAql(_filters, 'doc'))}
-      LIMIT 1
-      RETURN doc
-    `);
-
-      return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
-    } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
   async search({
-    filters,
-    sort,
-    pagination,
+    filters = FILTER_DEFAULT,
+    sort = SORT_DEFAULT,
+    pagination = PAGINATION_DEFAULT,
   }: {
-    filters: IFilterToAQL[];
-    sort: ISortToAQL[];
-    pagination: PaginationInput;
+    filters?: IFilterToAQL[];
+    sort?: ISortToAQL;
+    pagination?: PaginationInput;
   }): Promise<Role[]> {
     try {
       const cursor = await this.arangoService.query(aql`
       FOR doc IN ${this.arangoService.collection(this.name)}
-      ${aql.join(this.objectToAQL.filtersToAql(filters, 'doc'))}
-      ${aql.join(this.objectToAQL.sortToAql(sort, 'doc'))}
-      ${this.objectToAQL.paginationToAql(pagination)}
+      ${aql.join(this.queryParseService.filtersToAql(filters, 'doc'))}
+      ${aql.join(this.queryParseService.sortToAql(sort, 'doc'))}
+      ${this.queryParseService.paginationToAql(pagination)}
       RETURN doc
     `);
 
       return await cursor.map((el) => el);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
-  async count(filters: IFilterToAQL[]): Promise<number> {
+  async count({
+    filters = FILTER_DEFAULT,
+  }: {
+    filters?: IFilterToAQL[];
+  }): Promise<number> {
     try {
       const cursor = await this.arangoService.query(aql`
       RETURN COUNT(
         FOR doc IN ${this.arangoService.collection(this.name)}
-        ${aql.join(this.objectToAQL.filtersToAql(filters, 'doc'))}
+        ${aql.join(this.queryParseService.filtersToAql(filters, 'doc'))}
         RETURN doc
       )
     `);
@@ -151,7 +130,7 @@ export class RolesRepository {
       return await cursor.reduce((acc: number, cur: number) => acc + cur, 0);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
@@ -166,17 +145,17 @@ export class RolesRepository {
 
     try {
       const cursor = await this.arangoService.query(aql`
-      WITH ${aql.join(_collections, ', ')}
-      FOR vertex, edge IN ${direction} ${startVertexId} ${aql.join(
+        WITH ${aql.join(_collections, ', ')}
+        FOR vertex, edge IN ${direction} ${startVertexId} ${aql.join(
         _collections,
       )}
-      RETURN edge
-    `);
+        RETURN edge
+      `);
 
       return await cursor.map((el) => el);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 }

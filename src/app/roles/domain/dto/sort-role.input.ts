@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { OperatorSort } from '../../../../shared/enums/operator-sort.enum';
+import { SortMode } from '../../../../shared/enums/sort-mode.enum';
 
 @InputType()
 export class SortRoleInput {
@@ -30,6 +30,6 @@ export class SortRoleInput {
   @Field(() => Boolean, { nullable: true })
   updatedAt?: boolean;
 
-  @Field(() => OperatorSort)
-  sort: OperatorSort;
+  @Field(() => SortMode)
+  sortMode: SortMode;
 }

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
+import { SharedModule } from '../../shared/shared.module';
 import { ScopesCommandHandlers } from './application/commands/handlers/index';
 import { ScopesEventHandlers } from './application/events/index';
 import { ScopesQueryHandlers } from './application/queries/handlers/index';
@@ -8,7 +9,7 @@ import { ScopesRepository } from './infrastructure/repositories/scopes.repositor
 import { ScopesResolver } from './infrastructure/scopes.resolver';
 
 @Module({
-  imports: [CqrsModule],
+  imports: [CqrsModule, SharedModule],
   providers: [
     ScopesResolver,
     ...ScopesQueryHandlers,

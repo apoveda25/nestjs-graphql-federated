@@ -4,7 +4,9 @@ import {
   ICommandHandler,
   QueryBus,
 } from '@nestjs/cqrs';
+import { OperatorBoolean } from 'src/shared/enums/operator-boolean.enum';
 import { v4 as uuidv4 } from 'uuid';
+import { QueryParseService } from '../../../../../shared/services/query-parse/query-parse.service';
 import { CreateScopeDto } from '../../../domain/dto/create-scope.dto';
 import { Scope } from '../../../domain/entities/scope.entity';
 import { ScopeCreatedEvent } from '../../../domain/events/scope-created.event';
@@ -23,6 +25,7 @@ export class ScopesCreateCommandHandler
     private readonly eventBus: EventBus,
     private readonly scopesRepository: ScopesRepository,
     private readonly scopeModel: ScopeModel,
+    private readonly queryParseService: QueryParseService,
   ) {}
 
   async execute(command: ScopesCreateCommand): Promise<Scope[]> {
@@ -33,7 +36,12 @@ export class ScopesCreateCommandHandler
 
     for (const createScope of createScopes) {
       const conflictKeyName = await this.queryBus.execute(
-        new ScopeFindQuery({ _key: createScope._key, name: createScope.name }),
+        new ScopeFindQuery(
+          this.queryParseService.parseOneFilterByKey(
+            { _key: createScope._key, name: createScope.name },
+            OperatorBoolean.OR,
+          ),
+        ),
       );
 
       const scopeCreated = await this.scopeModel.create(createScope, {

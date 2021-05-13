@@ -1,14 +1,19 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { aql } from 'arangojs/aql';
+import { GraphQLError } from 'graphql';
 import { ArangodbService } from '../../../../arangodb/arangodb.service';
-import { InputTransform } from '../../../../arangodb/providers/input-transform';
-import { ObjectToAQL } from '../../../../arangodb/providers/object-to-aql';
+import { PaginationInput } from '../../../../shared/dto/pagination.input';
+import { IEdge } from '../../../../shared/interfaces/edge.interface';
 import {
   IFilterToAQL,
   ISortToAQL,
-} from '../../../../arangodb/providers/object-to-aql.interface';
-import { PaginationInput } from '../../../../shared/dto/pagination.input';
-import { IEdge } from '../../../../shared/interfaces/edge.interface';
+} from '../../../../shared/interfaces/queries-resources.interface';
+import {
+  FILTER_DEFAULT,
+  PAGINATION_DEFAULT,
+  SORT_DEFAULT,
+} from '../../../../shared/queries.constant';
+import { QueryParseService } from '../../../../shared/services/query-parse/query-parse.service';
 import { Role } from '../../../roles/domain/entities/role.entity';
 import { User } from '../../../users/domain/entities/user.entity';
 import { AddRoleUserDto } from '../../domain/dto/add-role-user.dto';
@@ -22,8 +27,7 @@ export class UsersHasRoleRepository {
 
   constructor(
     private readonly arangoService: ArangodbService,
-    private readonly objectToAQL: ObjectToAQL,
-    private readonly inputTransform: InputTransform,
+    private readonly queryParseService: QueryParseService,
   ) {}
 
   async create(addRoleUserDto: AddRoleUserDto) {
@@ -37,7 +41,7 @@ export class UsersHasRoleRepository {
       return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
@@ -52,7 +56,7 @@ export class UsersHasRoleRepository {
       return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
@@ -73,7 +77,7 @@ export class UsersHasRoleRepository {
       return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
@@ -94,20 +98,20 @@ export class UsersHasRoleRepository {
       return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
   async searchIn({
-    filters,
-    sort,
-    pagination,
     parentId,
+    filters = FILTER_DEFAULT,
+    sort = SORT_DEFAULT,
+    pagination = PAGINATION_DEFAULT,
   }: {
-    filters: IFilterToAQL[];
-    sort: ISortToAQL[];
-    pagination: PaginationInput;
     parentId: string;
+    filters?: IFilterToAQL[];
+    sort?: ISortToAQL;
+    pagination?: PaginationInput;
   }): Promise<User[]> {
     const collections = [
       this.name,
@@ -119,16 +123,16 @@ export class UsersHasRoleRepository {
       const cursor = await this.arangoService.query(aql`
         WITH ${aql.join(collections)}
         FOR vertex, edge IN INBOUND ${parentId} ${collections[0]}
-        ${aql.join(this.objectToAQL.filtersToAql(filters, 'vertex'))}
-        ${aql.join(this.objectToAQL.sortToAql(sort, 'vertex'))}
-        ${this.objectToAQL.paginationToAql(pagination)}
+        ${aql.join(this.queryParseService.filtersToAql(filters, 'vertex'))}
+        ${aql.join(this.queryParseService.sortToAql(sort, 'vertex'))}
+        ${this.queryParseService.paginationToAql(pagination)}
         RETURN vertex
       `);
 
       return await cursor.map((el) => el);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 }

@@ -1,6 +1,6 @@
 import { IQuery } from '@nestjs/cqrs';
-import { FindScopeInput } from '../../../domain/dto/find-scope.input';
+import { IFilterToAQL } from '../../../../../shared/interfaces/queries-resources.interface';
 
 export class ScopeFindQuery implements IQuery {
-  constructor(public readonly input: FindScopeInput) {}
+  constructor(public readonly input: IFilterToAQL[]) {}
 }

@@ -4,6 +4,8 @@ import {
   ICommandHandler,
   QueryBus,
 } from '@nestjs/cqrs';
+import { OperatorBoolean } from 'src/shared/enums/operator-boolean.enum';
+import { QueryParseService } from '../../../../../shared/services/query-parse/query-parse.service';
 import { Role } from '../../../domain/entities/role.entity';
 import { RolesUpdatedEvent } from '../../../domain/events/roles-updated.event';
 import { RoleModel } from '../../../domain/models/role.model';
@@ -17,6 +19,7 @@ export class RolesUpdateCommandHandlers
     private readonly queryBus: QueryBus,
     private readonly eventBus: EventBus,
     private readonly roleModel: RoleModel,
+    private readonly queryParseService: QueryParseService,
   ) {}
 
   async execute({ roles }: RolesUpdateCommand): Promise<Role[]> {
@@ -24,16 +27,33 @@ export class RolesUpdateCommandHandlers
 
     for (const role of roles) {
       const conflictKey = await this.queryBus.execute(
-        new RoleFindQuery({ _key: role._key }),
+        new RoleFindQuery(
+          this.queryParseService.parseOneFilterByKey(
+            { _key: role._key },
+            OperatorBoolean.AND,
+          ),
+        ),
       );
 
       const conflictName = role.name
-        ? await this.queryBus.execute(new RoleFindQuery({ name: role.name }))
+        ? await this.queryBus.execute(
+            new RoleFindQuery(
+              this.queryParseService.parseOneFilterByKey(
+                { name: role.name },
+                OperatorBoolean.AND,
+              ),
+            ),
+          )
         : null;
 
       const conflictDefault = role.default
         ? await this.queryBus.execute(
-            new RoleFindQuery({ default: role.default }),
+            new RoleFindQuery(
+              this.queryParseService.parseOneFilterByKey(
+                { default: role.default },
+                OperatorBoolean.AND,
+              ),
+            ),
           )
         : null;
 

@@ -1,16 +1,16 @@
 import { IQuery } from '@nestjs/cqrs';
+import { PaginationInput } from '../../../../../shared/dto/pagination.input';
 import {
   IFilterToAQL,
   ISortToAQL,
-} from '../../../../../arangodb/providers/object-to-aql.interface';
-import { PaginationInput } from '../../../../../shared/dto/pagination.input';
+} from '../../../../../shared/interfaces/queries-resources.interface';
 
 export class ScopesSearchQuery implements IQuery {
   constructor(
     public readonly input: {
-      filters: IFilterToAQL[];
-      sort: ISortToAQL[];
-      pagination: PaginationInput;
+      filters?: IFilterToAQL[];
+      sort?: ISortToAQL;
+      pagination?: PaginationInput;
     },
   ) {}
 }
