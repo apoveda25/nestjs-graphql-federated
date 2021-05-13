@@ -2,25 +2,18 @@ import { Injectable, PipeTransform } from '@nestjs/common';
 import {
   IFilter,
   IFilterToAQL,
-} from '../interfaces/search-resources.interface';
+} from '../interfaces/queries-resources.interface';
+import { QueryParseService } from '../services/query-parse/query-parse.service';
 
 @Injectable()
 export class FiltersResourcesPipe implements PipeTransform {
+  constructor(private readonly queryParseService: QueryParseService) {}
+
   transform(value: Record<string, IFilter[]>): IFilterToAQL[] {
-    return this.filtersParse(value);
+    return this.parse(value);
   }
 
-  private filtersParse(filters: any = {}): IFilterToAQL[] {
-    const filtersToAQL: IFilterToAQL[] = [];
-
-    const keys = Object.keys(filters);
-
-    keys.map((key: string) => {
-      filters[key].map((filter: IFilter) =>
-        filtersToAQL.push({ key, ...filter }),
-      );
-    });
-
-    return filtersToAQL;
+  private parse(filters: Record<string, IFilter[]> = {}): IFilterToAQL[] {
+    return this.queryParseService.parseManyFiltersByKey(filters);
   }
 }

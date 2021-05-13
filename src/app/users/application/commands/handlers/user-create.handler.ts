@@ -4,6 +4,8 @@ import {
   ICommandHandler,
   QueryBus,
 } from '@nestjs/cqrs';
+import { OperatorBoolean } from 'src/shared/enums/operator-boolean.enum';
+import { QueryParseService } from '../../../../../shared/services/query-parse/query-parse.service';
 import { RoleFindQuery } from '../../../../roles/application/queries/impl/role-find.query';
 import { CreateUserDto } from '../../../domain/dto/create-user.dto';
 import { UserCreatedEvent } from '../../../domain/events/user-created.event';
@@ -18,19 +20,30 @@ export class UserCreateCommandHandler
     private readonly queryBus: QueryBus,
     private readonly eventBus: EventBus,
     private readonly userModel: UserModel,
+    private readonly queryParseService: QueryParseService,
   ) {}
 
   async execute({ user }: UserCreateCommand): Promise<CreateUserDto> {
     const conflictKeyUsernameEmail = await this.queryBus.execute(
-      new UserFindQuery({
-        _key: user._key,
-        username: user.username,
-        email: user.email,
-      }),
+      new UserFindQuery(
+        this.queryParseService.parseOneFilterByKey(
+          {
+            _key: user._key,
+            username: user.username,
+            email: user.email,
+          },
+          OperatorBoolean.OR,
+        ),
+      ),
     );
 
     const conflictRoleId = await this.queryBus.execute(
-      new RoleFindQuery({ _id: user.roleId }),
+      new RoleFindQuery(
+        this.queryParseService.parseOneFilterByKey(
+          { _id: user.roleId },
+          OperatorBoolean.AND,
+        ),
+      ),
     );
 
     const userCreated = await this.userModel.create(user, {

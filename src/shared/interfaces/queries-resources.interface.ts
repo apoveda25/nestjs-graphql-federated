@@ -19,3 +19,20 @@ export interface IPagination {
   offset: number;
   count: number;
 }
+
+export interface IContextFilterFirst extends IFilter {
+  key: string;
+  node: string;
+}
+
+export interface IContextFilterLast extends IFilterToAQL {
+  node: string;
+}
+
+export interface IContextSort extends ISortToAQL {
+  node: string;
+}
+
+export interface ISort extends Record<string, boolean | any> {
+  sortMode: OperatorSort;
+}

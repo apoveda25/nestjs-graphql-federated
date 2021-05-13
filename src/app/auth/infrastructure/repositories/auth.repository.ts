@@ -1,8 +1,7 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { aql } from 'arangojs';
+import { GraphQLError } from 'graphql';
 import { ArangodbService } from '../../../../arangodb/arangodb.service';
-import { InputTransform } from '../../../../arangodb/providers/input-transform';
-import { ObjectToAQL } from '../../../../arangodb/providers/object-to-aql';
 import { User } from '../../../users/domain/entities/user.entity';
 
 @Injectable()
@@ -10,11 +9,7 @@ export class AuthRepository {
   private readonly name = 'Users';
   private readonly nameEdge = 'UsersHasRole';
 
-  constructor(
-    private readonly arangoService: ArangodbService,
-    private readonly objectToAQL: ObjectToAQL,
-    private readonly inputTransform: InputTransform,
-  ) {}
+  constructor(private readonly arangoService: ArangodbService) {}
 
   async signUp(user: User, hasRole: Record<string, any>) {
     try {
@@ -26,7 +21,7 @@ export class AuthRepository {
       return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 }

@@ -15,7 +15,7 @@ import { PaginationInput } from '../../../shared/dto/pagination.input';
 import {
   IFilterToAQL,
   ISortToAQL,
-} from '../../../shared/interfaces/search-resources.interface';
+} from '../../../shared/interfaces/queries-resources.interface';
 import { FiltersResourcesPipe } from '../../../shared/pipes/filters-resources.pipe';
 import { FindResourcePipe } from '../../../shared/pipes/find-resource.pipe';
 import { SortResourcesPipe } from '../../../shared/pipes/sort-resources.pipe';
@@ -87,7 +87,6 @@ export class UsersResolver {
     return await this.commandBus.execute(new UsersUpdateCommand(updateUserDto));
   }
 
-  @UsePipes(FindResourcePipe)
   @Query(() => User, { name: 'userFind', nullable: true })
   @Authorization(AuthorizationEnum.usersFind)
   async find(
@@ -97,10 +96,11 @@ export class UsersResolver {
         type: () => FindUserInput,
       },
       new ValidationPipe({ expectedType: FindUserInput }),
+      FindResourcePipe,
     )
-    findUserInput: FindUserInput,
+    filters: IFilterToAQL[],
   ) {
-    return await this.queryBus.execute(new UserFindQuery(findUserInput));
+    return await this.queryBus.execute(new UserFindQuery(filters));
   }
 
   @Query(() => [User], { name: 'usersSearch' })

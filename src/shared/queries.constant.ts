@@ -3,7 +3,7 @@ import {
   IFilterToAQL,
   IPagination,
   ISortToAQL,
-} from './interfaces/search-resources.interface';
+} from './interfaces/queries-resources.interface';
 
 export const FILTER_DEFAULT: IFilterToAQL[] = [];
 export const SORT_DEFAULT: ISortToAQL = {

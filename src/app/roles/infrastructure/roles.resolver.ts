@@ -15,7 +15,7 @@ import { AuthorizationEnum } from '../../../shared/enums/authorization';
 import {
   IFilterToAQL,
   ISortToAQL,
-} from '../../../shared/interfaces/search-resources.interface';
+} from '../../../shared/interfaces/queries-resources.interface';
 import { FiltersResourcesPipe } from '../../../shared/pipes/filters-resources.pipe';
 import { FindResourcePipe } from '../../../shared/pipes/find-resource.pipe';
 import { SortResourcesPipe } from '../../../shared/pipes/sort-resources.pipe';
@@ -113,7 +113,6 @@ export class RolesResolver {
     return await this.commandBus.execute(new RolesDeleteCommand(deleteRoleDto));
   }
 
-  @UsePipes(FindResourcePipe)
   @Query(() => Role, { name: 'roleFind' })
   @Authorization(AuthorizationEnum.rolesFind)
   async find(
@@ -123,10 +122,11 @@ export class RolesResolver {
         type: () => FindRoleInput,
       },
       new ValidationPipe({ expectedType: FindRoleInput }),
+      FindResourcePipe,
     )
-    findRoleDto: FindRoleInput,
+    filters: IFilterToAQL[],
   ) {
-    return await this.queryBus.execute(new RoleFindQuery(findRoleDto));
+    return await this.queryBus.execute(new RoleFindQuery(filters));
   }
 
   @Query(() => [Role], { name: 'rolesSearch' })

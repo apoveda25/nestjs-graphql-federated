@@ -2,19 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { aql } from 'arangojs/aql';
 import { GraphQLError } from 'graphql';
 import { ArangodbService } from '../../../../arangodb/arangodb.service';
-import { InputTransform } from '../../../../arangodb/providers/input-transform';
-import { ObjectToAQL } from '../../../../arangodb/providers/object-to-aql';
 import { PaginationInput } from '../../../../shared/dto/pagination.input';
 import {
   IFilterToAQL,
   ISortToAQL,
-} from '../../../../shared/interfaces/search-resources.interface';
+} from '../../../../shared/interfaces/queries-resources.interface';
 import {
   FILTER_DEFAULT,
   PAGINATION_DEFAULT,
   SORT_DEFAULT,
 } from '../../../../shared/queries.constant';
-import { FindUserInput } from '../../domain/dto/find-user.input';
+import { QueryParseService } from '../../../../shared/services/query-parse/query-parse.service';
 import { User } from '../../domain/entities/user.entity';
 
 @Injectable()
@@ -23,8 +21,7 @@ export class UsersRepository {
 
   constructor(
     private readonly arangoService: ArangodbService,
-    private readonly objectToAQL: ObjectToAQL,
-    private readonly inputTransform: InputTransform,
+    private readonly queryParseService: QueryParseService,
   ) {}
 
   async create(user: User) {
@@ -54,17 +51,11 @@ export class UsersRepository {
     }
   }
 
-  async findOr(filters: FindUserInput): Promise<User | null> {
-    const _filters: IFilterToAQL[] = this.inputTransform.resourceToArray(
-      filters,
-      '==',
-      'OR',
-    );
-
+  async find(filters: IFilterToAQL[]): Promise<User | null> {
     try {
       const cursor = await this.arangoService.query(aql`
         FOR doc IN ${this.arangoService.collection(this.name)}
-        ${aql.join(this.objectToAQL.filtersToAql(_filters, 'doc'))}
+        ${aql.join(this.queryParseService.filtersToAql(filters, 'doc'))}
         LIMIT 1
         RETURN doc
       `);
@@ -87,9 +78,9 @@ export class UsersRepository {
   }): Promise<User[]> {
     const cursor = await this.arangoService.query(aql`
       FOR doc IN ${this.arangoService.collection(this.name)}
-      ${aql.join(this.objectToAQL.filtersToAql(filters, 'doc'))}
-      ${aql.join(this.objectToAQL.sortToAql(sort, 'doc'))}
-      ${this.objectToAQL.paginationToAql(pagination)}
+      ${aql.join(this.queryParseService.filtersToAql(filters, 'doc'))}
+      ${aql.join(this.queryParseService.sortToAql(sort, 'doc'))}
+      ${this.queryParseService.paginationToAql(pagination)}
       RETURN doc
     `);
 
@@ -104,7 +95,7 @@ export class UsersRepository {
     const cursor = await this.arangoService.query(aql`
       RETURN COUNT(
         FOR doc IN ${this.arangoService.collection(this.name)}
-        ${aql.join(this.objectToAQL.filtersToAql(filters, 'doc'))}
+        ${aql.join(this.queryParseService.filtersToAql(filters, 'doc'))}
         RETURN doc
       )
     `);

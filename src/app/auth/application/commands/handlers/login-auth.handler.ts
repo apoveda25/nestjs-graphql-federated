@@ -1,5 +1,7 @@
 import { CommandHandler, ICommandHandler, QueryBus } from '@nestjs/cqrs';
 import { UserHasRoleOutQuery } from 'src/app/users-has-role/application/queries/impl/user-has-role-out.query';
+import { OperatorBoolean } from 'src/shared/enums/operator-boolean.enum';
+import { QueryParseService } from '../../../../../shared/services/query-parse/query-parse.service';
 import { Role } from '../../../../roles/domain/entities/role.entity';
 import { UserFindQuery } from '../../../../users/application/queries/impl/user-find.query';
 import { User } from '../../../../users/domain/entities/user.entity';
@@ -13,6 +15,7 @@ export class LoginAuthCommandHandler
   constructor(
     private readonly queryBus: QueryBus,
     private readonly authModel: AuthModel,
+    private readonly queryParseService: QueryParseService,
   ) {}
 
   async execute({ payload }: LoginAuthCommand): Promise<IPayload> {
@@ -20,10 +23,15 @@ export class LoginAuthCommandHandler
       UserFindQuery,
       User
     >(
-      new UserFindQuery({
-        username: payload.usernameOrEmail,
-        email: payload.usernameOrEmail,
-      }),
+      new UserFindQuery(
+        this.queryParseService.parseOneFilterByKey(
+          {
+            username: payload.usernameOrEmail,
+            email: payload.usernameOrEmail,
+          },
+          OperatorBoolean.OR,
+        ),
+      ),
     );
 
     const conflictRole = await this.queryBus.execute<UserHasRoleOutQuery, Role>(

@@ -2,21 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { aql } from 'arangojs/aql';
 import { GraphQLError } from 'graphql';
 import { ArangodbService } from '../../../../arangodb/arangodb.service';
-import { InputTransform } from '../../../../arangodb/providers/input-transform';
-import { ObjectToAQL } from '../../../../arangodb/providers/object-to-aql';
 import { PaginationInput } from '../../../../shared/dto/pagination.input';
 import {
   IFilterToAQL,
   ISortToAQL,
-} from '../../../../shared/interfaces/search-resources.interface';
+} from '../../../../shared/interfaces/queries-resources.interface';
 import {
   FILTER_DEFAULT,
   PAGINATION_DEFAULT,
   SORT_DEFAULT,
 } from '../../../../shared/queries.constant';
+import { QueryParseService } from '../../../../shared/services/query-parse/query-parse.service';
 import { CreateScopeDto } from '../../domain/dto/create-scope.dto';
 import { Scope } from '../../domain/entities/scope.entity';
-import { ICollection, IScope } from '../../domain/interfaces/scope.interfaces';
+import { ICollection } from '../../domain/interfaces/scope.interfaces';
 
 @Injectable()
 export class ScopesRepository {
@@ -24,8 +23,7 @@ export class ScopesRepository {
 
   constructor(
     private readonly arangoService: ArangodbService,
-    private readonly objectToAQL: ObjectToAQL,
-    private readonly inputTransform: InputTransform,
+    private readonly queryParseService: QueryParseService,
   ) {}
 
   async getCollections(): Promise<ICollection[]> {
@@ -48,38 +46,11 @@ export class ScopesRepository {
     }
   }
 
-  async findAnd(filters: IScope): Promise<Scope | null> {
-    const _filters: IFilterToAQL[] = this.inputTransform.resourceToArray(
-      filters,
-      '==',
-      'AND',
-    );
-
+  async find(filters: IFilterToAQL[]): Promise<Scope | null> {
     try {
       const cursor = await this.arangoService.query(aql`
       FOR doc IN ${this.arangoService.collection(this.name)}
-      ${aql.join(this.objectToAQL.filtersToAql(_filters, 'doc'))}
-      RETURN doc
-    `);
-
-      return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
-    } catch (error) {
-      console.log(error);
-      throw new GraphQLError(error);
-    }
-  }
-
-  async findOr(filters: IScope): Promise<Scope | null> {
-    const _filters: IFilterToAQL[] = this.inputTransform.resourceToArray(
-      filters,
-      '==',
-      'OR',
-    );
-
-    try {
-      const cursor = await this.arangoService.query(aql`
-      FOR doc IN ${this.arangoService.collection(this.name)}
-      ${aql.join(this.objectToAQL.filtersToAql(_filters, 'doc'))}
+      ${aql.join(this.queryParseService.filtersToAql(filters, 'doc'))}
       RETURN doc
     `);
 
@@ -99,7 +70,7 @@ export class ScopesRepository {
       const cursor = await this.arangoService.query(aql`
       RETURN COUNT (
         FOR doc IN ${this.arangoService.collection(this.name)}
-        ${aql.join(this.objectToAQL.filtersToAql(filters, 'doc'))}
+        ${aql.join(this.queryParseService.filtersToAql(filters, 'doc'))}
         RETURN doc
       )
     `);
@@ -123,9 +94,9 @@ export class ScopesRepository {
     try {
       const cursor = await this.arangoService.query(aql`
       FOR doc IN ${this.arangoService.collection(this.name)}
-      ${aql.join(this.objectToAQL.filtersToAql(filters, 'doc'))}
-      ${aql.join(this.objectToAQL.sortToAql(sort, 'doc'))}
-      ${this.objectToAQL.paginationToAql(pagination)}
+      ${aql.join(this.queryParseService.filtersToAql(filters, 'doc'))}
+      ${aql.join(this.queryParseService.sortToAql(sort, 'doc'))}
+      ${this.queryParseService.paginationToAql(pagination)}
       RETURN doc
     `);
 

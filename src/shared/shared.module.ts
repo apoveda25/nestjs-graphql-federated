@@ -6,6 +6,7 @@ import { FilterIntInput } from './dto/filter-int.input';
 import { FilterKeyInput } from './dto/filter-key.input';
 import { FilterStringInput } from './dto/filter-string.input';
 import { PaginationInput } from './dto/pagination.input';
+import { QueryParseService } from './services/query-parse/query-parse.service';
 
 @Module({
   providers: [
@@ -16,7 +17,8 @@ import { PaginationInput } from './dto/pagination.input';
     FilterIntInput,
     FilterFloatInput,
     FilterDatetimeInput,
+    QueryParseService,
   ],
-  exports: [],
+  exports: [QueryParseService],
 })
 export class SharedModule {}

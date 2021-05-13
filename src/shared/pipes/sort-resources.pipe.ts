@@ -1,16 +1,16 @@
 import { Injectable, PipeTransform } from '@nestjs/common';
-import { ISortToAQL } from '../interfaces/search-resources.interface';
+import { ISort, ISortToAQL } from '../interfaces/queries-resources.interface';
+import { QueryParseService } from '../services/query-parse/query-parse.service';
 
 @Injectable()
 export class SortResourcesPipe implements PipeTransform {
-  transform(value: Record<string, boolean | string>): ISortToAQL {
-    return this.sortParse(value);
+  constructor(private readonly queryParseService: QueryParseService) {}
+
+  transform(value: ISort): ISortToAQL {
+    return this.parse(value);
   }
 
-  private sortParse(sort: any = {}): ISortToAQL {
-    return {
-      keys: Object.keys(sort).filter((key) => sort[key] === true),
-      sortMode: sort.sortMode,
-    };
+  private parse(sort: ISort): ISortToAQL {
+    return this.queryParseService.parseSort(sort);
   }
 }

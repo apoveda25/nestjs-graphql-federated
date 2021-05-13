@@ -3,7 +3,7 @@ import { PaginationInput } from '../../../../../shared/dto/pagination.input';
 import {
   IFilterToAQL,
   ISortToAQL,
-} from '../../../../../shared/interfaces/search-resources.interface';
+} from '../../../../../shared/interfaces/queries-resources.interface';
 
 export class UsersSearchQuery implements IQuery {
   constructor(

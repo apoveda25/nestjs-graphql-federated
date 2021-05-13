@@ -1,4 +1,4 @@
-import { UsePipes, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import {
   Args,
@@ -17,7 +17,7 @@ import { IContextGraphQL } from '../../../shared/interfaces/context-graphql.inte
 import {
   IFilterToAQL,
   ISortToAQL,
-} from '../../../shared/interfaces/search-resources.interface';
+} from '../../../shared/interfaces/queries-resources.interface';
 import { FiltersResourcesPipe } from '../../../shared/pipes/filters-resources.pipe';
 import { FindResourcePipe } from '../../../shared/pipes/find-resource.pipe';
 import { SortResourcesPipe } from '../../../shared/pipes/sort-resources.pipe';
@@ -56,7 +56,6 @@ export class ScopesResolver {
     );
   }
 
-  @UsePipes(FindResourcePipe)
   @Query(() => Scope, { name: 'scopeFind', nullable: true })
   @Authorization(AuthorizationEnum.scopesFind)
   async find(
@@ -66,10 +65,11 @@ export class ScopesResolver {
         type: () => FindScopeInput,
       },
       new ValidationPipe({ expectedType: FindScopeInput }),
+      FindResourcePipe,
     )
-    findScopeInput: FindScopeInput,
+    filters: IFilterToAQL[],
   ) {
-    return await this.queryBus.execute(new ScopeFindQuery(findScopeInput));
+    return await this.queryBus.execute(new ScopeFindQuery(filters));
   }
 
   @Query(() => [Scope], { name: 'scopesSearch' })

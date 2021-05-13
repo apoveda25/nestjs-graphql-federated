@@ -3,19 +3,17 @@ import { aql } from 'arangojs';
 import { Edge } from 'arangojs/documents';
 import { GraphQLError } from 'graphql';
 import { ArangodbService } from '../../../../arangodb/arangodb.service';
-import { InputTransform } from '../../../../arangodb/providers/input-transform';
-import { ObjectToAQL } from '../../../../arangodb/providers/object-to-aql';
 import { PaginationInput } from '../../../../shared/dto/pagination.input';
-import { IEdgeFilter } from '../../../../shared/interfaces/edge.interface';
 import {
   IFilterToAQL,
   ISortToAQL,
-} from '../../../../shared/interfaces/search-resources.interface';
+} from '../../../../shared/interfaces/queries-resources.interface';
 import {
   FILTER_DEFAULT,
   PAGINATION_DEFAULT,
   SORT_DEFAULT,
 } from '../../../../shared/queries.constant';
+import { QueryParseService } from '../../../../shared/services/query-parse/query-parse.service';
 import { Role } from '../../../roles/domain/entities/role.entity';
 import { Scope } from '../../../scopes/domain/entities/scope.entity';
 import { AddScopesRoleDto } from '../../domain/dto/add-scopes-role.dto';
@@ -29,8 +27,7 @@ export class RolesHasScopeRepository {
 
   constructor(
     private readonly arangoService: ArangodbService,
-    private readonly objectToAQL: ObjectToAQL,
-    private readonly inputTransform: InputTransform,
+    private readonly queryParseService: QueryParseService,
   ) {}
 
   async create(addScopesRoleDto: AddScopesRoleDto[]) {
@@ -84,9 +81,9 @@ export class RolesHasScopeRepository {
       const cursor = await this.arangoService.query(aql`
       WITH ${aql.join(collections)}
       FOR vertex, edge IN OUTBOUND ${parentId} ${collections[0]}
-      ${aql.join(this.objectToAQL.filtersToAql(filters, 'vertex'))}
-      ${aql.join(this.objectToAQL.sortToAql(sort, 'vertex'))}
-      ${this.objectToAQL.paginationToAql(pagination)}
+      ${aql.join(this.queryParseService.filtersToAql(filters, 'vertex'))}
+      ${aql.join(this.queryParseService.sortToAql(sort, 'vertex'))}
+      ${this.queryParseService.paginationToAql(pagination)}
       RETURN vertex
     `);
 
@@ -118,9 +115,9 @@ export class RolesHasScopeRepository {
       const cursor = await this.arangoService.query(aql`
       WITH ${aql.join(collections)}
       FOR vertex, edge IN INBOUND ${parentId} ${collections[0]}
-      ${aql.join(this.objectToAQL.filtersToAql(filters, 'doc'))}
-      ${aql.join(this.objectToAQL.sortToAql(sort, 'doc'))}
-      ${this.objectToAQL.paginationToAql(pagination)}
+      ${aql.join(this.queryParseService.filtersToAql(filters, 'doc'))}
+      ${aql.join(this.queryParseService.sortToAql(sort, 'doc'))}
+      ${this.queryParseService.paginationToAql(pagination)}
       RETURN vertex
     `);
 
@@ -131,17 +128,11 @@ export class RolesHasScopeRepository {
     }
   }
 
-  async findAnd(filters: IEdgeFilter): Promise<Edge | null> {
-    const _filters: IFilterToAQL[] = this.inputTransform.resourceToArray(
-      filters,
-      '==',
-      'AND',
-    );
-
+  async find(filters: IFilterToAQL[]): Promise<Edge | null> {
     try {
       const cursor = await this.arangoService.query(aql`
       FOR doc IN ${this.arangoService.collection(this.name)}
-      ${aql.join(this.objectToAQL.filtersToAql(_filters, 'doc'))}
+      ${aql.join(this.queryParseService.filtersToAql(filters, 'doc'))}
       LIMIT 1
       RETURN doc
     `);
