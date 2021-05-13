@@ -4,6 +4,8 @@ import {
   ICommandHandler,
   QueryBus,
 } from '@nestjs/cqrs';
+import { OperatorBoolean } from 'src/shared/enums/operator-boolean.enum';
+import { QueryParseService } from '../../../../../shared/services/query-parse/query-parse.service';
 import { RoleHasScopeOutQuery } from '../../../../roles-has-scope/application/queries/impl/role-has-scope-out.query';
 import { UserHasRoleInQuery } from '../../../../users-has-role/application/queries/impl/user-has-role-in.query';
 import { Role } from '../../../domain/entities/role.entity';
@@ -19,6 +21,7 @@ export class RolesDeleteCommandHandlers
     private readonly queryBus: QueryBus,
     private readonly eventBus: EventBus,
     private readonly roleModel: RoleModel,
+    private readonly queryParseService: QueryParseService,
   ) {}
 
   async execute({ roles }: RolesDeleteCommand): Promise<Role[]> {
@@ -26,25 +29,20 @@ export class RolesDeleteCommandHandlers
 
     for (const role of roles) {
       const conflictKey = await this.queryBus.execute(
-        new RoleFindQuery({ _key: role._key }),
+        new RoleFindQuery(
+          this.queryParseService.parseOneFilterByKey(
+            { _key: role._key },
+            OperatorBoolean.AND,
+          ),
+        ),
       );
 
       const conflictEdgeOut = await this.queryBus.execute(
-        new RoleHasScopeOutQuery({
-          filters: [],
-          sort: [],
-          pagination: { offset: 0, count: 1 },
-          parentId: role._id,
-        }),
+        new RoleHasScopeOutQuery({ parentId: role._id }),
       );
 
       const conflictEdgeIn = await this.queryBus.execute(
-        new UserHasRoleInQuery({
-          filters: [],
-          sort: [],
-          pagination: { offset: 0, count: 1 },
-          parentId: role._id,
-        }),
+        new UserHasRoleInQuery({ parentId: role._id }),
       );
 
       const roleDeleted = await this.roleModel.delete(role, {

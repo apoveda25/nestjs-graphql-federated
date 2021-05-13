@@ -4,6 +4,8 @@ import {
   ICommandHandler,
   QueryBus,
 } from '@nestjs/cqrs';
+import { OperatorBoolean } from 'src/shared/enums/operator-boolean.enum';
+import { QueryParseService } from '../../../../../shared/services/query-parse/query-parse.service';
 import { RoleFindQuery } from '../../../../roles/application/queries/impl/role-find.query';
 import { UserFindQuery } from '../../../../users/application/queries/impl/user-find.query';
 import { UserChangedRoleEvent } from '../../../domain/events/user-changed-role.event';
@@ -18,15 +20,26 @@ export class UserChangeRoleCommandHandler
     private readonly queryBus: QueryBus,
     private readonly eventBus: EventBus,
     private readonly usersHasRoleModel: UsersHasRoleModel,
+    private readonly queryParseService: QueryParseService,
   ) {}
 
   async execute({ userHasRole }: UserChangeRoleCommand): Promise<boolean> {
     const conflictFrom = await this.queryBus.execute(
-      new UserFindQuery({ _id: userHasRole._from }),
+      new UserFindQuery(
+        this.queryParseService.parseOneFilterByKey(
+          { _id: userHasRole._from },
+          OperatorBoolean.AND,
+        ),
+      ),
     );
 
     const conflictTo = await this.queryBus.execute(
-      new RoleFindQuery({ _id: userHasRole._to }),
+      new RoleFindQuery(
+        this.queryParseService.parseOneFilterByKey(
+          { _id: userHasRole._to },
+          OperatorBoolean.AND,
+        ),
+      ),
     );
 
     const conflictEdge = await this.queryBus.execute(

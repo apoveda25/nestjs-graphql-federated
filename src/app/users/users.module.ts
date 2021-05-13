@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
+import { SharedModule } from '../../shared/shared.module';
 import { UsersCommandHandlers } from './application/commands/handlers/index';
 import { UsersEventHandlers } from './application/events';
 import { UsersQueryHandlers } from './application/queries/handlers/index';
@@ -9,7 +10,7 @@ import { UsersRepository } from './infrastructure/repositories/users.repository'
 import { UsersResolver } from './infrastructure/users.resolver';
 
 @Module({
-  imports: [CqrsModule],
+  imports: [CqrsModule, SharedModule],
   providers: [
     UsersResolver,
     ...UsersQueryHandlers,

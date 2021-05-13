@@ -6,13 +6,11 @@ import {
   IOptionsAsync,
   IOptionsFactory,
 } from './interfaces/module-options.interfaces';
-import { InputTransform } from './providers/input-transform';
-import { ObjectToAQL } from './providers/object-to-aql';
 
 @Global()
 @Module({
-  providers: [ArangodbService, InputTransform, ObjectToAQL],
-  exports: [ArangodbService, InputTransform, ObjectToAQL],
+  providers: [ArangodbService],
+  exports: [ArangodbService],
 })
 export class ArangodbModule {
   static forRoot(options: IOptions = {}): DynamicModule {

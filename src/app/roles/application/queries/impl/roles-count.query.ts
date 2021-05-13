@@ -1,6 +1,6 @@
 import { IQuery } from '@nestjs/cqrs';
-import { IFilterToAQL } from '../../../../../arangodb/providers/object-to-aql.interface';
+import { IFilterToAQL } from '../../../../../shared/interfaces/queries-resources.interface';
 
 export class RolesCountQuery implements IQuery {
-  constructor(public readonly filters: IFilterToAQL[]) {}
+  constructor(public readonly filters?: IFilterToAQL[]) {}
 }

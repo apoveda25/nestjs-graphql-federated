@@ -1,6 +1,6 @@
 import { IQuery } from '@nestjs/cqrs';
-import { FindUserInput } from '../../../domain/dto/find-user.input';
+import { IFilterToAQL } from '../../../../../shared/interfaces/queries-resources.interface';
 
 export class UserFindQuery implements IQuery {
-  constructor(public readonly input: FindUserInput) {}
+  constructor(public readonly input: IFilterToAQL[]) {}
 }

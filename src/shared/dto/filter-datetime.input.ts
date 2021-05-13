@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Field, InputType } from '@nestjs/graphql';
 import { IsDate, IsEnum } from 'class-validator';
-import { ComparisonOperatorDatetime } from '../enums/comparison-operator-datetime.enum';
+import { MatchModeDatetime } from '../enums/match-mode-datetime.enum';
+import { Operators } from '../enums/operators.enum';
 
 @Injectable()
 @InputType()
@@ -10,7 +11,11 @@ export class FilterDatetimeInput {
   @Field(() => Number)
   value: number;
 
-  @IsEnum(ComparisonOperatorDatetime)
-  @Field(() => ComparisonOperatorDatetime)
+  @IsEnum(MatchModeDatetime)
+  @Field(() => MatchModeDatetime)
+  matchMode: string;
+
+  @IsEnum(Operators)
+  @Field(() => Operators)
   operator: string;
 }
