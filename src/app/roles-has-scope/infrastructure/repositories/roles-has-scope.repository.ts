@@ -1,15 +1,21 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { aql } from 'arangojs';
 import { Edge } from 'arangojs/documents';
+import { GraphQLError } from 'graphql';
 import { ArangodbService } from '../../../../arangodb/arangodb.service';
 import { InputTransform } from '../../../../arangodb/providers/input-transform';
 import { ObjectToAQL } from '../../../../arangodb/providers/object-to-aql';
+import { PaginationInput } from '../../../../shared/dto/pagination.input';
+import { IEdgeFilter } from '../../../../shared/interfaces/edge.interface';
 import {
   IFilterToAQL,
   ISortToAQL,
-} from '../../../../arangodb/providers/object-to-aql.interface';
-import { PaginationInput } from '../../../../shared/dto/pagination.input';
-import { IEdgeFilter } from '../../../../shared/interfaces/edge.interface';
+} from '../../../../shared/interfaces/search-resources.interface';
+import {
+  FILTER_DEFAULT,
+  PAGINATION_DEFAULT,
+  SORT_DEFAULT,
+} from '../../../../shared/queries.constant';
 import { Role } from '../../../roles/domain/entities/role.entity';
 import { Scope } from '../../../scopes/domain/entities/scope.entity';
 import { AddScopesRoleDto } from '../../domain/dto/add-scopes-role.dto';
@@ -37,7 +43,7 @@ export class RolesHasScopeRepository {
       return await cursor.map((doc) => doc);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
@@ -53,20 +59,20 @@ export class RolesHasScopeRepository {
       return await cursor.map((doc) => doc);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
   async searchOut({
-    filters,
-    sort,
-    pagination,
     parentId,
+    filters = FILTER_DEFAULT,
+    sort = SORT_DEFAULT,
+    pagination = PAGINATION_DEFAULT,
   }: {
-    filters: IFilterToAQL[];
-    sort: ISortToAQL[];
-    pagination: PaginationInput;
     parentId: string;
+    filters?: IFilterToAQL[];
+    sort?: ISortToAQL;
+    pagination?: PaginationInput;
   }): Promise<Scope[]> {
     const collections = [
       this.name,
@@ -87,20 +93,20 @@ export class RolesHasScopeRepository {
       return await cursor.map((el) => el);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
   async searchIn({
-    filters,
-    sort,
-    pagination,
     parentId,
+    filters = FILTER_DEFAULT,
+    sort = SORT_DEFAULT,
+    pagination = PAGINATION_DEFAULT,
   }: {
-    filters: IFilterToAQL[];
-    sort: ISortToAQL[];
-    pagination: PaginationInput;
     parentId: string;
+    filters?: IFilterToAQL[];
+    sort?: ISortToAQL;
+    pagination?: PaginationInput;
   }): Promise<Role[]> {
     const collections = [
       this.name,
@@ -121,7 +127,7 @@ export class RolesHasScopeRepository {
       return await cursor.map((el) => el);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
@@ -143,7 +149,7 @@ export class RolesHasScopeRepository {
       return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 }

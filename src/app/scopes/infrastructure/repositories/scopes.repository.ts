@@ -1,13 +1,14 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { aql } from 'arangojs/aql';
+import { GraphQLError } from 'graphql';
 import { ArangodbService } from '../../../../arangodb/arangodb.service';
 import { InputTransform } from '../../../../arangodb/providers/input-transform';
 import { ObjectToAQL } from '../../../../arangodb/providers/object-to-aql';
+import { PaginationInput } from '../../../../shared/dto/pagination.input';
 import {
   IFilterToAQL,
   ISortToAQL,
-} from '../../../../arangodb/providers/object-to-aql.interface';
-import { PaginationInput } from '../../../../shared/dto/pagination.input';
+} from '../../../../shared/interfaces/search-resources.interface';
 import {
   FILTER_DEFAULT,
   PAGINATION_DEFAULT,
@@ -43,7 +44,7 @@ export class ScopesRepository {
       return await cursor.map((doc) => doc);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
@@ -64,7 +65,7 @@ export class ScopesRepository {
       return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
@@ -85,7 +86,7 @@ export class ScopesRepository {
       return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
@@ -106,7 +107,7 @@ export class ScopesRepository {
       return await cursor.reduce((acc: any, cur: any) => cur || acc, 0);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
@@ -116,7 +117,7 @@ export class ScopesRepository {
     pagination = PAGINATION_DEFAULT,
   }: {
     filters?: IFilterToAQL[];
-    sort?: ISortToAQL[];
+    sort?: ISortToAQL;
     pagination?: PaginationInput;
   }): Promise<Scope[]> {
     try {
@@ -131,7 +132,7 @@ export class ScopesRepository {
       return await cursor.map((doc) => doc);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 }

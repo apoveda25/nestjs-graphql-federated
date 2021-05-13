@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { aql, GeneratedAqlQuery } from 'arangojs/aql';
 import {
-  IContextFilterFirst,
-  IContextFilterLast,
-  IContextSort,
   IFilterToAQL,
   IPagination,
   ISortToAQL,
-} from './object-to-aql.interface';
+} from '../../shared/interfaces/search-resources.interface';
+import {
+  IContextFilterFirst,
+  IContextFilterLast,
+} from '../interfaces/object-to-aql.interface';
 
 @Injectable()
 export class ObjectToAQL {
@@ -15,48 +16,42 @@ export class ObjectToAQL {
     filters: IFilterToAQL[],
     node: string,
   ): GeneratedAqlQuery[] {
-    return filters.map(({ separator, key, operator, value }, index) =>
+    return filters.map(({ key, matchMode, value, operator }, index) =>
       index
-        ? this.aqlLastFilter({ node, separator, key, operator, value })
-        : this.aqlFirstFilter({ node, key, operator, value }),
+        ? this.aqlLastFilter({ node, operator, key, matchMode, value })
+        : this.aqlFirstFilter({ node, operator, key, matchMode, value }),
     );
   }
 
-  public sortToAql(sort: ISortToAQL[], node: string): GeneratedAqlQuery[] {
-    return sort.map((el, index) => {
-      return index
-        ? this.aqlLastSort({ ...el, node })
-        : this.aqlFirstSort({ ...el, node });
-    });
+  public sortToAql(sort: ISortToAQL, node: string): GeneratedAqlQuery[] {
+    if (!sort.keys.length) return [];
+
+    const keysSorting = sort.keys.map((key) => `${node}.${key}`).join(',');
+
+    return [
+      aql`SORT ${aql.literal(keysSorting)} ${aql.literal(sort.sortMode)}`,
+    ];
   }
 
   public paginationToAql({ offset, count }: IPagination): GeneratedAqlQuery {
     return aql`LIMIT ${offset}, ${count}`;
   }
 
-  private aqlFirstFilter({ node, key, operator, value }: IContextFilterFirst) {
+  private aqlFirstFilter({ node, key, matchMode, value }: IContextFilterFirst) {
     return aql`FILTER ${aql.literal(node)}.${aql.literal(key)} ${aql.literal(
-      operator,
+      matchMode,
     )} ${value} `;
   }
 
   private aqlLastFilter({
     node,
-    separator,
-    key,
     operator,
+    key,
+    matchMode,
     value,
   }: IContextFilterLast) {
-    return aql` ${aql.literal(separator)} ${aql.literal(node)}.${aql.literal(
+    return aql` ${aql.literal(operator)} ${aql.literal(node)}.${aql.literal(
       key,
-    )} ${aql.literal(operator)} ${value} `;
-  }
-
-  private aqlFirstSort({ node, value }: IContextSort) {
-    return aql`SORT ${aql.literal(node)}.${value}`;
-  }
-
-  private aqlLastSort({ node, value, sorting }: IContextSort) {
-    return sorting ? aql` ${value}` : aql`, ${aql.literal(node)}.${value}`;
+    )} ${aql.literal(matchMode)} ${value} `;
   }
 }

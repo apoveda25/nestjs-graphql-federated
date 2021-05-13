@@ -10,15 +10,15 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { AuthorizationEnum } from 'src/shared/enums/authorization';
+import { Authorization } from '../../../shared/decorators/authorization.decorator';
+import { PaginationInput } from '../../../shared/dto/pagination.input';
 import {
   IFilterToAQL,
   ISortToAQL,
-} from '../../../arangodb/providers/object-to-aql.interface';
-import { Authorization } from '../../../shared/decorators/authorization.decorator';
-import { PaginationInput } from '../../../shared/dto/pagination.input';
-import { CountResourcesPipe } from '../../../shared/pipes/count-resources.pipe';
+} from '../../../shared/interfaces/search-resources.interface';
+import { FiltersResourcesPipe } from '../../../shared/pipes/filters-resources.pipe';
 import { FindResourcePipe } from '../../../shared/pipes/find-resource.pipe';
-import { SearchResourcesPipe } from '../../../shared/pipes/search-resources.pipe';
+import { SortResourcesPipe } from '../../../shared/pipes/sort-resources.pipe';
 import {
   FILTER_DEFAULT,
   PAGINATION_DEFAULT,
@@ -103,21 +103,28 @@ export class UsersResolver {
     return await this.queryBus.execute(new UserFindQuery(findUserInput));
   }
 
-  @UsePipes(SearchResourcesPipe)
   @Query(() => [User], { name: 'usersSearch' })
   @Authorization(AuthorizationEnum.usersSearch)
   async search(
-    @Args('filters', {
-      type: () => FilterUserInput,
-      nullable: true,
-    })
+    @Args(
+      'filters',
+      {
+        type: () => FilterUserInput,
+        nullable: true,
+      },
+      FiltersResourcesPipe,
+    )
     filters: IFilterToAQL[] = FILTER_DEFAULT,
 
-    @Args('sort', {
-      type: () => SortRoleInput,
-      nullable: true,
-    })
-    sort: ISortToAQL[] = SORT_DEFAULT,
+    @Args(
+      'sort',
+      {
+        type: () => SortRoleInput,
+        nullable: true,
+      },
+      SortResourcesPipe,
+    )
+    sort: ISortToAQL = SORT_DEFAULT,
 
     @Args('pagination', {
       type: () => PaginationInput,
@@ -130,14 +137,17 @@ export class UsersResolver {
     );
   }
 
-  @UsePipes(CountResourcesPipe)
   @Query(() => Int, { name: 'usersCount' })
   @Authorization(AuthorizationEnum.usersCount)
   async count(
-    @Args('filters', {
-      type: () => FilterUserInput,
-      nullable: true,
-    })
+    @Args(
+      'filters',
+      {
+        type: () => FilterUserInput,
+        nullable: true,
+      },
+      FiltersResourcesPipe,
+    )
     filters: IFilterToAQL[] = FILTER_DEFAULT,
   ) {
     return await this.queryBus.execute(new UsersCountQuery(filters));

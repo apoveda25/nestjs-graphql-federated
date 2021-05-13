@@ -1,10 +1,10 @@
 import { IQuery } from '@nestjs/cqrs';
-import { IFilterToAQL } from '../../../../../arangodb/providers/object-to-aql.interface';
+import { IFilterToAQL } from '../../../../../shared/interfaces/search-resources.interface';
 
 export class ScopesCountQuery implements IQuery {
   constructor(
     public readonly input: {
-      filters: IFilterToAQL[];
+      filters?: IFilterToAQL[];
     },
   ) {}
 }

@@ -1,17 +1,17 @@
 import { IQuery } from '@nestjs/cqrs';
+import { PaginationInput } from '../../../../../shared/dto/pagination.input';
 import {
   IFilterToAQL,
   ISortToAQL,
-} from '../../../../../arangodb/providers/object-to-aql.interface';
-import { PaginationInput } from '../../../../../shared/dto/pagination.input';
+} from '../../../../../shared/interfaces/search-resources.interface';
 
 export class UserHasRoleInQuery implements IQuery {
   constructor(
     public readonly input: {
-      filters: IFilterToAQL[];
-      sort: ISortToAQL[];
-      pagination: PaginationInput;
       parentId: string;
+      filters?: IFilterToAQL[];
+      sort?: ISortToAQL;
+      pagination?: PaginationInput;
     },
   ) {}
 }

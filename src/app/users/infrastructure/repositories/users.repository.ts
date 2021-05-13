@@ -1,13 +1,19 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { aql } from 'arangojs/aql';
+import { GraphQLError } from 'graphql';
 import { ArangodbService } from '../../../../arangodb/arangodb.service';
 import { InputTransform } from '../../../../arangodb/providers/input-transform';
 import { ObjectToAQL } from '../../../../arangodb/providers/object-to-aql';
+import { PaginationInput } from '../../../../shared/dto/pagination.input';
 import {
   IFilterToAQL,
   ISortToAQL,
-} from '../../../../arangodb/providers/object-to-aql.interface';
-import { PaginationInput } from '../../../../shared/dto/pagination.input';
+} from '../../../../shared/interfaces/search-resources.interface';
+import {
+  FILTER_DEFAULT,
+  PAGINATION_DEFAULT,
+  SORT_DEFAULT,
+} from '../../../../shared/queries.constant';
 import { FindUserInput } from '../../domain/dto/find-user.input';
 import { User } from '../../domain/entities/user.entity';
 
@@ -30,7 +36,7 @@ export class UsersRepository {
       return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
@@ -44,7 +50,7 @@ export class UsersRepository {
       return await cursor.map((user) => user);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
@@ -66,18 +72,18 @@ export class UsersRepository {
       return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
   async search({
-    filters,
-    sort,
-    pagination,
+    filters = FILTER_DEFAULT,
+    sort = SORT_DEFAULT,
+    pagination = PAGINATION_DEFAULT,
   }: {
-    filters: IFilterToAQL[];
-    sort: ISortToAQL[];
-    pagination: PaginationInput;
+    filters?: IFilterToAQL[];
+    sort?: ISortToAQL;
+    pagination?: PaginationInput;
   }): Promise<User[]> {
     const cursor = await this.arangoService.query(aql`
       FOR doc IN ${this.arangoService.collection(this.name)}
@@ -90,7 +96,11 @@ export class UsersRepository {
     return await cursor.map((el) => el);
   }
 
-  async count(filters: IFilterToAQL[]): Promise<number> {
+  async count({
+    filters = FILTER_DEFAULT,
+  }: {
+    filters?: IFilterToAQL[];
+  }): Promise<number> {
     const cursor = await this.arangoService.query(aql`
       RETURN COUNT(
         FOR doc IN ${this.arangoService.collection(this.name)}

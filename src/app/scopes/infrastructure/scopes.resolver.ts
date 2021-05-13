@@ -10,17 +10,17 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import {
-  IFilterToAQL,
-  ISortToAQL,
-} from '../../../arangodb/providers/object-to-aql.interface';
 import { Authorization } from '../../../shared/decorators/authorization.decorator';
 import { PaginationInput } from '../../../shared/dto/pagination.input';
 import { AuthorizationEnum } from '../../../shared/enums/authorization';
 import { IContextGraphQL } from '../../../shared/interfaces/context-graphql.interface';
-import { CountResourcesPipe } from '../../../shared/pipes/count-resources.pipe';
+import {
+  IFilterToAQL,
+  ISortToAQL,
+} from '../../../shared/interfaces/search-resources.interface';
+import { FiltersResourcesPipe } from '../../../shared/pipes/filters-resources.pipe';
 import { FindResourcePipe } from '../../../shared/pipes/find-resource.pipe';
-import { SearchResourcesPipe } from '../../../shared/pipes/search-resources.pipe';
+import { SortResourcesPipe } from '../../../shared/pipes/sort-resources.pipe';
 import {
   FILTER_DEFAULT,
   PAGINATION_DEFAULT,
@@ -72,21 +72,28 @@ export class ScopesResolver {
     return await this.queryBus.execute(new ScopeFindQuery(findScopeInput));
   }
 
-  @UsePipes(SearchResourcesPipe)
   @Query(() => [Scope], { name: 'scopesSearch' })
   @Authorization(AuthorizationEnum.scopesSearch)
   async search(
-    @Args('filters', {
-      type: () => FilterScopeInput,
-      nullable: true,
-    })
+    @Args(
+      'filters',
+      {
+        type: () => FilterScopeInput,
+        nullable: true,
+      },
+      FiltersResourcesPipe,
+    )
     filters: IFilterToAQL[] = FILTER_DEFAULT,
 
-    @Args('sort', {
-      type: () => SortScopeInput,
-      nullable: true,
-    })
-    sort: ISortToAQL[] = SORT_DEFAULT,
+    @Args(
+      'sort',
+      {
+        type: () => SortScopeInput,
+        nullable: true,
+      },
+      SortResourcesPipe,
+    )
+    sort: ISortToAQL = SORT_DEFAULT,
 
     @Args('pagination', {
       type: () => PaginationInput,
@@ -99,36 +106,46 @@ export class ScopesResolver {
     );
   }
 
-  @UsePipes(CountResourcesPipe)
   @Query(() => Int, { name: 'scopesCount' })
   @Authorization(AuthorizationEnum.scopesCount)
   async count(
-    @Args('filters', {
-      type: () => FilterScopeInput,
-      nullable: true,
-    })
+    @Args(
+      'filters',
+      {
+        type: () => FilterScopeInput,
+        nullable: true,
+      },
+      FiltersResourcesPipe,
+    )
     filters: IFilterToAQL[] = FILTER_DEFAULT,
   ) {
     return await this.queryBus.execute(new ScopesCountQuery({ filters }));
   }
 
-  @UsePipes(SearchResourcesPipe)
   @ResolveField()
   @Authorization(AuthorizationEnum.rolesHasScopeRead)
   async roles(
     @Parent() { _id }: Role,
 
-    @Args('filters', {
-      type: () => FilterRoleInput,
-      nullable: true,
-    })
+    @Args(
+      'filters',
+      {
+        type: () => FilterRoleInput,
+        nullable: true,
+      },
+      FiltersResourcesPipe,
+    )
     filters: IFilterToAQL[] = FILTER_DEFAULT,
 
-    @Args('sort', {
-      type: () => SortRoleInput,
-      nullable: true,
-    })
-    sort: ISortToAQL[] = SORT_DEFAULT,
+    @Args(
+      'sort',
+      {
+        type: () => SortRoleInput,
+        nullable: true,
+      },
+      SortResourcesPipe,
+    )
+    sort: ISortToAQL = SORT_DEFAULT,
 
     @Args('pagination', {
       type: () => PaginationInput,

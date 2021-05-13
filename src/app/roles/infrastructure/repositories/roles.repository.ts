@@ -1,17 +1,23 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { aql } from 'arangojs/aql';
+import { GraphQLError } from 'graphql';
 import { ArangodbService } from '../../../../arangodb/arangodb.service';
 import { InputTransform } from '../../../../arangodb/providers/input-transform';
 import { ObjectToAQL } from '../../../../arangodb/providers/object-to-aql';
-import {
-  IFilterToAQL,
-  ISortToAQL,
-} from '../../../../arangodb/providers/object-to-aql.interface';
 import { PaginationInput } from '../../../../shared/dto/pagination.input';
 import {
   IEdge,
   IEdgeSearchInput,
 } from '../../../../shared/interfaces/edge.interface';
+import {
+  IFilterToAQL,
+  ISortToAQL,
+} from '../../../../shared/interfaces/search-resources.interface';
+import {
+  FILTER_DEFAULT,
+  PAGINATION_DEFAULT,
+  SORT_DEFAULT,
+} from '../../../../shared/queries.constant';
 import { CreateRoleDto } from '../../domain/dto/create-role.dto';
 import { DeleteRoleDto } from '../../domain/dto/delete-role.dto';
 import { FindRoleInput } from '../../domain/dto/find-role.input';
@@ -37,7 +43,7 @@ export class RolesRepository {
       return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
@@ -51,7 +57,7 @@ export class RolesRepository {
       return await cursor.map((doc) => doc);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
@@ -65,7 +71,7 @@ export class RolesRepository {
       return await cursor.map((doc) => doc);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
@@ -87,7 +93,7 @@ export class RolesRepository {
       return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
@@ -109,18 +115,18 @@ export class RolesRepository {
       return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
   async search({
-    filters,
-    sort,
-    pagination,
+    filters = FILTER_DEFAULT,
+    sort = SORT_DEFAULT,
+    pagination = PAGINATION_DEFAULT,
   }: {
-    filters: IFilterToAQL[];
-    sort: ISortToAQL[];
-    pagination: PaginationInput;
+    filters?: IFilterToAQL[];
+    sort?: ISortToAQL;
+    pagination?: PaginationInput;
   }): Promise<Role[]> {
     try {
       const cursor = await this.arangoService.query(aql`
@@ -134,11 +140,15 @@ export class RolesRepository {
       return await cursor.map((el) => el);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
-  async count(filters: IFilterToAQL[]): Promise<number> {
+  async count({
+    filters = FILTER_DEFAULT,
+  }: {
+    filters?: IFilterToAQL[];
+  }): Promise<number> {
     try {
       const cursor = await this.arangoService.query(aql`
       RETURN COUNT(
@@ -151,7 +161,7 @@ export class RolesRepository {
       return await cursor.reduce((acc: number, cur: number) => acc + cur, 0);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 
@@ -176,7 +186,7 @@ export class RolesRepository {
       return await cursor.map((el) => el);
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw new GraphQLError(error);
     }
   }
 }

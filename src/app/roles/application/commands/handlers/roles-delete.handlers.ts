@@ -30,21 +30,11 @@ export class RolesDeleteCommandHandlers
       );
 
       const conflictEdgeOut = await this.queryBus.execute(
-        new RoleHasScopeOutQuery({
-          filters: [],
-          sort: [],
-          pagination: { offset: 0, count: 1 },
-          parentId: role._id,
-        }),
+        new RoleHasScopeOutQuery({ parentId: role._id }),
       );
 
       const conflictEdgeIn = await this.queryBus.execute(
-        new UserHasRoleInQuery({
-          filters: [],
-          sort: [],
-          pagination: { offset: 0, count: 1 },
-          parentId: role._id,
-        }),
+        new UserHasRoleInQuery({ parentId: role._id }),
       );
 
       const roleDeleted = await this.roleModel.delete(role, {

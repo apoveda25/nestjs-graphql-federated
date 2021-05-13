@@ -3,7 +3,6 @@ import { FilterBooleanInput } from '../../../../shared/dto/filter-boolean.input'
 import { FilterIntInput } from '../../../../shared/dto/filter-int.input';
 import { FilterKeyInput } from '../../../../shared/dto/filter-key.input';
 import { FilterStringInput } from '../../../../shared/dto/filter-string.input';
-import { OperatorBoolean } from '../../../../shared/enums/operator-boolean.enum';
 
 @InputType()
 export class FilterUserInput {
@@ -51,7 +50,4 @@ export class FilterUserInput {
 
   @Field(() => [FilterIntInput], { nullable: true })
   updatedAt?: FilterIntInput[];
-
-  @Field(() => OperatorBoolean)
-  separator: OperatorBoolean;
 }
