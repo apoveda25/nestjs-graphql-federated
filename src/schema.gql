@@ -2,25 +2,21 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-# directive @extends on INTERFACE | OBJECT
+directive @extends on INTERFACE | OBJECT
 
-# directive @external on FIELD_DEFINITION | OBJECT
+directive @external on FIELD_DEFINITION | OBJECT
 
-# directive @key(fields: String!) on INTERFACE | OBJECT
+directive @key(fields: String!) on INTERFACE | OBJECT
 
-# directive @provides(fields: String!) on FIELD_DEFINITION
+directive @provides(fields: String!) on FIELD_DEFINITION
 
-# directive @requires(fields: String!) on FIELD_DEFINITION
+directive @requires(fields: String!) on FIELD_DEFINITION
 
 input AddScopesRoleInput {
-  """
-  Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   roleId: ID!
 
-  """
-  Example field (Scopes/20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (Scopes/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   scopesId: [ID!]!
 }
 
@@ -30,95 +26,61 @@ type Auth {
 }
 
 input ChangeRoleUserInput {
-  """
-  Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   roleId: ID!
 
-  """
-  Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   userId: ID!
 }
 
 input CreateRoleInput {
-  """
-  Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   _key: ID!
 
-  """
-  Example field (true)
-  """
+  """Example field (true)"""
   active: Boolean = true
 
-  """
-  Example field (description)
-  """
+  """Example field (description)"""
   description: String = ""
 
-  """
-  Example field (name)
-  """
+  """Example field (name)"""
   name: String!
 }
 
 input CreateUserInput {
-  """
-  Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   _key: ID!
 
-  """
-  Example field (1620911457187)
-  """
+  """Example field (1621115493676)"""
   birthday: Float = 0
 
-  """
-  Example field (email@email.com)
-  """
+  """Example field (email@email.com)"""
   email: String!
 
-  """
-  Example field (MALE | FEMALE | UNDEFINED)
-  """
+  """Example field (MALE | FEMALE | UNDEFINED)"""
   gender: Gender = UNDEFINED
 
-  """
-  Example field (name)
-  """
+  """Example field (name)"""
   name: String = ""
 
-  """
-  Example field (secret123456)
-  """
+  """Example field (secret123456)"""
   password: String!
 
-  """
-  Example field (prefix)
-  """
+  """Example field (prefix)"""
   prefix: String = ""
 
-  """
-  Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   roleId: ID!
 
-  """
-  Example field (surname)
-  """
+  """Example field (surname)"""
   surname: String = ""
 
-  """
-  Example field (username)
-  """
+  """Example field (username)"""
   username: String!
 }
 
 input DeleteRoleInput {
-  """
-  Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   _key: ID!
 }
 
@@ -188,113 +150,71 @@ input FilterUserInput {
 }
 
 input FindRoleInput {
-  """
-  Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   _id: ID
 
-  """
-  Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   _key: ID
 
-  """
-  Example field (true)
-  """
+  """Example field (true)"""
   active: Boolean
 
-  """
-  Example field (true)
-  """
+  """Example field (true)"""
   default: Boolean
 
-  """
-  Example field (description)
-  """
+  """Example field (description)"""
   description: String
 
-  """
-  Example field (name)
-  """
+  """Example field (name)"""
   name: String
 }
 
 input FindScopeInput {
-  """
-  Example field (Scopes/20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (Scopes/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   _id: ID
 
-  """
-  Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   _key: ID
 
-  """
-  Example field (CREATE | UPDATE | DELETE | FIND | SEARCH | COUNT)
-  """
+  """Example field (CREATE | UPDATE | DELETE | FIND | SEARCH | COUNT)"""
   action: ScopeAction
 
-  """
-  Example field (Scopes)
-  """
+  """Example field (Scopes)"""
   collection: String
 
-  """
-  Example field (scopes_find)
-  """
+  """Example field (scopes_find)"""
   name: String
 }
 
 input FindUserInput {
-  """
-  Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   _id: ID
 
-  """
-  Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   _key: ID
 
-  """
-  Example field (true)
-  """
+  """Example field (true)"""
   active: Boolean
 
-  """
-  Example field (1620911457189)
-  """
+  """Example field (1621115493676)"""
   birthday: Float
 
-  """
-  Example field (email@email.com)
-  """
+  """Example field (email@email.com)"""
   email: String
 
-  """
-  Example field (true)
-  """
+  """Example field (true)"""
   emailActive: Boolean
 
-  """
-  Example field (MALE | FEMALE)
-  """
+  """Example field (MALE | FEMALE)"""
   gender: String
 
-  """
-  Example field (name)
-  """
+  """Example field (name)"""
   name: String
 
-  """
-  Example field (surname)
-  """
+  """Example field (surname)"""
   surname: String
 
-  """
-  Example field (username)
-  """
+  """Example field (username)"""
   username: String
 }
 
@@ -304,25 +224,19 @@ enum Gender {
   UNDEFINED
 }
 
-"""
-Match mode for boolean values.
-"""
+"""Match mode for boolean values."""
 enum MatchModeBoolean {
   DISTINCT
   EQUAL
 }
 
-"""
-Match mode for ID values.
-"""
+"""Match mode for ID values."""
 enum MatchModeID {
   DISTINCT
   EQUAL
 }
 
-"""
-Match mode for number values.
-"""
+"""Match mode for number values."""
 enum MatchModeNumber {
   DISTINCT
   EQUAL
@@ -332,9 +246,7 @@ enum MatchModeNumber {
   LESS_EQUAL
 }
 
-"""
-Match mode for string values.
-"""
+"""Match mode for string values."""
 enum MatchModeString {
   DISTINCT
   EQUAL
@@ -363,9 +275,7 @@ type Mutation {
   usersUpdate(users: [UpdateUserInput!]!): [User!]!
 }
 
-"""
-Support for operators.
-"""
+"""Support for operators."""
 enum Operators {
   AND
   OR
@@ -379,150 +289,84 @@ input PaginationInput {
 type Query {
   roleFind(filters: FindRoleInput!): Role!
   rolesCount(filters: FilterRoleInput): Int!
-  rolesSearch(
-    filters: FilterRoleInput
-    pagination: PaginationInput
-    sort: SortRoleInput
-  ): [Role!]!
+  rolesSearch(filters: FilterRoleInput, pagination: PaginationInput, sort: SortRoleInput): [Role!]!
   scopeFind(find: FindScopeInput!): Scope
   scopesCount(filters: FilterScopeInput): Int!
-  scopesSearch(
-    filters: FilterScopeInput
-    pagination: PaginationInput
-    sort: SortScopeInput
-  ): [Scope!]!
+  scopesSearch(filters: FilterScopeInput, pagination: PaginationInput, sort: SortScopeInput): [Scope!]!
   userFind(filters: FindUserInput!): User
   usersCount(filters: FilterUserInput): Int!
-  usersSearch(
-    filters: FilterUserInput
-    pagination: PaginationInput
-    sort: SortRoleInput
-  ): [User!]!
+  usersSearch(filters: FilterUserInput, pagination: PaginationInput, sort: SortRoleInput): [User!]!
 }
 
 input RemoveScopesRoleInput {
-  """
-  Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   roleId: ID!
 
-  """
-  Example field (Scopes/20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (Scopes/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   scopesId: [ID!]!
 }
 
 type Role {
-  """
-  Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   _id: ID!
 
-  """
-  Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   _key: ID!
 
-  """
-  Example field (true)
-  """
+  """Example field (true)"""
   active: Boolean!
 
-  """
-  Example field (1620911457063)
-  """
+  """Example field (1621115493589)"""
   createdAt: Int!
 
-  """
-  Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   createdBy: String!
 
-  """
-  Example field (false)
-  """
+  """Example field (false)"""
   default: Boolean!
 
-  """
-  Example field (description)
-  """
+  """Example field (description)"""
   description: String!
 
-  """
-  Example field (name)
-  """
+  """Example field (name)"""
   name: String!
-  scopes(
-    filters: FilterScopeInput
-    pagination: PaginationInput
-    sort: SortScopeInput
-  ): [Scope!]!
+  scopes(filters: FilterScopeInput, pagination: PaginationInput, sort: SortScopeInput): [Scope!]!
 
-  """
-  Example field (1620911457063)
-  """
+  """Example field (1621115493589)"""
   updatedAt: Int!
 
-  """
-  Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   updatedBy: String!
-  users(
-    filters: FilterUserInput
-    pagination: PaginationInput
-    sort: SortUserInput
-  ): [User!]!
+  users(filters: FilterUserInput, pagination: PaginationInput, sort: SortUserInput): [User!]!
 }
 
 type Scope {
-  """
-  Example field (Scopes/f7053c3c-51ec-4f23-b970-156e11e2bff3)
-  """
+  """Example field (Scopes/f7053c3c-51ec-4f23-b970-156e11e2bff3)"""
   _id: ID!
 
-  """
-  Example field (f7053c3c-51ec-4f23-b970-156e11e2bff3)
-  """
+  """Example field (f7053c3c-51ec-4f23-b970-156e11e2bff3)"""
   _key: ID!
 
-  """
-  Example field (CREATE)
-  """
+  """Example field (CREATE)"""
   action: String!
 
-  """
-  Example field (Scopes)
-  """
+  """Example field (Scopes)"""
   collection: String!
 
-  """
-  Example field (1617105326902)
-  """
+  """Example field (1617105326902)"""
   createdAt: Float!
 
-  """
-  Example field (Users/3592b39d-0b79-45dc-a6d0-c8ba815cf350)
-  """
+  """Example field (Users/3592b39d-0b79-45dc-a6d0-c8ba815cf350)"""
   createdBy: String!
 
-  """
-  Example field (scopes_create)
-  """
+  """Example field (scopes_create)"""
   name: String!
-  roles(
-    filters: FilterRoleInput
-    pagination: PaginationInput
-    sort: SortRoleInput
-  ): [Role!]!
+  roles(filters: FilterRoleInput, pagination: PaginationInput, sort: SortRoleInput): [Role!]!
 
-  """
-  Example field (1617105326902)
-  """
+  """Example field (1617105326902)"""
   updatedAt: Float!
 
-  """
-  Example field (Users/3592b39d-0b79-45dc-a6d0-c8ba815cf350)
-  """
+  """Example field (Users/3592b39d-0b79-45dc-a6d0-c8ba815cf350)"""
   updatedBy: String!
 }
 
@@ -547,9 +391,7 @@ input SignUpAuthInput {
   username: String!
 }
 
-"""
-Sort mode support.
-"""
+"""Sort mode support."""
 enum SortMode {
   ASC
   DESC
@@ -600,163 +442,101 @@ input SortUserInput {
 }
 
 input UpdateRoleInput {
-  """
-  Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   _key: ID!
 
-  """
-  Example field (true)
-  """
+  """Example field (true)"""
   active: Boolean
 
-  """
-  Example field (true)
-  """
+  """Example field (true)"""
   default: Boolean
 
-  """
-  Example field (description)
-  """
+  """Example field (description)"""
   description: String
 
-  """
-  Example field (name)
-  """
+  """Example field (name)"""
   name: String
 }
 
 input UpdateUserInput {
-  """
-  Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   _key: ID!
 
-  """
-  Example field (true)
-  """
+  """Example field (true)"""
   active: Boolean
 
-  """
-  Example field (1620911457190)
-  """
+  """Example field (1621115493678)"""
   birthday: Float
 
-  """
-  Example field (email@email.com)
-  """
+  """Example field (email@email.com)"""
   email: String
 
-  """
-  Example field (MALE | FEMALE | UNDEFINED)
-  """
+  """Example field (MALE | FEMALE | UNDEFINED)"""
   gender: Gender
 
-  """
-  Example field (name)
-  """
+  """Example field (name)"""
   name: String
 
-  """
-  Example field (prefix)
-  """
+  """Example field (prefix)"""
   prefix: String
 
-  """
-  Example field (surname)
-  """
+  """Example field (surname)"""
   surname: String
 
-  """
-  Example field (prefix)
-  """
+  """Example field (prefix)"""
   urlImage: String
 
-  """
-  Example field (username)
-  """
+  """Example field (username)"""
   username: String
 }
 
 type User {
-  """
-  Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   _id: ID!
 
-  """
-  Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   _key: ID!
 
-  """
-  Example field (true)
-  """
+  """Example field (true)"""
   active: Boolean!
 
-  """
-  Example field (1620911457064)
-  """
+  """Example field (1621115493590)"""
   birthday: Float!
 
-  """
-  Example field (1620911457064)
-  """
+  """Example field (1621115493590)"""
   createdAt: Float!
 
-  """
-  Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   createdBy: String!
 
-  """
-  Example field (email@email.com)
-  """
+  """Example field (email@email.com)"""
   email: String!
 
-  """
-  Example field (true)
-  """
+  """Example field (true)"""
   emailActive: Boolean!
 
-  """
-  Example field (MALE | FEMALE | UNDEFINED)
-  """
+  """Example field (MALE | FEMALE | UNDEFINED)"""
   gender: String!
 
-  """
-  Example field (name)
-  """
+  """Example field (name)"""
   name: String!
 
-  """
-  Example field (prefix)
-  """
+  """Example field (prefix)"""
   prefix: String!
   role: Role!
 
-  """
-  Example field (surname)
-  """
+  """Example field (surname)"""
   surname: String!
 
-  """
-  Example field (1620911457064)
-  """
+  """Example field (1621115493590)"""
   updatedAt: Float!
 
-  """
-  Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)
-  """
+  """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   updatedBy: String!
 
-  """
-  Example field (https://domian.com)
-  """
+  """Example field (https://domian.com)"""
   urlImage: String!
 
-  """
-  Example field (username)
-  """
+  """Example field (username)"""
   username: String!
 }
