@@ -51,7 +51,7 @@ input CreateUserInput {
   """Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   _key: ID!
 
-  """Example field (1621115493676)"""
+  """Example field (1621136977048)"""
   birthday: Float = 0
 
   """Example field (email@email.com)"""
@@ -196,7 +196,7 @@ input FindUserInput {
   """Example field (true)"""
   active: Boolean
 
-  """Example field (1621115493676)"""
+  """Example field (1621136977048)"""
   birthday: Float
 
   """Example field (email@email.com)"""
@@ -295,7 +295,7 @@ type Query {
   scopesSearch(filters: FilterScopeInput, pagination: PaginationInput, sort: SortScopeInput): [Scope!]!
   userFind(filters: FindUserInput!): User
   usersCount(filters: FilterUserInput): Int!
-  usersSearch(filters: FilterUserInput, pagination: PaginationInput, sort: SortRoleInput): [User!]!
+  usersSearch(filters: FilterUserInput, pagination: PaginationInput, sort: SortUserInput): [User!]!
 }
 
 input RemoveScopesRoleInput {
@@ -316,7 +316,7 @@ type Role {
   """Example field (true)"""
   active: Boolean!
 
-  """Example field (1621115493589)"""
+  """Example field (1621136976920)"""
   createdAt: Int!
 
   """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
@@ -332,7 +332,7 @@ type Role {
   name: String!
   scopes(filters: FilterScopeInput, pagination: PaginationInput, sort: SortScopeInput): [Scope!]!
 
-  """Example field (1621115493589)"""
+  """Example field (1621136976920)"""
   updatedAt: Int!
 
   """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
@@ -465,7 +465,7 @@ input UpdateUserInput {
   """Example field (true)"""
   active: Boolean
 
-  """Example field (1621115493678)"""
+  """Example field (1621136977050)"""
   birthday: Float
 
   """Example field (email@email.com)"""
@@ -500,10 +500,10 @@ type User {
   """Example field (true)"""
   active: Boolean!
 
-  """Example field (1621115493590)"""
+  """Example field (1621136976920)"""
   birthday: Float!
 
-  """Example field (1621115493590)"""
+  """Example field (1621136976920)"""
   createdAt: Float!
 
   """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
@@ -528,7 +528,7 @@ type User {
   """Example field (surname)"""
   surname: String!
 
-  """Example field (1621115493590)"""
+  """Example field (1621136976920)"""
   updatedAt: Float!
 
   """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
