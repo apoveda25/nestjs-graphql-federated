@@ -24,7 +24,6 @@ import {
   PAGINATION_DEFAULT,
   SORT_DEFAULT,
 } from '../../../shared/queries.constant';
-import { SortRoleInput } from '../../roles/domain/dto/sort-role.input';
 import { UserChangeRoleCommand } from '../../users-has-role/application/commands/impl/user-change-role.command';
 import { ChangeRoleUserPipe } from '../../users-has-role/application/pipes/change-role-user.pipe';
 import { UserHasRoleOutQuery } from '../../users-has-role/application/queries/impl/user-has-role-out.query';
@@ -41,6 +40,7 @@ import { CreateUserDto } from '../domain/dto/create-user.dto';
 import { CreateUserInput } from '../domain/dto/create-user.input';
 import { FilterUserInput } from '../domain/dto/filter-user.input';
 import { FindUserInput } from '../domain/dto/find-user.input';
+import { SortUserInput } from '../domain/dto/sort-user.input';
 import { UpdateUserDto } from '../domain/dto/update-user.dto';
 import { UpdateUserInput } from '../domain/dto/update-user.input';
 import { User } from '../domain/entities/user.entity';
@@ -119,7 +119,7 @@ export class UsersResolver {
     @Args(
       'sort',
       {
-        type: () => SortRoleInput,
+        type: () => SortUserInput,
         nullable: true,
       },
       SortResourcesPipe,
