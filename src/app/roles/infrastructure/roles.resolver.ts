@@ -24,13 +24,13 @@ import {
   PAGINATION_DEFAULT,
   SORT_DEFAULT,
 } from '../../../shared/queries.constant';
-import { AddScopesRolePipe } from '../../roles-has-scope/application/pipes/add-scopes-role.pipe';
-import { RemoveScopesRolePipe } from '../../roles-has-scope/application/pipes/remove-scopes-role.pipe';
 import { RoleHasScopeOutQuery } from '../../roles-has-scope/application/queries/impl/role-has-scope-out.query';
 import { AddScopesRoleDto } from '../../roles-has-scope/domain/dto/add-scopes-role.dto';
 import { AddScopesRoleInput } from '../../roles-has-scope/domain/dto/add-scopes-role.input';
 import { RemoveScopesRoleDto } from '../../roles-has-scope/domain/dto/remove-scopes-role.dto';
 import { RemoveScopesRoleInput } from '../../roles-has-scope/domain/dto/remove-scopes-role.input';
+import { AddScopesRolePipe } from '../../roles-has-scope/domain/pipes/add-scopes-role.pipe';
+import { RemoveScopesRolePipe } from '../../roles-has-scope/domain/pipes/remove-scopes-role.pipe';
 import { FilterScopeInput } from '../../scopes/domain/dto/filter-scope.input';
 import { SortScopeInput } from '../../scopes/domain/dto/sort-scope.input';
 import { UserHasRoleInQuery } from '../../users-has-role/application/queries/impl/user-has-role-in.query';
@@ -41,9 +41,6 @@ import { RoleCreateCommand } from '../application/commands/impl/role-create.comm
 import { RoleRemoveScopesCommand } from '../application/commands/impl/role-remove-scopes.command';
 import { RolesDeleteCommand } from '../application/commands/impl/roles-delete.command';
 import { RolesUpdateCommand } from '../application/commands/impl/roles-update.command';
-import { CreateRolePipe } from '../application/pipes/create-role.pipe';
-import { DeleteRolesPipe } from '../application/pipes/delete-roles.pipe';
-import { UpdateRolesPipe } from '../application/pipes/update-roles.pipe';
 import { RoleFindQuery } from '../application/queries/impl/role-find.query';
 import { RolesCountQuery } from '../application/queries/impl/roles-count.query';
 import { RolesSearchQuery } from '../application/queries/impl/roles-search.query';
@@ -57,6 +54,9 @@ import { SortRoleInput } from '../domain/dto/sort-role.input';
 import { UpdateRoleDto } from '../domain/dto/update-role.dto';
 import { UpdateRoleInput } from '../domain/dto/update-role.input';
 import { Role } from '../domain/entities/role.entity';
+import { CreateRolePipe } from '../domain/pipes/create-role.pipe';
+import { DeleteRolesPipe } from '../domain/pipes/delete-roles.pipe';
+import { UpdateRolesPipe } from '../domain/pipes/update-roles.pipe';
 
 @Resolver(() => Role)
 export class RolesResolver {

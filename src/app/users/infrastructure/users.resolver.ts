@@ -25,14 +25,12 @@ import {
   SORT_DEFAULT,
 } from '../../../shared/queries.constant';
 import { UserChangeRoleCommand } from '../../users-has-role/application/commands/impl/user-change-role.command';
-import { ChangeRoleUserPipe } from '../../users-has-role/application/pipes/change-role-user.pipe';
 import { UserHasRoleOutQuery } from '../../users-has-role/application/queries/impl/user-has-role-out.query';
 import { ChangeRoleUserDto } from '../../users-has-role/domain/dto/change-role-user.dto';
 import { ChangeRoleUserInput } from '../../users-has-role/domain/dto/change-role-user.input';
+import { ChangeRoleUserPipe } from '../../users-has-role/domain/pipes/change-role-user.pipe';
 import { UserCreateCommand } from '../application/commands/impl/user-create.command';
 import { UsersUpdateCommand } from '../application/commands/impl/users-update.command';
-import { CreateUserPipe } from '../application/pipes/create-user.pipe';
-import { UpdateUsersPipe } from '../application/pipes/update-users.pipe';
 import { UserFindQuery } from '../application/queries/impl/user-find.query';
 import { UsersCountQuery } from '../application/queries/impl/users-count.query';
 import { UsersSearchQuery } from '../application/queries/impl/users-search.query';
@@ -44,6 +42,8 @@ import { SortUserInput } from '../domain/dto/sort-user.input';
 import { UpdateUserDto } from '../domain/dto/update-user.dto';
 import { UpdateUserInput } from '../domain/dto/update-user.input';
 import { User } from '../domain/entities/user.entity';
+import { CreateUserPipe } from '../domain/pipes/create-user.pipe';
+import { UpdateUsersPipe } from '../domain/pipes/update-users.pipe';
 
 @Resolver(() => User)
 export class UsersResolver {

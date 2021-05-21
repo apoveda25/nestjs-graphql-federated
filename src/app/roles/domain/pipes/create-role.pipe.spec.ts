@@ -1,7 +1,7 @@
 import * as faker from 'faker';
 import { IContextGraphQL } from '../../../../../dist/shared/interfaces/context-graphql.interface';
-import { CreateRoleDto } from '../../domain/dto/create-role.dto';
-import { CreateRoleInput } from '../../domain/dto/create-role.input';
+import { CreateRoleDto } from '../dto/create-role.dto';
+import { CreateRoleInput } from '../dto/create-role.input';
 import { CreateRolePipe } from './create-role.pipe';
 
 describe('CreateRolePipe', () => {

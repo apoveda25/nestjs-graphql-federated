@@ -1,8 +1,8 @@
 import { Inject, Injectable, PipeTransform } from '@nestjs/common';
 import { CONTEXT } from '@nestjs/graphql';
 import { IContextGraphQL } from '../../../../shared/interfaces/context-graphql.interface';
-import { UpdateUserDto } from '../../domain/dto/update-user.dto';
-import { UpdateUserInput } from '../../domain/dto/update-user.input';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { UpdateUserInput } from '../dto/update-user.input';
 
 @Injectable()
 export class UpdateUsersPipe implements PipeTransform {

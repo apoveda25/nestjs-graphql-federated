@@ -1,6 +1,6 @@
 import * as faker from 'faker';
-import { RemoveScopesRoleDto } from '../../domain/dto/remove-scopes-role.dto';
-import { RemoveScopesRoleInput } from '../../domain/dto/remove-scopes-role.input';
+import { RemoveScopesRoleDto } from '../dto/remove-scopes-role.dto';
+import { RemoveScopesRoleInput } from '../dto/remove-scopes-role.input';
 import { RemoveScopesRolePipe } from './remove-scopes-role.pipe';
 
 describe('RemoveScopesRolePipe', () => {

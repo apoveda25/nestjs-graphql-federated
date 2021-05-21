@@ -1,7 +1,7 @@
 import * as faker from 'faker';
 import { IContextGraphQL } from '../../../../shared/interfaces/context-graphql.interface';
-import { DeleteRoleDto } from '../../domain/dto/delete-role.dto';
-import { DeleteRoleInput } from '../../domain/dto/delete-role.input';
+import { DeleteRoleDto } from '../dto/delete-role.dto';
+import { DeleteRoleInput } from '../dto/delete-role.input';
 import { DeleteRolesPipe } from './delete-roles.pipe';
 
 describe('DeleteRolesPipe', () => {

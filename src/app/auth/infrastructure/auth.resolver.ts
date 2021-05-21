@@ -4,13 +4,13 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { LoginAuthCommand } from '../application/commands/impl/login-auth.command';
 import { SignInAuthCommand } from '../application/commands/impl/sign-in-auth.command';
 import { SignUpAuthCommand } from '../application/commands/impl/sign-up-auth.command';
-import { SignInAuthPipe } from '../application/pipes/sign-in-auth.pipe';
-import { SignUpAuthPipe } from '../application/pipes/sign-up-auth.pipe';
 import { SignInAuthDto } from '../domain/dto/sign-in-auth.dto';
 import { SignInAuthInput } from '../domain/dto/sign-in-auth.input';
 import { SignUpAuthDto } from '../domain/dto/sign-up-auth.dto';
 import { SignUpAuthInput } from '../domain/dto/sign-up-auth.input';
 import { Auth } from '../domain/entities/auth.entity';
+import { SignInAuthPipe } from '../domain/pipes/sign-in-auth.pipe';
+import { SignUpAuthPipe } from '../domain/pipes/sign-up-auth.pipe';
 
 @Resolver(() => Auth)
 export class AuthResolver {

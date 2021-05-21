@@ -51,6 +51,7 @@ export class User {
 
   @Field(() => Number, {
     description: `Example field (${Date.now()})`,
+    nullable: true,
   })
   birthday: number;
 
@@ -86,6 +87,7 @@ export class User {
 
   @Field(() => Number, {
     description: `Example field (${Date.now()})`,
+    nullable: true,
   })
   updatedAt: number;
 

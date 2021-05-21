@@ -72,7 +72,7 @@ export class ScopesCreateCommandHandler
           action,
           collection: collection.name,
           createdAt: Date.now(),
-          updatedAt: 0,
+          updatedAt: null,
           createdBy,
           updatedBy: '',
         });

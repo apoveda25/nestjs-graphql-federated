@@ -1,6 +1,7 @@
 import {
   IsBoolean,
-  IsNumber,
+  IsInt,
+  IsOptional,
   IsString,
   IsUUID,
   Matches,
@@ -32,9 +33,10 @@ export class CreateRoleDto {
   @IsString()
   updatedBy: string;
 
-  @IsNumber()
+  @IsInt()
   createdAt: number;
 
-  @IsNumber()
+  @IsOptional()
+  @IsInt()
   updatedAt: number;
 }

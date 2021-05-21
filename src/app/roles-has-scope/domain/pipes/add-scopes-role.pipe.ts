@@ -1,8 +1,8 @@
 import { Inject, Injectable, PipeTransform, Scope } from '@nestjs/common';
 import { CONTEXT } from '@nestjs/graphql';
 import { IContextGraphQL } from '../../../../shared/interfaces/context-graphql.interface';
-import { AddScopesRoleDto } from '../../domain/dto/add-scopes-role.dto';
-import { AddScopesRoleInput } from '../../domain/dto/add-scopes-role.input';
+import { AddScopesRoleDto } from '../dto/add-scopes-role.dto';
+import { AddScopesRoleInput } from '../dto/add-scopes-role.input';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AddScopesRolePipe implements PipeTransform {

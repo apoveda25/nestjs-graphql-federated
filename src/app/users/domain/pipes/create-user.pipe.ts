@@ -3,8 +3,8 @@ import { CONTEXT } from '@nestjs/graphql';
 import { delta } from '../../../../shared/helpers/delta';
 import { codeDigitsGenerate } from '../../../../shared/helpers/generate-code';
 import { IContextGraphQL } from '../../../../shared/interfaces/context-graphql.interface';
-import { CreateUserDto } from '../../domain/dto/create-user.dto';
-import { CreateUserInput } from '../../domain/dto/create-user.input';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { CreateUserInput } from '../dto/create-user.input';
 
 @Injectable({ scope: Scope.REQUEST })
 export class CreateUserPipe implements PipeTransform {
@@ -22,7 +22,7 @@ export class CreateUserPipe implements PipeTransform {
       createdBy: this.context.user._id,
       updatedBy: '',
       createdAt: Date.now(),
-      updatedAt: 0,
+      updatedAt: null,
     };
   }
 }
