@@ -1,7 +1,7 @@
 import * as faker from 'faker';
 import { IContextGraphQL } from '../../../../shared/interfaces/context-graphql.interface';
-import { UpdateRoleDto } from '../../domain/dto/update-role.dto';
-import { UpdateRoleInput } from '../../domain/dto/update-role.input';
+import { UpdateRoleDto } from '../dto/update-role.dto';
+import { UpdateRoleInput } from '../dto/update-role.input';
 import { UpdateRolesPipe } from './update-roles.pipe';
 
 describe('UpdateRolesPipe', () => {

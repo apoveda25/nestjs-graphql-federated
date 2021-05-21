@@ -2,8 +2,8 @@ import * as faker from 'faker';
 import { delta } from '../../../../shared/helpers/delta';
 import { codeDigitsGenerate } from '../../../../shared/helpers/generate-code';
 import { IContextGraphQL } from '../../../../shared/interfaces/context-graphql.interface';
-import { CreateUserDto } from '../../domain/dto/create-user.dto';
-import { CreateUserInput } from '../../domain/dto/create-user.input';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { CreateUserInput } from '../dto/create-user.input';
 import { CreateUserPipe } from './create-user.pipe';
 
 describe('CreateUsersPipe', () => {

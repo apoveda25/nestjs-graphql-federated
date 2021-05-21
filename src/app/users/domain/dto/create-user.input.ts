@@ -40,7 +40,7 @@ export class CreateUserInput {
   @Field(() => Number, {
     description: `Example field (${Date.now()})`,
     nullable: true,
-    defaultValue: 0,
+    defaultValue: null,
   })
   birthday: number;
 

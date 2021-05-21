@@ -5,6 +5,7 @@ import {
   IsEnum,
   IsInt,
   IsNumber,
+  IsOptional,
   IsString,
   IsUUID,
   Matches,
@@ -47,6 +48,7 @@ export class SignUpAuthDto {
   @IsNumber()
   emailCodeExpire: number;
 
+  @IsOptional()
   @IsNumber()
   birthday: number;
 
@@ -68,6 +70,7 @@ export class SignUpAuthDto {
   @IsInt()
   createdAt: number;
 
+  @IsOptional()
   @IsInt()
   updatedAt: number;
 

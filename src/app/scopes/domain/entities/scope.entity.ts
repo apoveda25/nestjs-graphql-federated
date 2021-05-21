@@ -45,6 +45,7 @@ export class Scope {
 
   @Field(() => String, {
     description: 'Example field (Users/3592b39d-0b79-45dc-a6d0-c8ba815cf350)',
+    nullable: true,
   })
   updatedBy: string;
 

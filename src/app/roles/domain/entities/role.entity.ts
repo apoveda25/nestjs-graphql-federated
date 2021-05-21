@@ -51,6 +51,7 @@ export class Role {
 
   @Field(() => Int, {
     description: `Example field (${Date.now()})`,
+    nullable: true,
   })
   updatedAt: number;
 

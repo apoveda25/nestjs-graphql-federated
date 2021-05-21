@@ -1,8 +1,8 @@
 import { Injectable, PipeTransform } from '@nestjs/common';
 import { delta } from '../../../../shared/helpers/delta';
 import { codeDigitsGenerate } from '../../../../shared/helpers/generate-code';
-import { SignUpAuthDto } from '../../domain/dto/sign-up-auth.dto';
-import { SignUpAuthInput } from '../../domain/dto/sign-up-auth.input';
+import { SignUpAuthDto } from '../dto/sign-up-auth.dto';
+import { SignUpAuthInput } from '../dto/sign-up-auth.input';
 
 @Injectable()
 export class SignUpAuthPipe implements PipeTransform {
@@ -16,14 +16,14 @@ export class SignUpAuthPipe implements PipeTransform {
       emailActive: false,
       emailCode: codeDigitsGenerate(6),
       emailCodeExpire: Date.now() + delta({ days: 1 }),
-      birthday: 0,
+      birthday: null,
       gender: 'UNDEFINED',
       prefix: '',
       urlImage: '',
       createdBy: `Users/${signUpAuthInput._key}`,
       updatedBy: '',
       createdAt: Date.now(),
-      updatedAt: 0,
+      updatedAt: null,
     };
   }
 }

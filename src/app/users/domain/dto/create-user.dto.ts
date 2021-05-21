@@ -5,6 +5,7 @@ import {
   IsEnum,
   IsInt,
   IsNumber,
+  IsOptional,
   IsString,
   IsUUID,
   Matches,
@@ -52,6 +53,7 @@ export class CreateUserDto {
   @IsNumber()
   emailCodeExpire: number;
 
+  @IsOptional()
   @IsNumber()
   birthday: number;
 
@@ -73,6 +75,7 @@ export class CreateUserDto {
   @IsInt()
   createdAt: number;
 
+  @IsOptional()
   @IsInt()
   updatedAt: number;
 

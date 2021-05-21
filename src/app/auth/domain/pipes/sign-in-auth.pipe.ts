@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 import { EMAIL, WORD } from '../../../../shared/helpers/regex';
-import { SignInAuthDto } from '../../domain/dto/sign-in-auth.dto';
-import { SignInAuthInput } from '../../domain/dto/sign-in-auth.input';
+import { SignInAuthDto } from '../dto/sign-in-auth.dto';
+import { SignInAuthInput } from '../dto/sign-in-auth.input';
 
 @Injectable()
 export class SignInAuthPipe implements PipeTransform {
