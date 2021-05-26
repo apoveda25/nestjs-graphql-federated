@@ -2,6 +2,7 @@ import { ParseArrayPipe, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import {
   Args,
+  Context,
   Int,
   Mutation,
   Parent,
@@ -9,13 +10,14 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { AuthorizationEnum } from 'src/shared/enums/authorization';
 import { Authorization } from '../../../shared/decorators/authorization.decorator';
 import { PaginationInput } from '../../../shared/dto/pagination.input';
+import { AuthorizationEnum } from '../../../shared/enums/authorization';
 import {
   IFilterToAQL,
   ISortToAQL,
 } from '../../../shared/interfaces/queries-resources.interface';
+import { CurrentResourcePipe } from '../../../shared/pipes/current-resource.pipe';
 import { FiltersResourcesPipe } from '../../../shared/pipes/filters-resources.pipe';
 import { FindResourcePipe } from '../../../shared/pipes/find-resource.pipe';
 import { SortResourcesPipe } from '../../../shared/pipes/sort-resources.pipe';
@@ -85,6 +87,13 @@ export class UsersResolver {
     updateUserDto: UpdateUserDto[],
   ) {
     return await this.commandBus.execute(new UsersUpdateCommand(updateUserDto));
+  }
+
+  @UsePipes(CurrentResourcePipe)
+  @Query(() => User, { name: 'userCurrent' })
+  @Authorization(AuthorizationEnum.usersFind)
+  async current(@Context('user') filters: IFilterToAQL[]) {
+    return await this.queryBus.execute(new UserFindQuery(filters));
   }
 
   @Query(() => User, { name: 'userFind', nullable: true })
