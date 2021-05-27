@@ -1,10 +1,7 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { Edge } from 'arangojs/documents';
+import { GraphQLError } from 'graphql';
 import { Role } from '../../../roles/domain/entities/role.entity';
 import { Scope } from '../../../scopes/domain/entities/scope.entity';
 import { AddScopesRoleDto } from '../dto/add-scopes-role.dto';
@@ -22,11 +19,12 @@ export class RolesHasScopeModel {
     roleHasScope: AddScopesRoleDto,
     { conflictEdge, conflictFrom, conflictTo }: IRoleAddScopesConflicts,
   ): Promise<AddScopesRoleDto> {
-    if (this.isRoleHasScopeExist(conflictEdge)) throw new ConflictException();
+    if (this.isRoleHasScopeExist(conflictEdge))
+      throw new GraphQLError('Conflict');
 
-    if (this.isNotRoleExist(conflictFrom)) throw new NotFoundException();
+    if (this.isNotRoleExist(conflictFrom)) throw new GraphQLError('Not Found');
 
-    if (this.isNotScopeExist(conflictTo)) throw new NotFoundException();
+    if (this.isNotScopeExist(conflictTo)) throw new GraphQLError('Not Found');
 
     return roleHasScope;
   }
@@ -36,7 +34,7 @@ export class RolesHasScopeModel {
     { conflictEdge }: IRoleRemoveScopesConflicts,
   ): Promise<RemoveScopesRoleDto> {
     if (this.isNotRoleHasScopeExist(conflictEdge))
-      throw new NotFoundException();
+      throw new GraphQLError('Not Found');
 
     return roleHasScope;
   }

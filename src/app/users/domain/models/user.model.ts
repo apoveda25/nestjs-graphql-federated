@@ -1,9 +1,7 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { genSalt, hash } from 'bcrypt';
+import { GraphQLError } from 'graphql';
+import { IContextUser } from '../../../../shared/interfaces/context-graphql.interface';
 import { Role } from '../../../roles/domain/entities/role.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
@@ -18,11 +16,18 @@ export class UserModel {
   async create(
     user: CreateUserDto,
     { conflictKeyUsernameEmail, conflictRoleId }: IUserCreateConflits,
+    context: IContextUser,
   ): Promise<CreateUserDto> {
     if (this.isUserExist(conflictKeyUsernameEmail))
-      throw new ConflictException();
+      throw new GraphQLError('Conflict');
 
-    if (this.isNotRoleExist(conflictRoleId)) throw new NotFoundException();
+    if (this.isNotRoleExist(conflictRoleId))
+      throw new GraphQLError('Not Found');
+
+    if (
+      this.isLevelRoleAssignedLessEqualRoleUserCurrent(conflictRoleId, context)
+    )
+      throw new GraphQLError('Bad Request');
 
     user.password = await hash(user.password, await genSalt(10));
 
@@ -33,13 +38,13 @@ export class UserModel {
     user: UpdateUserDto,
     { conflictKey, conflictUsername, conflictEmail }: IUserUpdateConflits,
   ): Promise<User> {
-    if (this.isNotUserExist(conflictKey)) throw new NotFoundException();
+    if (this.isNotUserExist(conflictKey)) throw new GraphQLError('Not Found');
 
     if (this.isThereAnotherUserWithTheSame(conflictUsername, user))
-      throw new ConflictException();
+      throw new GraphQLError('Conflict');
 
     if (this.isThereAnotherUserWithTheSame(conflictEmail, user))
-      throw new ConflictException();
+      throw new GraphQLError('Conflict');
 
     return { ...conflictKey, ...user };
   }
@@ -61,5 +66,12 @@ export class UserModel {
 
   private isNotRoleExist(role: Role): boolean {
     return !role;
+  }
+
+  private isLevelRoleAssignedLessEqualRoleUserCurrent(
+    role: Role,
+    context: IContextUser,
+  ): boolean {
+    return role.level <= context.role.level;
   }
 }

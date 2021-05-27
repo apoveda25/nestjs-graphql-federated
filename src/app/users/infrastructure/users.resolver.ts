@@ -13,6 +13,7 @@ import {
 import { Authorization } from '../../../shared/decorators/authorization.decorator';
 import { PaginationInput } from '../../../shared/dto/pagination.input';
 import { AuthorizationEnum } from '../../../shared/enums/authorization';
+import { IContextUser } from '../../../shared/interfaces/context-graphql.interface';
 import {
   IFilterToAQL,
   ISortToAQL,
@@ -54,7 +55,6 @@ export class UsersResolver {
     private readonly queryBus: QueryBus,
   ) {}
 
-  @UsePipes(CreateUserPipe)
   @Mutation(() => User, { name: 'userCreate' })
   @Authorization(
     AuthorizationEnum.usersCreate,
@@ -66,11 +66,16 @@ export class UsersResolver {
         name: 'user',
         type: () => CreateUserInput,
       },
+      CreateUserPipe,
       new ValidationPipe({ expectedType: CreateUserDto }),
     )
     createUserDto: CreateUserDto,
+
+    @Context('user') context: IContextUser,
   ) {
-    return await this.commandBus.execute(new UserCreateCommand(createUserDto));
+    return await this.commandBus.execute(
+      new UserCreateCommand(createUserDto, context),
+    );
   }
 
   @UsePipes(UpdateUsersPipe)
@@ -89,10 +94,9 @@ export class UsersResolver {
     return await this.commandBus.execute(new UsersUpdateCommand(updateUserDto));
   }
 
-  @UsePipes(CurrentResourcePipe)
   @Query(() => User, { name: 'userCurrent' })
   @Authorization(AuthorizationEnum.usersFind)
-  async current(@Context('user') filters: IFilterToAQL[]) {
+  async current(@Context('user', CurrentResourcePipe) filters: IFilterToAQL[]) {
     return await this.queryBus.execute(new UserFindQuery(filters));
   }
 
@@ -182,9 +186,11 @@ export class UsersResolver {
       new ValidationPipe({ expectedType: ChangeRoleUserDto }),
     )
     changeRoleUserDto: ChangeRoleUserDto,
+
+    @Context('user') context: IContextUser,
   ) {
     return await this.commandBus.execute(
-      new UserChangeRoleCommand(changeRoleUserDto),
+      new UserChangeRoleCommand(changeRoleUserDto, context),
     );
   }
 }

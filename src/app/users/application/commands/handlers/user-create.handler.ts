@@ -23,7 +23,7 @@ export class UserCreateCommandHandler
     private readonly queryParseService: QueryParseService,
   ) {}
 
-  async execute({ user }: UserCreateCommand): Promise<CreateUserDto> {
+  async execute({ user, context }: UserCreateCommand): Promise<CreateUserDto> {
     const conflictKeyUsernameEmail = await this.queryBus.execute(
       new UserFindQuery(
         this.queryParseService.parseOneFilterByKey(
@@ -46,10 +46,14 @@ export class UserCreateCommandHandler
       ),
     );
 
-    const userCreated = await this.userModel.create(user, {
-      conflictKeyUsernameEmail,
-      conflictRoleId,
-    });
+    const userCreated = await this.userModel.create(
+      user,
+      {
+        conflictKeyUsernameEmail,
+        conflictRoleId,
+      },
+      context,
+    );
 
     this.eventBus.publish(new UserCreatedEvent(userCreated));
 
