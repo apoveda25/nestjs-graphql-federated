@@ -27,7 +27,7 @@ export class ScopesRepository {
   ) {}
 
   async getCollections(): Promise<ICollection[]> {
-    return await this.arangoService.collections(true);
+    return await this.arangoService.listCollections(true);
   }
 
   async create(createScopeDto: CreateScopeDto[]): Promise<Scope[]> {

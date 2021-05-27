@@ -1,4 +1,4 @@
-export const SCOPES_ACTIONS = [
+export const SCOPES_ACTIONS_NODES = [
   'SEARCH',
   'COUNT',
   'FIND',
@@ -6,3 +6,10 @@ export const SCOPES_ACTIONS = [
   'UPDATE',
   'DELETE',
 ];
+
+export const SCOPES_ACTIONS_EDGES = ['ADD', 'CHANGE', 'REMOVE', 'READ'];
+
+export const SCOPES_ACTIONS = {
+  2: SCOPES_ACTIONS_NODES,
+  3: SCOPES_ACTIONS_EDGES,
+};

@@ -56,5 +56,13 @@ export class FindRoleInput {
     description: 'Example field (true)',
     nullable: true,
   })
+  level?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  @Field(() => Boolean, {
+    description: 'Example field (true)',
+    nullable: true,
+  })
   default?: boolean;
 }

@@ -1,4 +1,4 @@
-import { Field, ID, InputType } from '@nestjs/graphql';
+import { Field, ID, InputType, Int } from '@nestjs/graphql';
 
 @InputType()
 export class UpdateRoleInput {
@@ -24,6 +24,12 @@ export class UpdateRoleInput {
     nullable: true,
   })
   active?: boolean;
+
+  @Field(() => Int, {
+    description: 'Example field (9)',
+    nullable: true,
+  })
+  level?: number;
 
   @Field(() => Boolean, {
     description: 'Example field (true)',

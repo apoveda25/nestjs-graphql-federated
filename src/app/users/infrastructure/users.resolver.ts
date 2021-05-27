@@ -2,6 +2,7 @@ import { ParseArrayPipe, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import {
   Args,
+  Context,
   Int,
   Mutation,
   Parent,
@@ -9,13 +10,15 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { AuthorizationEnum } from 'src/shared/enums/authorization';
 import { Authorization } from '../../../shared/decorators/authorization.decorator';
 import { PaginationInput } from '../../../shared/dto/pagination.input';
+import { AuthorizationEnum } from '../../../shared/enums/authorization';
+import { IContextUser } from '../../../shared/interfaces/context-graphql.interface';
 import {
   IFilterToAQL,
   ISortToAQL,
 } from '../../../shared/interfaces/queries-resources.interface';
+import { CurrentResourcePipe } from '../../../shared/pipes/current-resource.pipe';
 import { FiltersResourcesPipe } from '../../../shared/pipes/filters-resources.pipe';
 import { FindResourcePipe } from '../../../shared/pipes/find-resource.pipe';
 import { SortResourcesPipe } from '../../../shared/pipes/sort-resources.pipe';
@@ -52,7 +55,6 @@ export class UsersResolver {
     private readonly queryBus: QueryBus,
   ) {}
 
-  @UsePipes(CreateUserPipe)
   @Mutation(() => User, { name: 'userCreate' })
   @Authorization(
     AuthorizationEnum.usersCreate,
@@ -64,11 +66,16 @@ export class UsersResolver {
         name: 'user',
         type: () => CreateUserInput,
       },
+      CreateUserPipe,
       new ValidationPipe({ expectedType: CreateUserDto }),
     )
     createUserDto: CreateUserDto,
+
+    @Context('user') context: IContextUser,
   ) {
-    return await this.commandBus.execute(new UserCreateCommand(createUserDto));
+    return await this.commandBus.execute(
+      new UserCreateCommand(createUserDto, context),
+    );
   }
 
   @UsePipes(UpdateUsersPipe)
@@ -85,6 +92,12 @@ export class UsersResolver {
     updateUserDto: UpdateUserDto[],
   ) {
     return await this.commandBus.execute(new UsersUpdateCommand(updateUserDto));
+  }
+
+  @Query(() => User, { name: 'userCurrent' })
+  @Authorization(AuthorizationEnum.usersFind)
+  async current(@Context('user', CurrentResourcePipe) filters: IFilterToAQL[]) {
+    return await this.queryBus.execute(new UserFindQuery(filters));
   }
 
   @Query(() => User, { name: 'userFind', nullable: true })
@@ -161,7 +174,6 @@ export class UsersResolver {
     );
   }
 
-  @UsePipes(ChangeRoleUserPipe)
   @Mutation(() => Boolean, { name: 'userChangeRole' })
   @Authorization(AuthorizationEnum.usersHasRoleChange)
   async changeRole(
@@ -170,12 +182,15 @@ export class UsersResolver {
         name: 'role',
         type: () => ChangeRoleUserInput,
       },
+      ChangeRoleUserPipe,
       new ValidationPipe({ expectedType: ChangeRoleUserDto }),
     )
     changeRoleUserDto: ChangeRoleUserDto,
+
+    @Context('user') context: IContextUser,
   ) {
     return await this.commandBus.execute(
-      new UserChangeRoleCommand(changeRoleUserDto),
+      new UserChangeRoleCommand(changeRoleUserDto, context),
     );
   }
 }

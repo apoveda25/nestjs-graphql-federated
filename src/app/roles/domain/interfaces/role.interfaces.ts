@@ -7,6 +7,7 @@ export interface IRole {
   name?: string;
   description?: string;
   active?: boolean;
+  level?: number;
   default?: boolean;
   createdBy?: string;
   updatedBy?: string;

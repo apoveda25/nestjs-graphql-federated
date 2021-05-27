@@ -29,6 +29,11 @@ export class Role {
   })
   active: boolean;
 
+  @Field(() => Int, {
+    description: 'Example field (9)',
+  })
+  level: number;
+
   @Field(() => Boolean, {
     description: 'Example field (false)',
   })

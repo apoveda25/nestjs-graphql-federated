@@ -16,6 +16,9 @@ export class SortRoleInput {
   active?: boolean;
 
   @Field(() => Boolean, { nullable: true })
+  level?: boolean;
+
+  @Field(() => Boolean, { nullable: true })
   default?: boolean;
 
   @Field(() => Boolean, { nullable: true })
