@@ -174,7 +174,6 @@ export class UsersResolver {
     );
   }
 
-  @UsePipes(ChangeRoleUserPipe)
   @Mutation(() => Boolean, { name: 'userChangeRole' })
   @Authorization(AuthorizationEnum.usersHasRoleChange)
   async changeRole(
@@ -183,6 +182,7 @@ export class UsersResolver {
         name: 'role',
         type: () => ChangeRoleUserInput,
       },
+      ChangeRoleUserPipe,
       new ValidationPipe({ expectedType: ChangeRoleUserDto }),
     )
     changeRoleUserDto: ChangeRoleUserDto,
