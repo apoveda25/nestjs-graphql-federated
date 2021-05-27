@@ -23,7 +23,10 @@ export class UserChangeRoleCommandHandler
     private readonly queryParseService: QueryParseService,
   ) {}
 
-  async execute({ userHasRole }: UserChangeRoleCommand): Promise<boolean> {
+  async execute({
+    userHasRole,
+    context,
+  }: UserChangeRoleCommand): Promise<boolean> {
     const conflictFrom = await this.queryBus.execute(
       new UserFindQuery(
         this.queryParseService.parseOneFilterByKey(
@@ -46,11 +49,15 @@ export class UserChangeRoleCommandHandler
       new UserHasRoleOutEdgeQuery({ parentId: userHasRole._from }),
     );
 
-    const userChangedRole = await this.usersHasRoleModel.update(userHasRole, {
-      conflictFrom,
-      conflictTo,
-      conflictEdge,
-    });
+    const userChangedRole = await this.usersHasRoleModel.update(
+      userHasRole,
+      {
+        conflictFrom,
+        conflictTo,
+        conflictEdge,
+      },
+      context,
+    );
 
     this.eventBus.publish(new UserChangedRoleEvent(userChangedRole));
 

@@ -94,10 +94,9 @@ export class UsersResolver {
     return await this.commandBus.execute(new UsersUpdateCommand(updateUserDto));
   }
 
-  @UsePipes(CurrentResourcePipe)
   @Query(() => User, { name: 'userCurrent' })
   @Authorization(AuthorizationEnum.usersFind)
-  async current(@Context('user') filters: IFilterToAQL[]) {
+  async current(@Context('user', CurrentResourcePipe) filters: IFilterToAQL[]) {
     return await this.queryBus.execute(new UserFindQuery(filters));
   }
 
@@ -187,9 +186,11 @@ export class UsersResolver {
       new ValidationPipe({ expectedType: ChangeRoleUserDto }),
     )
     changeRoleUserDto: ChangeRoleUserDto,
+
+    @Context('user') context: IContextUser,
   ) {
     return await this.commandBus.execute(
-      new UserChangeRoleCommand(changeRoleUserDto),
+      new UserChangeRoleCommand(changeRoleUserDto, context),
     );
   }
 }

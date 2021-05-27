@@ -1,9 +1,5 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { GraphQLError } from 'graphql';
 import { IEdge } from '../../../../shared/interfaces/edge.interface';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { DeleteRoleDto } from '../dto/delete-role.dto';
@@ -21,7 +17,7 @@ export class RoleModel {
     role: CreateRoleDto,
     { conflictKeyName }: IRoleCreateConflits,
   ): Promise<Role> {
-    if (this.isRoleExist(conflictKeyName)) throw new ConflictException();
+    if (this.isRoleExist(conflictKeyName)) throw new GraphQLError('Conflict');
 
     return role;
   }
@@ -30,13 +26,13 @@ export class RoleModel {
     role: UpdateRoleDto,
     { conflictKey, conflictName, conflictDefault }: IRoleUpdateConflits,
   ): Promise<Role> {
-    if (this.isNotRoleExist(conflictKey)) throw new NotFoundException();
+    if (this.isNotRoleExist(conflictKey)) throw new GraphQLError('Not Found');
 
     if (this.isThereAnotherRoleWithTheSame(conflictName, role))
-      throw new ConflictException();
+      throw new GraphQLError('Conflict');
 
     if (this.isThereAnotherRoleWithTheSame(conflictDefault, role))
-      throw new ConflictException();
+      throw new GraphQLError('Conflict');
 
     return { ...conflictKey, ...role };
   }
@@ -45,13 +41,13 @@ export class RoleModel {
     role: DeleteRoleDto,
     { conflictKey, conflictEdgeOut, conflictEdgeIn }: IRoleDeleteConflits,
   ): Promise<Role> {
-    if (this.isNotRoleExist(conflictKey)) throw new NotFoundException();
+    if (this.isNotRoleExist(conflictKey)) throw new GraphQLError('Not Found');
 
     if (this.haveEdgeConnections(conflictEdgeOut))
-      throw new BadRequestException();
+      throw new GraphQLError('Bad Request');
 
     if (this.haveEdgeConnections(conflictEdgeIn))
-      throw new BadRequestException();
+      throw new GraphQLError('Bad Request');
 
     return { ...conflictKey, ...role };
   }

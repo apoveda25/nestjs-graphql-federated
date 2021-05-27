@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { genSalt, hash } from 'bcrypt';
 import { GraphQLError } from 'graphql';
 import { IContextUser } from '../../../../shared/interfaces/context-graphql.interface';
@@ -42,13 +38,13 @@ export class UserModel {
     user: UpdateUserDto,
     { conflictKey, conflictUsername, conflictEmail }: IUserUpdateConflits,
   ): Promise<User> {
-    if (this.isNotUserExist(conflictKey)) throw new NotFoundException();
+    if (this.isNotUserExist(conflictKey)) throw new GraphQLError('Not Found');
 
     if (this.isThereAnotherUserWithTheSame(conflictUsername, user))
-      throw new ConflictException();
+      throw new GraphQLError('Conflict');
 
     if (this.isThereAnotherUserWithTheSame(conflictEmail, user))
-      throw new ConflictException();
+      throw new GraphQLError('Conflict');
 
     return { ...conflictKey, ...user };
   }
