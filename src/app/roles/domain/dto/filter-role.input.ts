@@ -18,6 +18,9 @@ export class FilterRoleInput {
   @Field(() => [FilterBooleanInput], { nullable: true })
   active?: FilterBooleanInput[];
 
+  @Field(() => [FilterIntInput], { nullable: true })
+  level?: FilterIntInput[];
+
   @Field(() => [FilterBooleanInput], { nullable: true })
   default?: FilterBooleanInput[];
 

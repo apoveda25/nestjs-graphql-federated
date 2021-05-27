@@ -1,10 +1,13 @@
 import {
   IsBoolean,
+  IsInt,
   IsNumber,
   IsOptional,
   IsString,
   IsUUID,
   Matches,
+  Max,
+  Min,
 } from 'class-validator';
 import { ROLE_ID, USER_ID } from '../../../../shared/helpers/regex';
 
@@ -26,6 +29,12 @@ export class UpdateRoleDto {
   @IsBoolean()
   @IsOptional()
   active?: boolean;
+
+  @Max(9)
+  @Min(1)
+  @IsInt()
+  @IsOptional()
+  level?: number;
 
   @IsBoolean()
   @IsOptional()
