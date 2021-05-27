@@ -14,13 +14,18 @@ export const graphqlFederatedConfig: (
   ),
   sortSchema: configService.get('graphql.sortSchema'),
   context: ({ req }) => {
-    return {
-      user: {
-        _id: req.headers['x-user-id'] ? req.headers['x-user-id'] : '',
-        scopes: req.headers['x-scopes']
-          ? req.headers['x-scopes'].split(',')
-          : [],
-      },
-    };
+    const user = req.headers['x-user']
+      ? JSON.parse(req.headers['x-user'])
+      : { _id: '', active: false, emailActive: false };
+
+    const role = req.headers['x-role']
+      ? JSON.parse(req.headers['x-role'])
+      : { _id: '', _key: '', level: 9 };
+
+    const scopes = req.headers['x-scopes']
+      ? req.headers['x-scopes'].split(',')
+      : [];
+
+    return { user: { ...user, role, scopes } };
   },
 });
