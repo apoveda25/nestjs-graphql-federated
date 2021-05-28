@@ -54,7 +54,7 @@ input CreateUserInput {
   """Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   _key: ID!
 
-  """Example field (1622094831850)"""
+  """Example field (1622236037924)"""
   birthday: Float = null
 
   """Example field (email@email.com)"""
@@ -93,6 +93,12 @@ input FilterBooleanInput {
   value: Boolean!
 }
 
+input FilterDatetimeInput {
+  matchMode: MatchModeDatetime!
+  operator: Operators!
+  value: Timestamp!
+}
+
 input FilterIntInput {
   matchMode: MatchModeNumber!
   operator: Operators!
@@ -108,13 +114,13 @@ input FilterKeyInput {
 input FilterRoleInput {
   _key: [FilterKeyInput!]
   active: [FilterBooleanInput!]
-  createdAt: [FilterIntInput!]
+  createdAt: [FilterDatetimeInput!]
   createdBy: [FilterStringInput!]
   default: [FilterBooleanInput!]
   description: [FilterStringInput!]
   level: [FilterIntInput!]
   name: [FilterStringInput!]
-  updatedAt: [FilterIntInput!]
+  updatedAt: [FilterDatetimeInput!]
   updatedBy: [FilterStringInput!]
 }
 
@@ -122,10 +128,10 @@ input FilterScopeInput {
   _key: [FilterKeyInput!]
   action: [FilterStringInput!]
   collection: [FilterStringInput!]
-  createdAt: [FilterIntInput!]
+  createdAt: [FilterDatetimeInput!]
   createdBy: [FilterStringInput!]
   name: [FilterStringInput!]
-  updatedAt: [FilterIntInput!]
+  updatedAt: [FilterDatetimeInput!]
   updatedBy: [FilterStringInput!]
 }
 
@@ -138,8 +144,8 @@ input FilterStringInput {
 input FilterUserInput {
   _key: [FilterKeyInput!]
   active: [FilterBooleanInput!]
-  birthday: [FilterIntInput!]
-  createdAt: [FilterIntInput!]
+  birthday: [FilterDatetimeInput!]
+  createdAt: [FilterDatetimeInput!]
   createdBy: [FilterStringInput!]
   email: [FilterStringInput!]
   emailActive: [FilterBooleanInput!]
@@ -147,7 +153,7 @@ input FilterUserInput {
   name: [FilterStringInput!]
   prefix: [FilterStringInput!]
   surname: [FilterStringInput!]
-  updatedAt: [FilterIntInput!]
+  updatedAt: [FilterDatetimeInput!]
   updatedBy: [FilterStringInput!]
   urlImage: [FilterStringInput!]
   username: [FilterStringInput!]
@@ -203,8 +209,8 @@ input FindUserInput {
   """Example field (true)"""
   active: Boolean
 
-  """Example field (1622094831851)"""
-  birthday: Float
+  """Example field (1622236037925)"""
+  birthday: Timestamp
 
   """Example field (email@email.com)"""
   email: String
@@ -235,6 +241,16 @@ enum Gender {
 enum MatchModeBoolean {
   DISTINCT
   EQUAL
+}
+
+"""Match mode for datetime string values."""
+enum MatchModeDatetime {
+  DISTINCT
+  EQUAL
+  GREATER
+  GREATER_EQUAL
+  LESS
+  LESS_EQUAL
 }
 
 """Match mode for ID values."""
@@ -324,7 +340,7 @@ type Role {
   """Example field (true)"""
   active: Boolean!
 
-  """Example field (1622094831734)"""
+  """Example field (1622236037787)"""
   createdAt: Int!
 
   """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
@@ -343,7 +359,7 @@ type Role {
   name: String!
   scopes(filters: FilterScopeInput, pagination: PaginationInput, sort: SortScopeInput): [Scope!]!
 
-  """Example field (1622094831734)"""
+  """Example field (1622236037787)"""
   updatedAt: Int
 
   """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
@@ -453,6 +469,11 @@ input SortUserInput {
   username: Boolean
 }
 
+"""
+`Date` type as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
+"""
+scalar Timestamp
+
 input UpdateRoleInput {
   """Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   _key: ID!
@@ -480,8 +501,8 @@ input UpdateUserInput {
   """Example field (true)"""
   active: Boolean
 
-  """Example field (1622094831852)"""
-  birthday: Float
+  """Example field (1622236037927)"""
+  birthday: Timestamp
 
   """Example field (email@email.com)"""
   email: String
@@ -515,10 +536,10 @@ type User {
   """Example field (true)"""
   active: Boolean!
 
-  """Example field (1622094831734)"""
+  """Example field (1622236037787)"""
   birthday: Float
 
-  """Example field (1622094831734)"""
+  """Example field (1622236037787)"""
   createdAt: Float!
 
   """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
@@ -543,7 +564,7 @@ type User {
   """Example field (surname)"""
   surname: String!
 
-  """Example field (1622094831734)"""
+  """Example field (1622236037787)"""
   updatedAt: Float
 
   """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""

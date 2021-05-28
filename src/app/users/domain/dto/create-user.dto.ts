@@ -4,7 +4,6 @@ import {
   IsEmail,
   IsEnum,
   IsInt,
-  IsNumber,
   IsOptional,
   IsString,
   IsUUID,
@@ -50,11 +49,11 @@ export class CreateUserDto {
   @IsString()
   emailCode: string;
 
-  @IsNumber()
+  @IsInt()
   emailCodeExpire: number;
 
   @IsOptional()
-  @IsNumber()
+  @IsInt()
   birthday: number;
 
   @IsEnum(Gender)

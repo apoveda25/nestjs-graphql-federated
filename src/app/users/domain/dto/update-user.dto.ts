@@ -4,7 +4,6 @@ import {
   IsEmail,
   IsEnum,
   IsInt,
-  IsNumber,
   IsOptional,
   IsString,
   IsUrl,
@@ -42,7 +41,7 @@ export class UpdateUserDto {
   @IsOptional()
   surname?: string;
 
-  @IsNumber()
+  @IsInt()
   @IsOptional()
   birthday?: number;
 

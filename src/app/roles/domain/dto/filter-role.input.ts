@@ -1,5 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { FilterBooleanInput } from '../../../../shared/dto/filter-boolean.input';
+import { FilterDatetimeInput } from '../../../../shared/dto/filter-datetime.input';
 import { FilterIntInput } from '../../../../shared/dto/filter-int.input';
 import { FilterKeyInput } from '../../../../shared/dto/filter-key.input';
 import { FilterStringInput } from '../../../../shared/dto/filter-string.input';
@@ -30,9 +31,9 @@ export class FilterRoleInput {
   @Field(() => [FilterStringInput], { nullable: true })
   updatedBy?: FilterStringInput[];
 
-  @Field(() => [FilterIntInput], { nullable: true })
-  createdAt?: FilterIntInput[];
+  @Field(() => [FilterDatetimeInput], { nullable: true })
+  createdAt?: FilterDatetimeInput[];
 
-  @Field(() => [FilterIntInput], { nullable: true })
-  updatedAt?: FilterIntInput[];
+  @Field(() => [FilterDatetimeInput], { nullable: true })
+  updatedAt?: FilterDatetimeInput[];
 }

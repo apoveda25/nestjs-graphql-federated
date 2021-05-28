@@ -1,4 +1,4 @@
-import { Field, ID, InputType } from '@nestjs/graphql';
+import { Field, GraphQLTimestamp, ID, InputType } from '@nestjs/graphql';
 import { IsOptional, IsString, IsUUID, Matches } from 'class-validator';
 import { USER_ID } from '../../../../shared/helpers/regex';
 
@@ -62,7 +62,7 @@ export class FindUserInput {
   })
   emailActive?: boolean;
 
-  @Field(() => Number, {
+  @Field(() => GraphQLTimestamp, {
     description: `Example field (${Date.now()})`,
     nullable: true,
   })
