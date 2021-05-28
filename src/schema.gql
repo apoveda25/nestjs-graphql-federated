@@ -54,7 +54,7 @@ input CreateUserInput {
   """Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   _key: ID!
 
-  """Example field (1622236037924)"""
+  """Example field (1622236241726)"""
   birthday: Float = null
 
   """Example field (email@email.com)"""
@@ -209,7 +209,7 @@ input FindUserInput {
   """Example field (true)"""
   active: Boolean
 
-  """Example field (1622236037925)"""
+  """Example field (1622236241726)"""
   birthday: Timestamp
 
   """Example field (email@email.com)"""
@@ -340,7 +340,7 @@ type Role {
   """Example field (true)"""
   active: Boolean!
 
-  """Example field (1622236037787)"""
+  """Example field (1622236241726)"""
   createdAt: Int!
 
   """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
@@ -359,7 +359,7 @@ type Role {
   name: String!
   scopes(filters: FilterScopeInput, pagination: PaginationInput, sort: SortScopeInput): [Scope!]!
 
-  """Example field (1622236037787)"""
+  """Example field (1622236241726)"""
   updatedAt: Int
 
   """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
@@ -501,7 +501,7 @@ input UpdateUserInput {
   """Example field (true)"""
   active: Boolean
 
-  """Example field (1622236037927)"""
+  """Example field (1622236241726)"""
   birthday: Timestamp
 
   """Example field (email@email.com)"""
@@ -536,10 +536,10 @@ type User {
   """Example field (true)"""
   active: Boolean!
 
-  """Example field (1622236037787)"""
+  """Example field (1622236241726)"""
   birthday: Float
 
-  """Example field (1622236037787)"""
+  """Example field (1622236241726)"""
   createdAt: Float!
 
   """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
@@ -564,7 +564,7 @@ type User {
   """Example field (surname)"""
   surname: String!
 
-  """Example field (1622236037787)"""
+  """Example field (1622236241726)"""
   updatedAt: Float
 
   """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""

@@ -38,7 +38,7 @@ export class CreateUserInput {
   surname: string;
 
   @Field(() => Number, {
-    description: `Example field (${Date.now()})`,
+    description: `Example field (1622236241726)`,
     nullable: true,
     defaultValue: null,
   })

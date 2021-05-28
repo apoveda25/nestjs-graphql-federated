@@ -63,7 +63,7 @@ export class FindUserInput {
   emailActive?: boolean;
 
   @Field(() => GraphQLTimestamp, {
-    description: `Example field (${Date.now()})`,
+    description: `Example field (1622236241726)`,
     nullable: true,
   })
   birthday?: number;

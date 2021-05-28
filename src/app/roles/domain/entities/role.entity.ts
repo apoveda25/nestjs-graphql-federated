@@ -50,12 +50,12 @@ export class Role {
   updatedBy: string;
 
   @Field(() => Int, {
-    description: `Example field (${Date.now()})`,
+    description: `Example field (1622236241726)`,
   })
   createdAt: number;
 
   @Field(() => Int, {
-    description: `Example field (${Date.now()})`,
+    description: `Example field (1622236241726)`,
     nullable: true,
   })
   updatedAt: number;

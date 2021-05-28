@@ -50,7 +50,7 @@ export class User {
   emailCodeExpire?: number;
 
   @Field(() => Number, {
-    description: `Example field (${Date.now()})`,
+    description: `Example field (1622236241726)`,
     nullable: true,
   })
   birthday: number;
@@ -81,12 +81,12 @@ export class User {
   updatedBy: string;
 
   @Field(() => Number, {
-    description: `Example field (${Date.now()})`,
+    description: `Example field (1622236241726)`,
   })
   createdAt: number;
 
   @Field(() => Number, {
-    description: `Example field (${Date.now()})`,
+    description: `Example field (1622236241726)`,
     nullable: true,
   })
   updatedAt: number;
