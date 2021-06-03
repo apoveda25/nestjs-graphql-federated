@@ -398,10 +398,14 @@ type Scope {
 }
 
 enum ScopeAction {
+  ADD
+  CHANGE
   COUNT
   CREATE
   DELETE
   FIND
+  READ
+  REMOVE
   SEARCH
   UPDATE
 }
