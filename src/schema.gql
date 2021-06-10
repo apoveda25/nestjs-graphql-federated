@@ -341,7 +341,7 @@ type Role {
   active: Boolean!
 
   """Example field (1622236241726)"""
-  createdAt: Int!
+  createdAt: Timestamp!
 
   """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   createdBy: String!
@@ -360,7 +360,7 @@ type Role {
   scopes(filters: FilterScopeInput, pagination: PaginationInput, sort: SortScopeInput): [Scope!]!
 
   """Example field (1622236241726)"""
-  updatedAt: Int
+  updatedAt: Timestamp
 
   """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   updatedBy: String!
@@ -381,7 +381,7 @@ type Scope {
   collection: String!
 
   """Example field (1617105326902)"""
-  createdAt: Float!
+  createdAt: Timestamp!
 
   """Example field (Users/3592b39d-0b79-45dc-a6d0-c8ba815cf350)"""
   createdBy: String!
@@ -391,7 +391,7 @@ type Scope {
   roles(filters: FilterRoleInput, pagination: PaginationInput, sort: SortRoleInput): [Role!]!
 
   """Example field (1617105326902)"""
-  updatedAt: Float!
+  updatedAt: Timestamp!
 
   """Example field (Users/3592b39d-0b79-45dc-a6d0-c8ba815cf350)"""
   updatedBy: String
@@ -541,10 +541,10 @@ type User {
   active: Boolean!
 
   """Example field (1622236241726)"""
-  birthday: Float
+  birthday: Timestamp
 
   """Example field (1622236241726)"""
-  createdAt: Float!
+  createdAt: Timestamp!
 
   """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   createdBy: String!
@@ -569,7 +569,7 @@ type User {
   surname: String!
 
   """Example field (1622236241726)"""
-  updatedAt: Float
+  updatedAt: Timestamp
 
   """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   updatedBy: String!
