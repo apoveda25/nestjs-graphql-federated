@@ -1,4 +1,4 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, GraphQLTimestamp, ID, ObjectType } from '@nestjs/graphql';
 import { Role } from '../../../roles/domain/entities/role.entity';
 
 @ObjectType()
@@ -28,12 +28,12 @@ export class Scope {
   })
   collection: string;
 
-  @Field(() => Number, {
+  @Field(() => GraphQLTimestamp, {
     description: 'Example field (1617105326902)',
   })
   createdAt: number;
 
-  @Field(() => Number, {
+  @Field(() => GraphQLTimestamp, {
     description: 'Example field (1617105326902)',
   })
   updatedAt: number;
