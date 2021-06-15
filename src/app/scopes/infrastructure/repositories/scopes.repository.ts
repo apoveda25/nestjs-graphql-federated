@@ -20,6 +20,7 @@ import { ICollection } from '../../domain/interfaces/scope.interfaces';
 @Injectable()
 export class ScopesRepository {
   readonly name = 'Scopes';
+  private readonly RolesHasScope = 'RolesHasScope';
 
   constructor(
     private readonly arangoService: ArangodbService,
@@ -98,6 +99,39 @@ export class ScopesRepository {
       ${aql.join(this.queryParseService.sortToAql(sort, 'doc'))}
       ${this.queryParseService.paginationToAql(pagination)}
       RETURN doc
+    `);
+
+      return await cursor.map((doc) => doc);
+    } catch (error) {
+      console.log(error);
+      throw new GraphQLError(error);
+    }
+  }
+
+  async searchRolesHasScopes({
+    filters = FILTER_DEFAULT,
+    sort = SORT_DEFAULT,
+    pagination = PAGINATION_DEFAULT,
+    filtersRole = FILTER_DEFAULT,
+  }: {
+    filters?: IFilterToAQL[];
+    sort?: ISortToAQL;
+    pagination?: PaginationInput;
+    filtersRole: IFilterToAQL[];
+  }): Promise<Scope[]> {
+    try {
+      const cursor = await this.arangoService.query(aql`
+        FOR scope_v IN ${this.arangoService.collection(this.name)}
+        ${aql.join(this.queryParseService.filtersToAql(filters, 'scope_v'))}
+        ${aql.join(this.queryParseService.sortToAql(sort, 'scope_v'))}
+        ${this.queryParseService.paginationToAql(pagination)}
+          FOR role_v, scope_e IN INBOUND scope_v._id ${this.arangoService.collection(
+            this.RolesHasScope,
+          )}
+          ${aql.join(
+            this.queryParseService.filtersToAql(filtersRole, 'role_v'),
+          )}
+          RETURN scope_v
     `);
 
       return await cursor.map((doc) => doc);

@@ -33,6 +33,7 @@ import { Role } from '../../roles/domain/entities/role.entity';
 import { ScopesCreateCommand } from '../application/commands/impl/scopes-create.command';
 import { ScopeFindQuery } from '../application/queries/impl/scope-find.query';
 import { ScopesCountQuery } from '../application/queries/impl/scopes-count.query';
+import { ScopesSearchRolesHasScopeQuery } from '../application/queries/impl/scopes-search-roles-has-scope.query';
 import { ScopesSearchQuery } from '../application/queries/impl/scopes-search.query';
 import { FilterScopeInput } from '../domain/dto/filter-scope.input';
 import { FindScopeInput } from '../domain/dto/find-scope.input';
@@ -120,6 +121,57 @@ export class ScopesResolver {
     filters: IFilterToAQL[] = FILTER_DEFAULT,
   ) {
     return await this.queryBus.execute(new ScopesCountQuery({ filters }));
+  }
+
+  @Query(() => [Scope], { name: 'scopesSearchRolesHasScope' })
+  @Authorization(
+    AuthorizationEnum.scopesSearch,
+    AuthorizationEnum.rolesHasScopeRead,
+  )
+  async searchRolesHasScope(
+    @Args(
+      'filters',
+      {
+        type: () => FilterScopeInput,
+        nullable: true,
+      },
+      FiltersResourcesPipe,
+    )
+    filters: IFilterToAQL[] = FILTER_DEFAULT,
+
+    @Args(
+      'sort',
+      {
+        type: () => SortScopeInput,
+        nullable: true,
+      },
+      SortResourcesPipe,
+    )
+    sort: ISortToAQL = SORT_DEFAULT,
+
+    @Args('pagination', {
+      type: () => PaginationInput,
+      nullable: true,
+    })
+    pagination: PaginationInput = PAGINATION_DEFAULT,
+
+    @Args(
+      'filtersRole',
+      {
+        type: () => FilterScopeInput,
+      },
+      FiltersResourcesPipe,
+    )
+    filtersRole: IFilterToAQL[] = FILTER_DEFAULT,
+  ) {
+    return await this.queryBus.execute(
+      new ScopesSearchRolesHasScopeQuery({
+        filters,
+        sort,
+        pagination,
+        filtersRole,
+      }),
+    );
   }
 
   @ResolveField()

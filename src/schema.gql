@@ -316,6 +316,7 @@ type Query {
   scopeFind(find: FindScopeInput!): Scope
   scopesCount(filters: FilterScopeInput): Int!
   scopesSearch(filters: FilterScopeInput, pagination: PaginationInput, sort: SortScopeInput): [Scope!]!
+  scopesSearchRolesHasScope(filters: FilterScopeInput, filtersRole: FilterScopeInput!, pagination: PaginationInput, sort: SortScopeInput): [Scope!]!
   userCurrent: User!
   userFind(filters: FindUserInput!): User
   usersCount(filters: FilterUserInput): Int!
