@@ -158,7 +158,7 @@ export class ScopesResolver {
     @Args(
       'filtersRole',
       {
-        type: () => FilterScopeInput,
+        type: () => FilterRoleInput,
       },
       FiltersResourcesPipe,
     )
