@@ -112,11 +112,13 @@ export class ScopesRepository {
     filters = FILTER_DEFAULT,
     sort = SORT_DEFAULT,
     pagination = PAGINATION_DEFAULT,
+    collect = false,
     filtersRole = FILTER_DEFAULT,
   }: {
     filters?: IFilterToAQL[];
     sort?: ISortToAQL;
     pagination?: PaginationInput;
+    collect?: boolean;
     filtersRole: IFilterToAQL[];
   }): Promise<Scope[]> {
     try {
@@ -131,7 +133,11 @@ export class ScopesRepository {
           ${aql.join(
             this.queryParseService.filtersToAql(filtersRole, 'role_v'),
           )}
-          RETURN scope_v
+          ${
+            collect
+              ? aql.literal('COLLECT group = scope_v RETURN group')
+              : aql.literal('RETURN scope_v')
+          }
     `);
 
       return await cursor.map((doc) => doc);

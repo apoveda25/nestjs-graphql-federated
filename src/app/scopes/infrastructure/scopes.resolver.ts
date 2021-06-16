@@ -155,6 +155,12 @@ export class ScopesResolver {
     })
     pagination: PaginationInput = PAGINATION_DEFAULT,
 
+    @Args('collect', {
+      type: () => Boolean,
+      nullable: true,
+    })
+    collect = false,
+
     @Args(
       'filtersRole',
       {
@@ -169,6 +175,7 @@ export class ScopesResolver {
         filters,
         sort,
         pagination,
+        collect,
         filtersRole,
       }),
     );

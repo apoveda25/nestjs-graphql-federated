@@ -11,6 +11,7 @@ export class ScopesSearchRolesHasScopeQuery implements IQuery {
       filters?: IFilterToAQL[];
       sort?: ISortToAQL;
       pagination?: PaginationInput;
+      collect?: boolean;
       filtersRole: IFilterToAQL[];
     },
   ) {}
