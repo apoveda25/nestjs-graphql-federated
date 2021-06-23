@@ -1,6 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { IsArray, IsOptional } from 'class-validator';
-import { FilterIntInput } from '../../../../shared/dto/filter-int.input';
+import { FilterDatetimeInput } from '../../../../shared/dto/filter-datetime.input';
 import { FilterKeyInput } from '../../../../shared/dto/filter-key.input';
 import { FilterStringInput } from '../../../../shared/dto/filter-string.input';
 
@@ -36,13 +36,13 @@ export class FilterScopeInput {
   @IsOptional()
   updatedBy?: FilterStringInput[];
 
-  @Field(() => [FilterIntInput], { nullable: true })
+  @Field(() => [FilterDatetimeInput], { nullable: true })
   @IsArray()
   @IsOptional()
-  createdAt?: FilterIntInput[];
+  createdAt?: FilterDatetimeInput[];
 
-  @Field(() => [FilterIntInput], { nullable: true })
+  @Field(() => [FilterDatetimeInput], { nullable: true })
   @IsArray()
   @IsOptional()
-  updatedAt?: FilterIntInput[];
+  updatedAt?: FilterDatetimeInput[];
 }

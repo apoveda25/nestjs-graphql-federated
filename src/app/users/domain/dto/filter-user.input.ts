@@ -1,6 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { FilterBooleanInput } from '../../../../shared/dto/filter-boolean.input';
-import { FilterIntInput } from '../../../../shared/dto/filter-int.input';
+import { FilterDatetimeInput } from '../../../../shared/dto/filter-datetime.input';
 import { FilterKeyInput } from '../../../../shared/dto/filter-key.input';
 import { FilterStringInput } from '../../../../shared/dto/filter-string.input';
 
@@ -27,8 +27,8 @@ export class FilterUserInput {
   @Field(() => [FilterBooleanInput], { nullable: true })
   emailActive?: FilterBooleanInput[];
 
-  @Field(() => [FilterIntInput], { nullable: true })
-  birthday?: FilterIntInput[];
+  @Field(() => [FilterDatetimeInput], { nullable: true })
+  birthday?: FilterDatetimeInput[];
 
   @Field(() => [FilterStringInput], { nullable: true })
   gender?: FilterStringInput[];
@@ -45,9 +45,9 @@ export class FilterUserInput {
   @Field(() => [FilterStringInput], { nullable: true })
   updatedBy?: FilterStringInput[];
 
-  @Field(() => [FilterIntInput], { nullable: true })
-  createdAt?: FilterIntInput[];
+  @Field(() => [FilterDatetimeInput], { nullable: true })
+  createdAt?: FilterDatetimeInput[];
 
-  @Field(() => [FilterIntInput], { nullable: true })
-  updatedAt?: FilterIntInput[];
+  @Field(() => [FilterDatetimeInput], { nullable: true })
+  updatedAt?: FilterDatetimeInput[];
 }

@@ -7,6 +7,10 @@ export enum ScopeAction {
   FIND = 'FIND',
   SEARCH = 'SEARCH',
   COUNT = 'COUNT',
+  ADD = 'ADD',
+  CHANGE = 'CHANGE',
+  REMOVE = 'REMOVE',
+  READ = 'READ',
 }
 
 registerEnumType(ScopeAction, {

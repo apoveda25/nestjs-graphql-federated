@@ -24,6 +24,8 @@ import {
   PAGINATION_DEFAULT,
   SORT_DEFAULT,
 } from '../../../shared/queries.constant';
+import { RoleAddScopesCommand } from '../../roles-has-scope/application/commands/impl/role-add-scopes.command';
+import { RoleRemoveScopesCommand } from '../../roles-has-scope/application/commands/impl/role-remove-scopes.command';
 import { RoleHasScopeOutQuery } from '../../roles-has-scope/application/queries/impl/role-has-scope-out.query';
 import { AddScopesRoleDto } from '../../roles-has-scope/domain/dto/add-scopes-role.dto';
 import { AddScopesRoleInput } from '../../roles-has-scope/domain/dto/add-scopes-role.input';
@@ -36,9 +38,7 @@ import { SortScopeInput } from '../../scopes/domain/dto/sort-scope.input';
 import { UserHasRoleInQuery } from '../../users-has-role/application/queries/impl/user-has-role-in.query';
 import { FilterUserInput } from '../../users/domain/dto/filter-user.input';
 import { SortUserInput } from '../../users/domain/dto/sort-user.input';
-import { RoleAddScopesCommand } from '../application/commands/impl/role-add-scopes.command';
 import { RoleCreateCommand } from '../application/commands/impl/role-create.command';
-import { RoleRemoveScopesCommand } from '../application/commands/impl/role-remove-scopes.command';
 import { RolesDeleteCommand } from '../application/commands/impl/roles-delete.command';
 import { RolesUpdateCommand } from '../application/commands/impl/roles-update.command';
 import { RoleFindQuery } from '../application/queries/impl/role-find.query';
@@ -288,7 +288,7 @@ export class RolesResolver {
         name: 'role',
         type: () => RemoveScopesRoleInput,
       },
-      new ValidationPipe({ expectedType: RemoveScopesRoleDto }),
+      new ParseArrayPipe({ items: RemoveScopesRoleDto }),
     )
     removeScopesRoleDto: RemoveScopesRoleDto[],
   ) {

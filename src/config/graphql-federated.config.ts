@@ -5,6 +5,7 @@ import { join } from 'path';
 export const graphqlFederatedConfig: (
   configService: ConfigService,
 ) => GqlModuleOptions = (configService: ConfigService) => ({
+  dateScalarMode: 'timestamp',
   introspection: configService.get('graphql.introspection'),
   playground: configService.get('graphql.playground'),
   subscriptions: configService.get('graphql.subscriptions'),
