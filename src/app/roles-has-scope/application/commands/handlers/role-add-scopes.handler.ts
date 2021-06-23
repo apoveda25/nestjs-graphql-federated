@@ -31,7 +31,7 @@ export class RoleAddScopesCommandHandler
       const conflictEdge = await this.queryBus.execute(
         new RoleHasScopeFindQuery(
           this.queryParseService.parseOneFilterByKey(
-            { ...roleHasScope },
+            { _from: roleHasScope._from, _to: roleHasScope._to },
             OperatorBoolean.AND,
           ),
         ),
