@@ -5,14 +5,12 @@ import {
   ISortToAQL,
 } from '../../../../../shared/interfaces/queries-resources.interface';
 
-export class ScopesSearchRolesHasScopeQuery implements IQuery {
+export class ScopesSearchFilterByRoleQuery implements IQuery {
   constructor(
     public readonly input: {
       filters?: IFilterToAQL[];
       sort?: ISortToAQL;
       pagination?: PaginationInput;
-      collect?: boolean;
-      filtersRole: IFilterToAQL[];
     },
   ) {}
 }

@@ -159,6 +159,17 @@ input FilterUserInput {
   username: [FilterStringInput!]
 }
 
+input FiltersSearchScopesDontBelongRoleInput {
+  """Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
+  _id: ID
+
+  """Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
+  _key: ID
+
+  """Example field (name)"""
+  name: String
+}
+
 input FindRoleInput {
   """Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   _id: ID
@@ -316,7 +327,7 @@ type Query {
   scopeFind(find: FindScopeInput!): Scope
   scopesCount(filters: FilterScopeInput): Int!
   scopesSearch(filters: FilterScopeInput, pagination: PaginationInput, sort: SortScopeInput): [Scope!]!
-  scopesSearchRolesHasScope(collect: Boolean, filters: FilterScopeInput, filtersRole: FilterRoleInput!, pagination: PaginationInput, sort: SortScopeInput): [Scope!]!
+  scopesSearchDontBelongRole(filters: FiltersSearchScopesDontBelongRoleInput!, pagination: PaginationInput, sort: SortScopeInput): [Scope!]!
   userCurrent: User!
   userFind(filters: FindUserInput!): User
   usersCount(filters: FilterUserInput): Int!

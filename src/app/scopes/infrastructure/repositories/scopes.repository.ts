@@ -108,36 +108,30 @@ export class ScopesRepository {
     }
   }
 
-  async searchRolesHasScopes({
+  async searchFilterByRole({
     filters = FILTER_DEFAULT,
     sort = SORT_DEFAULT,
     pagination = PAGINATION_DEFAULT,
-    collect = false,
-    filtersRole = FILTER_DEFAULT,
   }: {
     filters?: IFilterToAQL[];
     sort?: ISortToAQL;
     pagination?: PaginationInput;
-    collect?: boolean;
-    filtersRole: IFilterToAQL[];
   }): Promise<Scope[]> {
     try {
       const cursor = await this.arangoService.query(aql`
-        FOR scope_v IN ${this.arangoService.collection(this.name)}
-        ${aql.join(this.queryParseService.filtersToAql(filters, 'scope_v'))}
-        ${aql.join(this.queryParseService.sortToAql(sort, 'scope_v'))}
+        LET scopesIdInRole = (
+            FOR role_v IN Roles
+            ${aql.join(this.queryParseService.filtersToAql(filters, 'role_v'))}
+                FOR scope_v, role_e IN OUTBOUND role_v._id ${this.arangoService.collection(
+                  this.RolesHasScope,
+                )}
+                RETURN scope_v._id
+        )
+        FOR scope IN Scopes
+        FILTER scope._id NOT IN scopesIdInRole
+        ${aql.join(this.queryParseService.sortToAql(sort, 'scope'))}
         ${this.queryParseService.paginationToAql(pagination)}
-          FOR role_v, scope_e IN INBOUND scope_v._id ${this.arangoService.collection(
-            this.RolesHasScope,
-          )}
-          ${aql.join(
-            this.queryParseService.filtersToAql(filtersRole, 'role_v'),
-          )}
-          ${
-            collect
-              ? aql.literal('COLLECT group = scope_v RETURN group')
-              : aql.literal('RETURN scope_v')
-          }
+        RETURN scope
     `);
 
       return await cursor.map((doc) => doc);
