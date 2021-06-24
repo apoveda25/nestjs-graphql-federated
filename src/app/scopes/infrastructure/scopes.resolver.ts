@@ -34,7 +34,7 @@ import { Role } from '../../roles/domain/entities/role.entity';
 import { ScopesCreateCommand } from '../application/commands/impl/scopes-create.command';
 import { ScopeFindQuery } from '../application/queries/impl/scope-find.query';
 import { ScopesCountQuery } from '../application/queries/impl/scopes-count.query';
-import { ScopesSearchFilterByRoleQuery } from '../application/queries/impl/scopes-search-filter-by-role.query';
+import { ScopesSearchDontBelongRoleQuery } from '../application/queries/impl/scopes-search-dont-belong-role.query';
 import { ScopesSearchQuery } from '../application/queries/impl/scopes-search.query';
 import { FilterScopeInput } from '../domain/dto/filter-scope.input';
 import { FindScopeInput } from '../domain/dto/find-scope.input';
@@ -140,7 +140,7 @@ export class ScopesResolver {
       }),
       FindResourcePipe,
     )
-    filters: IFilterToAQL[] = FILTER_DEFAULT,
+    filters: IFilterToAQL[],
 
     @Args(
       'sort',
@@ -159,7 +159,7 @@ export class ScopesResolver {
     pagination: PaginationInput = PAGINATION_DEFAULT,
   ) {
     return await this.queryBus.execute(
-      new ScopesSearchFilterByRoleQuery({
+      new ScopesSearchDontBelongRoleQuery({
         filters,
         sort,
         pagination,

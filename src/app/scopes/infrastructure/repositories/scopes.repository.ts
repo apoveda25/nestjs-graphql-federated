@@ -108,12 +108,12 @@ export class ScopesRepository {
     }
   }
 
-  async searchFilterByRole({
-    filters = FILTER_DEFAULT,
+  async searchDontBelongRole({
+    filters,
     sort = SORT_DEFAULT,
     pagination = PAGINATION_DEFAULT,
   }: {
-    filters?: IFilterToAQL[];
+    filters: IFilterToAQL[];
     sort?: ISortToAQL;
     pagination?: PaginationInput;
   }): Promise<Scope[]> {
