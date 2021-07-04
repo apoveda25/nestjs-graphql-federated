@@ -1,7 +1,7 @@
 import { Field, ID, InputType } from '@nestjs/graphql';
 import { IsEnum, IsOptional, IsString, IsUUID, Matches } from 'class-validator';
 import { SCOPE_ID } from '../../../../shared/helpers/regex';
-import { ScopeAction } from './action.enum';
+import { SCOPES_ACTIONS_ENUM } from '../enums/scopes.enum';
 
 @InputType()
 export class FindScopeInput {
@@ -29,9 +29,9 @@ export class FindScopeInput {
   })
   name?: string;
 
-  @IsEnum(ScopeAction)
+  @IsEnum(SCOPES_ACTIONS_ENUM)
   @IsOptional()
-  @Field(() => ScopeAction, {
+  @Field(() => SCOPES_ACTIONS_ENUM, {
     nullable: true,
     description: `Example field (CREATE | UPDATE | DELETE | FIND | SEARCH | COUNT)`,
   })

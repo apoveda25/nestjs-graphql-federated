@@ -1,4 +1,4 @@
-import { ValidationPipe } from '@nestjs/common';
+import { UsePipes, ValidationPipe } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import {
   Args,
@@ -32,14 +32,18 @@ import { FilterRoleInput } from '../../roles/domain/dto/filter-role.input';
 import { SortRoleInput } from '../../roles/domain/dto/sort-role.input';
 import { Role } from '../../roles/domain/entities/role.entity';
 import { ScopesCreateCommand } from '../application/commands/impl/scopes-create.command';
+import { ScopesInitCommand } from '../application/commands/impl/scopes-init.command';
 import { ScopeFindQuery } from '../application/queries/impl/scope-find.query';
 import { ScopesCountQuery } from '../application/queries/impl/scopes-count.query';
 import { ScopesSearchDontBelongRoleQuery } from '../application/queries/impl/scopes-search-dont-belong-role.query';
 import { ScopesSearchQuery } from '../application/queries/impl/scopes-search.query';
+import { CreateScopeDto } from '../domain/dto/create-scope.dto';
+import { CreateScopeInput } from '../domain/dto/create-scope.input';
 import { FilterScopeInput } from '../domain/dto/filter-scope.input';
 import { FindScopeInput } from '../domain/dto/find-scope.input';
 import { SortScopeInput } from '../domain/dto/sort-scope.input';
 import { Scope } from '../domain/entities/scope.entity';
+import { CreateScopePipe } from '../domain/pipes/create-scope.pipe';
 
 @Resolver(() => Scope)
 export class ScopesResolver {
@@ -49,12 +53,52 @@ export class ScopesResolver {
   ) {}
 
   @Mutation(() => [Scope], {
-    name: 'scopesCreate',
+    name: 'scopesInit',
   })
   @Authorization(AuthorizationEnum.scopesCreate)
-  async create(@Context() context: IContextGraphQL) {
+  async init(@Context() context: IContextGraphQL) {
     return await this.commandBus.execute(
-      new ScopesCreateCommand(context.user._id),
+      new ScopesInitCommand(context.user._id),
+    );
+  }
+
+  @UsePipes(CreateScopePipe)
+  @Mutation(() => Scope, {
+    name: 'scopeCreate',
+  })
+  @Authorization(AuthorizationEnum.scopesCreate)
+  async create(
+    @Args(
+      {
+        name: 'scope',
+        type: () => CreateScopeInput,
+      },
+      new ValidationPipe({ expectedType: CreateScopeDto }),
+    )
+    createScopeDto: CreateScopeDto,
+  ) {
+    return await this.commandBus.execute(
+      new ScopesCreateCommand(createScopeDto),
+    );
+  }
+
+  @Mutation(() => [Scope], {
+    name: 'scopesUpdate',
+  })
+  @Authorization(AuthorizationEnum.scopesUpdate)
+  async update(@Context() context: IContextGraphQL) {
+    return await this.commandBus.execute(
+      new ScopesInitCommand(context.user._id),
+    );
+  }
+
+  @Mutation(() => [Scope], {
+    name: 'scopesDelete',
+  })
+  @Authorization(AuthorizationEnum.scopesDelete)
+  async delete(@Context() context: IContextGraphQL) {
+    return await this.commandBus.execute(
+      new ScopesInitCommand(context.user._id),
     );
   }
 

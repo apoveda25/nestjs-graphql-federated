@@ -50,6 +50,17 @@ input CreateRoleInput {
   name: String!
 }
 
+input CreateScopeInput {
+  """Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
+  _key: ID!
+
+  """Example field (CREATE)"""
+  action: scopesActionsEnum!
+
+  """Example field (Scopes)"""
+  collection: collectionsEnum!
+}
+
 input CreateUserInput {
   """Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   _key: ID!
@@ -201,7 +212,7 @@ input FindScopeInput {
   _key: ID
 
   """Example field (CREATE | UPDATE | DELETE | FIND | SEARCH | COUNT)"""
-  action: ScopeAction
+  action: scopesActionsEnum
 
   """Example field (Scopes)"""
   collection: String
@@ -301,7 +312,10 @@ type Mutation {
   roleRemoveScopes(role: RemoveScopesRoleInput!): Boolean!
   rolesDelete(roles: [DeleteRoleInput!]!): [Role!]!
   rolesUpdate(roles: [UpdateRoleInput!]!): [Role!]!
-  scopesCreate: [Scope!]!
+  scopeCreate(scope: CreateScopeInput!): Scope!
+  scopesDelete: [Scope!]!
+  scopesInit: [Scope!]!
+  scopesUpdate: [Scope!]!
   signIn(payload: SignInAuthInput!): Auth!
   signUp(payload: SignUpAuthInput!): Auth!
   userChangeRole(role: ChangeRoleUserInput!): Boolean!
@@ -407,19 +421,6 @@ type Scope {
 
   """Example field (Users/3592b39d-0b79-45dc-a6d0-c8ba815cf350)"""
   updatedBy: String
-}
-
-enum ScopeAction {
-  ADD
-  CHANGE
-  COUNT
-  CREATE
-  DELETE
-  FIND
-  READ
-  REMOVE
-  SEARCH
-  UPDATE
 }
 
 input SignInAuthInput {
@@ -591,4 +592,21 @@ type User {
 
   """Example field (username)"""
   username: String!
+}
+
+enum collectionsEnum {
+  ROLES
+  ROLES_HAS_SCOPE
+  SCOPES
+  USERS
+  USERS_HAS_ROLE
+}
+
+enum scopesActionsEnum {
+  COUNT
+  CREATE
+  DELETE
+  FIND
+  SEARCH
+  UPDATE
 }

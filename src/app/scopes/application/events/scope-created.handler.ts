@@ -7,7 +7,7 @@ export class ScopeCreatedEventHandler
   implements IEventHandler<ScopeCreatedEvent> {
   constructor(private readonly scopesRepository: ScopesRepository) {}
 
-  async handle(event: ScopeCreatedEvent) {
-    return await this.scopesRepository.create([event.input]);
+  async handle({ input }: ScopeCreatedEvent) {
+    return await this.scopesRepository.create(input);
   }
 }

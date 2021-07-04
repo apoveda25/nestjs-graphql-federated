@@ -1,15 +1,16 @@
 import { Injectable } from '@nestjs/common';
+import { GraphQLError } from 'graphql';
 import { CreateScopeDto } from '../dto/create-scope.dto';
 import { Scope } from '../entities/scope.entity';
 import { IScopeCreateConflits } from '../interfaces/scope.interfaces';
 
 @Injectable()
 export class ScopeModel {
-  async create(
+  create(
     scope: CreateScopeDto,
     { conflictKeyName }: IScopeCreateConflits,
-  ): Promise<CreateScopeDto> {
-    if (this.isScopeExist(conflictKeyName)) return null;
+  ): CreateScopeDto {
+    if (this.isScopeExist(conflictKeyName)) throw new GraphQLError('Conflict');
 
     return scope;
   }

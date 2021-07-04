@@ -34,8 +34,8 @@ export class RolesRepository {
   async create(createRoleDto: CreateRoleDto) {
     try {
       const cursor = await this.arangoService.query(aql`
-      INSERT ${createRoleDto} INTO ${this.arangoService.collection(this.name)}
-    `);
+        INSERT ${createRoleDto} INTO ${this.arangoService.collection(this.name)}
+      `);
 
       return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
     } catch (error) {

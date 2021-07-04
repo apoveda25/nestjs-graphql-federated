@@ -15,12 +15,13 @@ import {
 import { QueryParseService } from '../../../../shared/services/query-parse/query-parse.service';
 import { CreateScopeDto } from '../../domain/dto/create-scope.dto';
 import { Scope } from '../../domain/entities/scope.entity';
+import { COLLECTIONS_ENUM } from '../../domain/enums/scopes.enum';
 import { ICollection } from '../../domain/interfaces/scope.interfaces';
 
 @Injectable()
 export class ScopesRepository {
-  readonly name = 'Scopes';
-  private readonly RolesHasScope = 'RolesHasScope';
+  private readonly name = COLLECTIONS_ENUM.SCOPES;
+  private readonly RolesHasScope = COLLECTIONS_ENUM.ROLES_HAS_SCOPE;
 
   constructor(
     private readonly arangoService: ArangodbService,
@@ -31,7 +32,7 @@ export class ScopesRepository {
     return await this.arangoService.listCollections(true);
   }
 
-  async create(createScopeDto: CreateScopeDto[]): Promise<Scope[]> {
+  async init(createScopeDto: CreateScopeDto[]): Promise<Scope[]> {
     try {
       const cursor = await this.arangoService.query(aql`
       FOR doc IN ${createScopeDto}
@@ -41,6 +42,20 @@ export class ScopesRepository {
     `);
 
       return await cursor.map((doc) => doc);
+    } catch (error) {
+      console.log(error);
+      throw new GraphQLError(error);
+    }
+  }
+
+  async create(createScopeDto: CreateScopeDto): Promise<Scope> {
+    try {
+      const cursor = await this.arangoService.query(aql`
+        INSERT ${createScopeDto} INTO ${this.arangoService.collection(
+        this.name,
+      )}`);
+
+      return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
     } catch (error) {
       console.log(error);
       throw new GraphQLError(error);
