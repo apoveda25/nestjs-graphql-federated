@@ -1,13 +1,13 @@
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { ScopeCreatedEvent } from '../../domain/events/scope-created.event';
+import { ScopesCreatedEvent } from '../../domain/events/scopes-created.event';
 import { ScopesRepository } from '../../infrastructure/repositories/scopes.repository';
 
-@EventsHandler(ScopeCreatedEvent)
-export class ScopeCreatedEventHandler
-  implements IEventHandler<ScopeCreatedEvent> {
+@EventsHandler(ScopesCreatedEvent)
+export class ScopesCreatedEventHandler
+  implements IEventHandler<ScopesCreatedEvent> {
   constructor(private readonly scopesRepository: ScopesRepository) {}
 
-  async handle({ input }: ScopeCreatedEvent) {
+  async handle({ input }: ScopesCreatedEvent) {
     return await this.scopesRepository.create(input);
   }
 }

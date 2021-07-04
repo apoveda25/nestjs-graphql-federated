@@ -6,8 +6,8 @@ import {
 } from '@nestjs/cqrs';
 import { OperatorBoolean } from 'src/shared/enums/operator-boolean.enum';
 import { QueryParseService } from '../../../../../shared/services/query-parse/query-parse.service';
-import { Scope } from '../../../domain/entities/scope.entity';
-import { ScopeCreatedEvent } from '../../../domain/events/scope-created.event';
+import { CreateScopeDto } from '../../../domain/dto/create-scope.dto';
+import { ScopesCreatedEvent } from '../../../domain/events/scopes-created.event';
 import { ScopeModel } from '../../../domain/models/scope.model';
 import { ScopeFindQuery } from '../../queries/impl/scope-find.query';
 import { ScopesCreateCommand } from '../impl/scopes-create.command';
@@ -22,22 +22,34 @@ export class ScopesCreateCommandHandler
     private readonly queryParseService: QueryParseService,
   ) {}
 
-  async execute({ input }: ScopesCreateCommand): Promise<Scope> {
-    const conflictKeyName = await this.queryBus.execute(
-      new ScopeFindQuery(
-        this.queryParseService.parseOneFilterByKey(
-          { _key: input._key, name: input.name },
-          OperatorBoolean.OR,
+  async execute({ input }: ScopesCreateCommand): Promise<CreateScopeDto[]> {
+    const scopesCreated: CreateScopeDto[] = await this.validate(input);
+
+    this.eventBus.publish(new ScopesCreatedEvent(scopesCreated));
+
+    return scopesCreated;
+  }
+
+  private async validate(input: CreateScopeDto[]): Promise<CreateScopeDto[]> {
+    const scopesCreated: CreateScopeDto[] = [];
+
+    for (const scope of input) {
+      const conflictKeyName = await this.queryBus.execute(
+        new ScopeFindQuery(
+          this.queryParseService.parseOneFilterByKey(
+            { _key: scope._key, name: scope.name },
+            OperatorBoolean.OR,
+          ),
         ),
-      ),
-    );
+      );
 
-    const scopeCreated = this.scopeModel.create(input, {
-      conflictKeyName,
-    });
+      const scopeCreated = this.scopeModel.create(scope, {
+        conflictKeyName,
+      });
 
-    this.eventBus.publish(new ScopeCreatedEvent(scopeCreated));
+      scopesCreated.push(scopeCreated);
+    }
 
-    return scopeCreated;
+    return scopesCreated;
   }
 }

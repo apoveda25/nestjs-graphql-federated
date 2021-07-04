@@ -48,14 +48,16 @@ export class ScopesRepository {
     }
   }
 
-  async create(createScopeDto: CreateScopeDto): Promise<Scope> {
+  async create(createScopeDto: CreateScopeDto[]): Promise<Scope[]> {
     try {
       const cursor = await this.arangoService.query(aql`
-        INSERT ${createScopeDto} INTO ${this.arangoService.collection(
-        this.name,
-      )}`);
+        FOR doc IN ${createScopeDto}
+        INSERT doc INTO ${this.arangoService.collection(this.name)}
+        OPTIONS { waitForSync: true }
+        RETURN doc
+      `);
 
-      return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
+      return await cursor.map((doc) => doc);
     } catch (error) {
       console.log(error);
       throw new GraphQLError(error);

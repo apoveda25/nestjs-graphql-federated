@@ -1,8 +1,8 @@
 import { IsUUID, Matches } from 'class-validator';
-import { ROLE_ID } from '../../../../shared/helpers/regex';
+import { SCOPE_ID } from '../../../../shared/helpers/regex';
 
-export class DeleteRoleDto {
-  @Matches(ROLE_ID)
+export class DeleteScopeDto {
+  @Matches(SCOPE_ID)
   _id: string;
 
   @IsUUID(4)

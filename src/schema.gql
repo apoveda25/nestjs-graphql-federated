@@ -313,9 +313,8 @@ type Mutation {
   rolesDelete(roles: [DeleteRoleInput!]!): [Role!]!
   rolesUpdate(roles: [UpdateRoleInput!]!): [Role!]!
   scopeCreate(scope: CreateScopeInput!): Scope!
-  scopesDelete: [Scope!]!
+  scopesCreate(scopes: [CreateScopeInput!]!): [Scope!]!
   scopesInit: [Scope!]!
-  scopesUpdate: [Scope!]!
   signIn(payload: SignInAuthInput!): Auth!
   signUp(payload: SignUpAuthInput!): Auth!
   userChangeRole(role: ChangeRoleUserInput!): Boolean!

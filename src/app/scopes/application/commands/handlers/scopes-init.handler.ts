@@ -10,7 +10,7 @@ import { QueryParseService } from '../../../../../shared/services/query-parse/qu
 import { SCOPES_ACTIONS } from '../../../domain/constants/scopes.constant';
 import { CreateScopeDto } from '../../../domain/dto/create-scope.dto';
 import { InitScopeDto } from '../../../domain/dto/init-scope.dto';
-import { ScopeCreatedEvent } from '../../../domain/events/scope-created.event';
+import { ScopesCreatedEvent } from '../../../domain/events/scopes-created.event';
 import { ICollection } from '../../../domain/interfaces/scope.interfaces';
 import { ScopeModel } from '../../../domain/models/scope.model';
 import { ScopesRepository } from '../../../infrastructure/repositories/scopes.repository';
@@ -51,9 +51,7 @@ export class ScopesInitCommandHandler
       scopesCreated.push(scopeCreated);
     }
 
-    scopesCreated.map((result) =>
-      this.eventBus.publish(new ScopeCreatedEvent(result)),
-    );
+    this.eventBus.publish(new ScopesCreatedEvent(scopesCreated));
 
     return scopesCreated;
   }

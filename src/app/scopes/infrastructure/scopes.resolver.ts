@@ -1,4 +1,4 @@
-import { UsePipes, ValidationPipe } from '@nestjs/common';
+import { ParseArrayPipe, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import {
   Args,
@@ -44,6 +44,7 @@ import { FindScopeInput } from '../domain/dto/find-scope.input';
 import { SortScopeInput } from '../domain/dto/sort-scope.input';
 import { Scope } from '../domain/entities/scope.entity';
 import { CreateScopePipe } from '../domain/pipes/create-scope.pipe';
+import { CreateScopesPipe } from '../domain/pipes/create-scopes.pipe';
 
 @Resolver(() => Scope)
 export class ScopesResolver {
@@ -63,11 +64,9 @@ export class ScopesResolver {
   }
 
   @UsePipes(CreateScopePipe)
-  @Mutation(() => Scope, {
-    name: 'scopeCreate',
-  })
+  @Mutation(() => Scope)
   @Authorization(AuthorizationEnum.scopesCreate)
-  async create(
+  async scopeCreate(
     @Args(
       {
         name: 'scope',
@@ -78,29 +77,46 @@ export class ScopesResolver {
     createScopeDto: CreateScopeDto,
   ) {
     return await this.commandBus.execute(
-      new ScopesCreateCommand(createScopeDto),
+      new ScopesCreateCommand([createScopeDto]),
     );
   }
 
-  @Mutation(() => [Scope], {
-    name: 'scopesUpdate',
-  })
-  @Authorization(AuthorizationEnum.scopesUpdate)
-  async update(@Context() context: IContextGraphQL) {
+  @UsePipes(CreateScopesPipe)
+  @Mutation(() => [Scope])
+  @Authorization(AuthorizationEnum.scopesCreate)
+  async scopesCreate(
+    @Args(
+      {
+        name: 'scopes',
+        type: () => [CreateScopeInput],
+      },
+      new ParseArrayPipe({ items: CreateScopeDto }),
+    )
+    createScopesDto: CreateScopeDto[],
+  ) {
     return await this.commandBus.execute(
-      new ScopesInitCommand(context.user._id),
+      new ScopesCreateCommand(createScopesDto),
     );
   }
 
-  @Mutation(() => [Scope], {
-    name: 'scopesDelete',
-  })
-  @Authorization(AuthorizationEnum.scopesDelete)
-  async delete(@Context() context: IContextGraphQL) {
-    return await this.commandBus.execute(
-      new ScopesInitCommand(context.user._id),
-    );
-  }
+  // @Mutation(() => [Scope], {
+  //   name: 'scopesDelete',
+  // })
+  // @Authorization(AuthorizationEnum.scopesDelete)
+  // async delete(
+  //   @Args(
+  //     {
+  //       name: 'scopes',
+  //       type: () => [DeleteScopeInput],
+  //     },
+  //     new ParseArrayPipe({ items: DeleteScopeInput }),
+  //   )
+  //   createScopeDto: CreateScopeDto,
+  // ) {
+  //   return await this.commandBus.execute(
+  //     new ScopesInitCommand(context.user._id),
+  //   );
+  // }
 
   @Query(() => Scope, { name: 'scopeFind', nullable: true })
   @Authorization(AuthorizationEnum.scopesFind)

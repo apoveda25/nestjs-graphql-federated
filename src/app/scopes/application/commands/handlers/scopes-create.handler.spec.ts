@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { SCOPES_ACTIONS } from '../../../domain/constants/scopes.constant';
 import { Scope } from '../../../domain/entities/scope.entity';
-import { ScopeCreatedEvent } from '../../../domain/events/scope-created.event';
+import { ScopesCreatedEvent } from '../../../domain/events/scopes-created.event';
 import { ScopeModel } from '../../../domain/models/scope.model';
 import { ScopesRepository } from '../../../infrastructure/repositories/scopes.repository';
 import { ScopesCreateCommandHandler } from './scopes-create.handler';
@@ -90,13 +90,13 @@ describe('ScopesCreateCommandHandler', () => {
           action,
           collection: nameCollection,
           createdAt: Date.now(),
-          updatedAt: 0,
+          updatedAt: null,
           createdBy,
-          updatedBy: '',
+          updatedBy: null,
         };
       });
       const scopesCreatedEvent = createScopes.map(
-        (scope) => new ScopeCreatedEvent(scope),
+        (scope) => new ScopesCreatedEvent([scope]),
       );
 
       const scopesRepositoryGetCollectionsSpy = jest
