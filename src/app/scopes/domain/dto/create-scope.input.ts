@@ -1,5 +1,6 @@
 import { Field, ID, InputType } from '@nestjs/graphql';
-import { COLLECTIONS_ENUM, SCOPES_ACTIONS_ENUM } from '../enums/scopes.enum';
+import { collectionsEnum } from '../../../../shared/enums/collections.enum';
+import { scopesActionsEnum } from '../enums/scopes.enum';
 
 @InputType()
 export class CreateScopeInput {
@@ -8,12 +9,12 @@ export class CreateScopeInput {
   })
   _key: string;
 
-  @Field(() => SCOPES_ACTIONS_ENUM, {
+  @Field(() => scopesActionsEnum, {
     description: 'Example field (CREATE)',
   })
   action: string;
 
-  @Field(() => COLLECTIONS_ENUM, {
+  @Field(() => collectionsEnum, {
     description: 'Example field (Scopes)',
   })
   collection: string;

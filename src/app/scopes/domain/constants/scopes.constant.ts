@@ -1,4 +1,4 @@
-export const SCOPES_ACTIONS_ARRAY = [
+export const SCOPES_ACTIONS = [
   'SEARCH',
   'COUNT',
   'FIND',
@@ -6,26 +6,3 @@ export const SCOPES_ACTIONS_ARRAY = [
   'UPDATE',
   'DELETE',
 ];
-
-export const SCOPES_ACTIONS_NODES = [
-  'SEARCH',
-  'COUNT',
-  'FIND',
-  'CREATE',
-  'UPDATE',
-  'DELETE',
-];
-
-export const SCOPES_ACTIONS_EDGES = [
-  'SEARCH',
-  'COUNT',
-  'FIND',
-  'CREATE',
-  'UPDATE',
-  'DELETE',
-];
-
-export const SCOPES_ACTIONS = {
-  2: SCOPES_ACTIONS_NODES,
-  3: SCOPES_ACTIONS_EDGES,
-};

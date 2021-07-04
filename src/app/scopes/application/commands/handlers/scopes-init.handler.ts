@@ -60,7 +60,7 @@ export class ScopesInitCommandHandler
     const createScopes: InitScopeDto[] = [];
 
     collections.map((collection) => {
-      SCOPES_ACTIONS[collection.type].map((action) => {
+      SCOPES_ACTIONS.map((action) => {
         const _key = uuidv4();
 
         createScopes.push({

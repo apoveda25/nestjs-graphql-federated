@@ -3,6 +3,7 @@ import { aql } from 'arangojs/aql';
 import { GraphQLError } from 'graphql';
 import { ArangodbService } from '../../../../arangodb/arangodb.service';
 import { PaginationInput } from '../../../../shared/dto/pagination.input';
+import { collectionsEnum } from '../../../../shared/enums/collections.enum';
 import {
   IFilterToAQL,
   ISortToAQL,
@@ -15,13 +16,12 @@ import {
 import { QueryParseService } from '../../../../shared/services/query-parse/query-parse.service';
 import { CreateScopeDto } from '../../domain/dto/create-scope.dto';
 import { Scope } from '../../domain/entities/scope.entity';
-import { COLLECTIONS_ENUM } from '../../domain/enums/scopes.enum';
 import { ICollection } from '../../domain/interfaces/scope.interfaces';
 
 @Injectable()
 export class ScopesRepository {
-  private readonly name = COLLECTIONS_ENUM.SCOPES;
-  private readonly RolesHasScope = COLLECTIONS_ENUM.ROLES_HAS_SCOPE;
+  private readonly name = collectionsEnum.SCOPES;
+  private readonly RolesHasScope = collectionsEnum.ROLES_HAS_SCOPE;
 
   constructor(
     private readonly arangoService: ArangodbService,
@@ -30,22 +30,6 @@ export class ScopesRepository {
 
   async getCollections(): Promise<ICollection[]> {
     return await this.arangoService.listCollections(true);
-  }
-
-  async init(createScopeDto: CreateScopeDto[]): Promise<Scope[]> {
-    try {
-      const cursor = await this.arangoService.query(aql`
-      FOR doc IN ${createScopeDto}
-      INSERT doc INTO ${this.arangoService.collection(this.name)}
-      OPTIONS { waitForSync: true }
-      RETURN doc
-    `);
-
-      return await cursor.map((doc) => doc);
-    } catch (error) {
-      console.log(error);
-      throw new GraphQLError(error);
-    }
   }
 
   async create(createScopeDto: CreateScopeDto[]): Promise<Scope[]> {

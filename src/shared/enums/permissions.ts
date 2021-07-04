@@ -1,4 +1,4 @@
-export enum AuthorizationEnum {
+export enum PermissionsEnum {
   usersCreate = 'users_create',
   usersUpdate = 'users_update',
   usersDelete = 'users_delete',

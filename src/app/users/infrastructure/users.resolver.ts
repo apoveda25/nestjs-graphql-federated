@@ -12,7 +12,7 @@ import {
 } from '@nestjs/graphql';
 import { Authorization } from '../../../shared/decorators/authorization.decorator';
 import { PaginationInput } from '../../../shared/dto/pagination.input';
-import { AuthorizationEnum } from '../../../shared/enums/authorization';
+import { PermissionsEnum } from '../../../shared/enums/permissions';
 import { IContextUser } from '../../../shared/interfaces/context-graphql.interface';
 import {
   IFilterToAQL,
@@ -56,10 +56,7 @@ export class UsersResolver {
   ) {}
 
   @Mutation(() => User, { name: 'userCreate' })
-  @Authorization(
-    AuthorizationEnum.usersCreate,
-    AuthorizationEnum.usersHasRoleAdd,
-  )
+  @Authorization(PermissionsEnum.usersCreate, PermissionsEnum.usersHasRoleAdd)
   async create(
     @Args(
       {
@@ -80,7 +77,7 @@ export class UsersResolver {
 
   @UsePipes(UpdateUsersPipe)
   @Mutation(() => [User], { name: 'usersUpdate' })
-  @Authorization(AuthorizationEnum.usersUpdate)
+  @Authorization(PermissionsEnum.usersUpdate)
   async update(
     @Args(
       {
@@ -95,13 +92,13 @@ export class UsersResolver {
   }
 
   @Query(() => User, { name: 'userCurrent' })
-  @Authorization(AuthorizationEnum.usersFind)
+  @Authorization(PermissionsEnum.usersFind)
   async current(@Context('user', CurrentResourcePipe) filters: IFilterToAQL[]) {
     return await this.queryBus.execute(new UserFindQuery(filters));
   }
 
   @Query(() => User, { name: 'userFind', nullable: true })
-  @Authorization(AuthorizationEnum.usersFind)
+  @Authorization(PermissionsEnum.usersFind)
   async find(
     @Args(
       {
@@ -117,7 +114,7 @@ export class UsersResolver {
   }
 
   @Query(() => [User], { name: 'usersSearch' })
-  @Authorization(AuthorizationEnum.usersSearch)
+  @Authorization(PermissionsEnum.usersSearch)
   async search(
     @Args(
       'filters',
@@ -151,7 +148,7 @@ export class UsersResolver {
   }
 
   @Query(() => Int, { name: 'usersCount' })
-  @Authorization(AuthorizationEnum.usersCount)
+  @Authorization(PermissionsEnum.usersCount)
   async count(
     @Args(
       'filters',
@@ -167,7 +164,7 @@ export class UsersResolver {
   }
 
   @ResolveField()
-  @Authorization(AuthorizationEnum.usersHasRoleRead)
+  @Authorization(PermissionsEnum.usersHasRoleRead)
   async role(@Parent() { _id }: User) {
     return await this.queryBus.execute(
       new UserHasRoleOutQuery({ parentId: _id }),
@@ -175,7 +172,7 @@ export class UsersResolver {
   }
 
   @Mutation(() => Boolean, { name: 'userChangeRole' })
-  @Authorization(AuthorizationEnum.usersHasRoleChange)
+  @Authorization(PermissionsEnum.usersHasRoleChange)
   async changeRole(
     @Args(
       {

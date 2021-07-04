@@ -12,7 +12,7 @@ import {
 } from '@nestjs/graphql';
 import { Authorization } from '../../../shared/decorators/authorization.decorator';
 import { PaginationInput } from '../../../shared/dto/pagination.input';
-import { AuthorizationEnum } from '../../../shared/enums/authorization';
+import { PermissionsEnum } from '../../../shared/enums/permissions';
 import { IContextGraphQL } from '../../../shared/interfaces/context-graphql.interface';
 import {
   IFilterToAQL,
@@ -56,7 +56,7 @@ export class ScopesResolver {
   @Mutation(() => [Scope], {
     name: 'scopesInit',
   })
-  @Authorization(AuthorizationEnum.scopesCreate)
+  @Authorization(PermissionsEnum.scopesCreate)
   async init(@Context() context: IContextGraphQL) {
     return await this.commandBus.execute(
       new ScopesInitCommand(context.user._id),
@@ -65,7 +65,7 @@ export class ScopesResolver {
 
   @UsePipes(CreateScopePipe)
   @Mutation(() => Scope)
-  @Authorization(AuthorizationEnum.scopesCreate)
+  @Authorization(PermissionsEnum.scopesCreate)
   async scopeCreate(
     @Args(
       {
@@ -83,7 +83,7 @@ export class ScopesResolver {
 
   @UsePipes(CreateScopesPipe)
   @Mutation(() => [Scope])
-  @Authorization(AuthorizationEnum.scopesCreate)
+  @Authorization(PermissionsEnum.scopesCreate)
   async scopesCreate(
     @Args(
       {
@@ -102,7 +102,7 @@ export class ScopesResolver {
   // @Mutation(() => [Scope], {
   //   name: 'scopesDelete',
   // })
-  // @Authorization(AuthorizationEnum.scopesDelete)
+  // @Authorization(PermissionsEnum.scopesDelete)
   // async delete(
   //   @Args(
   //     {
@@ -119,7 +119,7 @@ export class ScopesResolver {
   // }
 
   @Query(() => Scope, { name: 'scopeFind', nullable: true })
-  @Authorization(AuthorizationEnum.scopesFind)
+  @Authorization(PermissionsEnum.scopesFind)
   async find(
     @Args(
       {
@@ -135,7 +135,7 @@ export class ScopesResolver {
   }
 
   @Query(() => [Scope], { name: 'scopesSearch' })
-  @Authorization(AuthorizationEnum.scopesSearch)
+  @Authorization(PermissionsEnum.scopesSearch)
   async search(
     @Args(
       'filters',
@@ -169,7 +169,7 @@ export class ScopesResolver {
   }
 
   @Query(() => Int, { name: 'scopesCount' })
-  @Authorization(AuthorizationEnum.scopesCount)
+  @Authorization(PermissionsEnum.scopesCount)
   async count(
     @Args(
       'filters',
@@ -186,8 +186,8 @@ export class ScopesResolver {
 
   @Query(() => [Scope], { name: 'scopesSearchDontBelongRole' })
   @Authorization(
-    AuthorizationEnum.scopesSearch,
-    AuthorizationEnum.rolesHasScopeRead,
+    PermissionsEnum.scopesSearch,
+    PermissionsEnum.rolesHasScopeRead,
   )
   async searchDontBelongRole(
     @Args(
@@ -228,7 +228,7 @@ export class ScopesResolver {
   }
 
   @ResolveField()
-  @Authorization(AuthorizationEnum.rolesHasScopeRead)
+  @Authorization(PermissionsEnum.rolesHasScopeRead)
   async roles(
     @Parent() { _id }: Role,
 

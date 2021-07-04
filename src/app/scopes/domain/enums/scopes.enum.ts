@@ -1,6 +1,6 @@
 import { registerEnumType } from '@nestjs/graphql';
 
-export enum SCOPES_ACTIONS_ENUM {
+export enum scopesActionsEnum {
   SEARCH = 'SEARCH',
   COUNT = 'COUNT',
   FIND = 'FIND',
@@ -9,18 +9,6 @@ export enum SCOPES_ACTIONS_ENUM {
   DELETE = 'DELETE',
 }
 
-registerEnumType(SCOPES_ACTIONS_ENUM, {
+registerEnumType(scopesActionsEnum, {
   name: 'scopesActionsEnum',
-});
-
-export enum COLLECTIONS_ENUM {
-  USERS = 'Users',
-  USERS_HAS_ROLE = 'UsersHasRole',
-  ROLES = 'Roles',
-  ROLES_HAS_SCOPE = 'RolesHasScope',
-  SCOPES = 'Scopes',
-}
-
-registerEnumType(COLLECTIONS_ENUM, {
-  name: 'collectionsEnum',
 });
