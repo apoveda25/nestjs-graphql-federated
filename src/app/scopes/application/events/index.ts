@@ -1,3 +1,7 @@
-import { ScopeCreatedEventHandler } from './scope-created.handler';
+import { ScopesCreatedEventHandler } from './scopes-created.handler';
+import { ScopesDeletedEventHandler } from './scopes-deleted.handler';
 
-export const ScopesEventHandlers = [ScopeCreatedEventHandler];
+export const ScopesEventHandlers = [
+  ScopesCreatedEventHandler,
+  ScopesDeletedEventHandler,
+];

@@ -90,13 +90,13 @@ describe('ScopesCreateCommandHandler', () => {
           action,
           collection: nameCollection,
           createdAt: Date.now(),
-          updatedAt: null,
+          updatedAt: 0,
           createdBy,
-          updatedBy: null,
+          updatedBy: '',
         };
       });
       const scopesCreatedEvent = createScopes.map(
-        (scope) => new ScopesCreatedEvent([scope]),
+        (scope) => new ScopesCreatedEvent(scope),
       );
 
       const scopesRepositoryGetCollectionsSpy = jest
