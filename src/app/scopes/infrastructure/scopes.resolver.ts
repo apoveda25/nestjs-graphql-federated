@@ -32,6 +32,7 @@ import { FilterRoleInput } from '../../roles/domain/dto/filter-role.input';
 import { SortRoleInput } from '../../roles/domain/dto/sort-role.input';
 import { Role } from '../../roles/domain/entities/role.entity';
 import { ScopesCreateCommand } from '../application/commands/impl/scopes-create.command';
+import { ScopesDeleteCommand } from '../application/commands/impl/scopes-delete.command';
 import { ScopesInitCommand } from '../application/commands/impl/scopes-init.command';
 import { ScopeFindQuery } from '../application/queries/impl/scope-find.query';
 import { ScopesCountQuery } from '../application/queries/impl/scopes-count.query';
@@ -39,12 +40,16 @@ import { ScopesSearchDontBelongRoleQuery } from '../application/queries/impl/sco
 import { ScopesSearchQuery } from '../application/queries/impl/scopes-search.query';
 import { CreateScopeDto } from '../domain/dto/create-scope.dto';
 import { CreateScopeInput } from '../domain/dto/create-scope.input';
+import { DeleteScopeDto } from '../domain/dto/delete-scope.dto';
+import { DeleteScopeInput } from '../domain/dto/delete-scope.input';
 import { FilterScopeInput } from '../domain/dto/filter-scope.input';
 import { FindScopeInput } from '../domain/dto/find-scope.input';
 import { SortScopeInput } from '../domain/dto/sort-scope.input';
 import { Scope } from '../domain/entities/scope.entity';
 import { CreateScopePipe } from '../domain/pipes/create-scope.pipe';
 import { CreateScopesPipe } from '../domain/pipes/create-scopes.pipe';
+import { DeleteScopePipe } from '../domain/pipes/delete-scope.pipe';
+import { DeleteScopesPipe } from '../domain/pipes/delete-scopes.pipe';
 
 @Resolver(() => Scope)
 export class ScopesResolver {
@@ -56,7 +61,7 @@ export class ScopesResolver {
   @Mutation(() => [Scope], {
     name: 'scopesInit',
   })
-  @Authorization(PermissionsEnum.scopesCreate)
+  @Authorization(PermissionsEnum.scopesCreateAll)
   async init(@Context() context: IContextGraphQL) {
     return await this.commandBus.execute(
       new ScopesInitCommand(context.user._id),
@@ -65,7 +70,7 @@ export class ScopesResolver {
 
   @UsePipes(CreateScopePipe)
   @Mutation(() => Scope)
-  @Authorization(PermissionsEnum.scopesCreate)
+  @Authorization(PermissionsEnum.scopesCreateOne)
   async scopeCreate(
     @Args(
       {
@@ -83,7 +88,7 @@ export class ScopesResolver {
 
   @UsePipes(CreateScopesPipe)
   @Mutation(() => [Scope])
-  @Authorization(PermissionsEnum.scopesCreate)
+  @Authorization(PermissionsEnum.scopesCreateAll)
   async scopesCreate(
     @Args(
       {
@@ -99,24 +104,41 @@ export class ScopesResolver {
     );
   }
 
-  // @Mutation(() => [Scope], {
-  //   name: 'scopesDelete',
-  // })
-  // @Authorization(PermissionsEnum.scopesDelete)
-  // async delete(
-  //   @Args(
-  //     {
-  //       name: 'scopes',
-  //       type: () => [DeleteScopeInput],
-  //     },
-  //     new ParseArrayPipe({ items: DeleteScopeInput }),
-  //   )
-  //   createScopeDto: CreateScopeDto,
-  // ) {
-  //   return await this.commandBus.execute(
-  //     new ScopesInitCommand(context.user._id),
-  //   );
-  // }
+  @UsePipes(DeleteScopePipe)
+  @Mutation(() => Scope)
+  @Authorization(PermissionsEnum.scopesDeleteOne)
+  async scopeDelete(
+    @Args(
+      {
+        name: 'scope',
+        type: () => DeleteScopeInput,
+      },
+      new ValidationPipe({ expectedType: DeleteScopeDto }),
+    )
+    deleteScopeDto: DeleteScopeDto,
+  ) {
+    return await this.commandBus.execute(
+      new ScopesDeleteCommand([deleteScopeDto]),
+    );
+  }
+
+  @UsePipes(DeleteScopesPipe)
+  @Mutation(() => [Scope])
+  @Authorization(PermissionsEnum.scopesDeleteAll)
+  async scopesDelete(
+    @Args(
+      {
+        name: 'scopes',
+        type: () => [DeleteScopeInput],
+      },
+      new ParseArrayPipe({ items: DeleteScopeDto }),
+    )
+    deleteScopesDto: DeleteScopeDto[],
+  ) {
+    return await this.commandBus.execute(
+      new ScopesDeleteCommand(deleteScopesDto),
+    );
+  }
 
   @Query(() => Scope, { name: 'scopeFind', nullable: true })
   @Authorization(PermissionsEnum.scopesFind)

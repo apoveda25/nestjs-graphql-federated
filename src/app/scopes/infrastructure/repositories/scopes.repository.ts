@@ -4,6 +4,7 @@ import { GraphQLError } from 'graphql';
 import { ArangodbService } from '../../../../arangodb/arangodb.service';
 import { PaginationInput } from '../../../../shared/dto/pagination.input';
 import { collectionsEnum } from '../../../../shared/enums/collections.enum';
+import { IEdge } from '../../../../shared/interfaces/edge.interface';
 import {
   IFilterToAQL,
   ISortToAQL,
@@ -15,6 +16,7 @@ import {
 } from '../../../../shared/queries.constant';
 import { QueryParseService } from '../../../../shared/services/query-parse/query-parse.service';
 import { CreateScopeDto } from '../../domain/dto/create-scope.dto';
+import { DeleteScopeDto } from '../../domain/dto/delete-scope.dto';
 import { Scope } from '../../domain/entities/scope.entity';
 import { ICollection } from '../../domain/interfaces/scope.interfaces';
 
@@ -39,6 +41,21 @@ export class ScopesRepository {
         INSERT doc INTO ${this.arangoService.collection(this.name)}
         OPTIONS { waitForSync: true }
         RETURN doc
+      `);
+
+      return await cursor.map((doc) => doc);
+    } catch (error) {
+      console.log(error);
+      throw new GraphQLError(error);
+    }
+  }
+
+  async delete(deleteScopeDto: DeleteScopeDto[]): Promise<Scope[]> {
+    try {
+      const cursor = await this.arangoService.query(aql`
+        FOR doc IN ${deleteScopeDto}
+        REMOVE doc IN ${this.arangoService.collection(this.name)}
+        RETURN OLD
       `);
 
       return await cursor.map((doc) => doc);
@@ -134,6 +151,24 @@ export class ScopesRepository {
         ${this.queryParseService.paginationToAql(pagination)}
         RETURN scope
     `);
+
+      return await cursor.map((doc) => doc);
+    } catch (error) {
+      console.log(error);
+      throw new GraphQLError(error);
+    }
+  }
+
+  async inEdges(nodeId: string, collections: string[]): Promise<IEdge[]> {
+    try {
+      const collectionName = collections.map((item) =>
+        this.arangoService.collection(item),
+      );
+
+      const cursor = await this.arangoService.query(aql`
+        FOR v, e IN INBOUND ${nodeId} ${aql.join(collectionName, ', ')}
+        RETURN e
+      `);
 
       return await cursor.map((doc) => doc);
     } catch (error) {
