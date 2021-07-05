@@ -11,7 +11,7 @@ import {
 } from '@nestjs/graphql';
 import { Authorization } from '../../../shared/decorators/authorization.decorator';
 import { PaginationInput } from '../../../shared/dto/pagination.input';
-import { AuthorizationEnum } from '../../../shared/enums/authorization';
+import { PermissionsEnum } from '../../../shared/enums/permissions';
 import {
   IFilterToAQL,
   ISortToAQL,
@@ -67,7 +67,7 @@ export class RolesResolver {
 
   @UsePipes(CreateRolePipe)
   @Mutation(() => Role, { name: 'roleCreate' })
-  @Authorization(AuthorizationEnum.rolesCreate)
+  @Authorization(PermissionsEnum.rolesCreate)
   async create(
     @Args(
       {
@@ -83,7 +83,7 @@ export class RolesResolver {
 
   @UsePipes(UpdateRolesPipe)
   @Mutation(() => [Role], { name: 'rolesUpdate' })
-  @Authorization(AuthorizationEnum.rolesUpdate)
+  @Authorization(PermissionsEnum.rolesUpdate)
   async update(
     @Args(
       {
@@ -99,7 +99,7 @@ export class RolesResolver {
 
   @UsePipes(DeleteRolesPipe)
   @Mutation(() => [Role], { name: 'rolesDelete' })
-  @Authorization(AuthorizationEnum.rolesDelete)
+  @Authorization(PermissionsEnum.rolesDelete)
   async delete(
     @Args(
       {
@@ -114,7 +114,7 @@ export class RolesResolver {
   }
 
   @Query(() => Role, { name: 'roleFind' })
-  @Authorization(AuthorizationEnum.rolesFind)
+  @Authorization(PermissionsEnum.rolesFind)
   async find(
     @Args(
       {
@@ -130,7 +130,7 @@ export class RolesResolver {
   }
 
   @Query(() => [Role], { name: 'rolesSearch' })
-  @Authorization(AuthorizationEnum.rolesSearch)
+  @Authorization(PermissionsEnum.rolesSearch)
   async search(
     @Args(
       'filters',
@@ -164,7 +164,7 @@ export class RolesResolver {
   }
 
   @Query(() => Int, { name: 'rolesCount' })
-  @Authorization(AuthorizationEnum.rolesCount)
+  @Authorization(PermissionsEnum.rolesCount)
   async count(
     @Args(
       'filters',
@@ -180,7 +180,7 @@ export class RolesResolver {
   }
 
   @ResolveField()
-  @Authorization(AuthorizationEnum.usersHasRoleRead)
+  @Authorization(PermissionsEnum.usersHasRoleRead)
   async users(
     @Parent() { _id }: Role,
 
@@ -221,7 +221,7 @@ export class RolesResolver {
   }
 
   @ResolveField()
-  @Authorization(AuthorizationEnum.rolesHasScopeRead)
+  @Authorization(PermissionsEnum.rolesHasScopeRead)
   async scopes(
     @Parent() { _id }: Role,
 
@@ -263,7 +263,7 @@ export class RolesResolver {
 
   @UsePipes(AddScopesRolePipe)
   @Mutation(() => Boolean, { name: 'roleAddScopes' })
-  @Authorization(AuthorizationEnum.rolesHasScopeAdd)
+  @Authorization(PermissionsEnum.rolesHasScopeAdd)
   async addScopes(
     @Args(
       {
@@ -281,7 +281,7 @@ export class RolesResolver {
 
   @UsePipes(RemoveScopesRolePipe)
   @Mutation(() => Boolean, { name: 'roleRemoveScopes' })
-  @Authorization(AuthorizationEnum.rolesHasScopeRemove)
+  @Authorization(PermissionsEnum.rolesHasScopeRemove)
   async removeScopes(
     @Args(
       {

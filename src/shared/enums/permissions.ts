@@ -1,4 +1,4 @@
-export enum AuthorizationEnum {
+export enum PermissionsEnum {
   usersCreate = 'users_create',
   usersUpdate = 'users_update',
   usersDelete = 'users_delete',
@@ -23,9 +23,12 @@ export enum AuthorizationEnum {
   rolesHasScopeRemove = 'roleshasscope_remove',
   rolesHasScopeRead = 'roleshasscope_read',
 
-  scopesCreate = 'scopes_create',
-  scopesUpdate = 'scopes_update',
-  scopesDelete = 'scopes_delete',
+  scopesCreateOne = 'scopes_create_one',
+  scopesCreateAll = 'scopes_create_all',
+  scopesUpdateOne = 'scopes_update_one',
+  scopesUpdateAll = 'scopes_update_all',
+  scopesDeleteOne = 'scopes_delete_one',
+  scopesDeleteAll = 'scopes_delete_all',
   scopesFind = 'scopes_find',
   scopesSearch = 'scopes_search',
   scopesCount = 'scopes_count',

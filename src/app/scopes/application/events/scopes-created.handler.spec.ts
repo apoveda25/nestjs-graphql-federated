@@ -1,16 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { ScopesRepository } from '../../infrastructure/repositories/scopes.repository';
-import { ScopeCreatedEventHandler } from './scope-created.handler';
+import { ScopesCreatedEventHandler } from './scopes-created.handler';
 
 describe('ScopeCreatedEventHandler', () => {
-  let eventHandler: ScopeCreatedEventHandler;
+  let eventHandler: ScopesCreatedEventHandler;
   let scopesRepository: ScopesRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        ScopeCreatedEventHandler,
+        ScopesCreatedEventHandler,
         {
           provide: ScopesRepository,
           useFactory: () => ({ create: jest.fn() }),
@@ -18,8 +18,8 @@ describe('ScopeCreatedEventHandler', () => {
       ],
     }).compile();
 
-    eventHandler = module.get<ScopeCreatedEventHandler>(
-      ScopeCreatedEventHandler,
+    eventHandler = module.get<ScopesCreatedEventHandler>(
+      ScopesCreatedEventHandler,
     );
     scopesRepository = module.get<ScopesRepository>(ScopesRepository);
   });
@@ -42,15 +42,15 @@ describe('ScopeCreatedEventHandler', () => {
         action: faker.lorem.word(),
         collection: faker.lorem.word(),
         createdAt: Date.now(),
-        updatedAt: 0,
+        updatedAt: null,
         createdBy: `Users/${faker.datatype.uuid()}`,
-        updatedBy: '',
+        updatedBy: null,
       };
-      const event = { input: createScope };
+      const event = { input: [createScope] };
 
       const scopesRepositoryHandleSpy = jest
         .spyOn(scopesRepository, 'create')
-        .mockResolvedValue([createScope]);
+        .mockResolvedValue(createScope);
 
       /**
        * Act
