@@ -1,3 +1,4 @@
+import { RoleHasScopeInQueryHandler } from './roles-has-scope/role-has-scope-in.handler';
 import { ScopeFindQueryHandler } from './scope-find.handler';
 import { ScopesCountQueryHandler } from './scopes-count.handler';
 import { ScopesSearchDontBelongRoleQueryHandler } from './scopes-search-dont-belong-role.handler';
@@ -8,4 +9,5 @@ export const ScopesQueryHandlers = [
   ScopesCountQueryHandler,
   ScopesSearchQueryHandler,
   ScopesSearchDontBelongRoleQueryHandler,
+  RoleHasScopeInQueryHandler,
 ];

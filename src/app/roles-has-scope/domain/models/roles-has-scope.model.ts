@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { QueryBus } from '@nestjs/cqrs';
 import { Edge } from 'arangojs/documents';
 import { GraphQLError } from 'graphql';
 import { Role } from '../../../roles/domain/entities/role.entity';
@@ -13,12 +12,10 @@ import {
 
 @Injectable()
 export class RolesHasScopeModel {
-  constructor(private readonly queryBus: QueryBus) {}
-
-  async addScopes(
+  addScopes(
     roleHasScope: AddScopesRoleDto,
     { conflictEdge, conflictFrom, conflictTo }: IRoleAddScopesConflicts,
-  ): Promise<AddScopesRoleDto> {
+  ): AddScopesRoleDto {
     if (this.isRoleHasScopeExist(conflictEdge))
       throw new GraphQLError('Conflict');
 
@@ -29,10 +26,10 @@ export class RolesHasScopeModel {
     return roleHasScope;
   }
 
-  async removeScopes(
+  removeScopes(
     roleHasScope: RemoveScopesRoleDto,
     { conflictEdge }: IRoleRemoveScopesConflicts,
-  ): Promise<RemoveScopesRoleDto> {
+  ): RemoveScopesRoleDto {
     if (this.isNotRoleHasScopeExist(conflictEdge))
       throw new GraphQLError('Not Found');
 

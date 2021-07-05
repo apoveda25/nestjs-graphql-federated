@@ -7,6 +7,7 @@ import { ScopesQueryHandlers } from './application/queries/handlers/index';
 import { ScopeModel } from './domain/models/scope.model';
 import { ScopesRepository } from './infrastructure/repositories/scopes.repository';
 import { ScopesResolver } from './infrastructure/scopes.resolver';
+import { RolesHasScopesRepository } from './infrastructure/repositories/roles-has-scopes.repository';
 
 @Module({
   imports: [CqrsModule, SharedModule],
@@ -17,6 +18,7 @@ import { ScopesResolver } from './infrastructure/scopes.resolver';
     ...ScopesEventHandlers,
     ScopesRepository,
     ScopeModel,
+    RolesHasScopesRepository,
   ],
 })
 export class ScopesModule {}
