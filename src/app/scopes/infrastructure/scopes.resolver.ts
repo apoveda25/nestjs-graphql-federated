@@ -26,13 +26,13 @@ import {
   PAGINATION_DEFAULT,
   SORT_DEFAULT,
 } from '../../../shared/queries.constant';
+import { RoleHasScopeInboundQuery } from '../../roles/application/queries/impl/roles-has-scope/role-has-scope-inbound.query';
 import { FilterRoleInput } from '../../roles/domain/dto/filter-role.input';
 import { SortRoleInput } from '../../roles/domain/dto/sort-role.input';
 import { Role } from '../../roles/domain/entities/role.entity';
 import { ScopesCreateCommand } from '../application/commands/impl/scopes-create.command';
 import { ScopesDeleteCommand } from '../application/commands/impl/scopes-delete.command';
 import { ScopesInitCommand } from '../application/commands/impl/scopes-init.command';
-import { RoleHasScopeInQuery } from '../application/queries/impl/roles-has-scope/role-has-scope-in.query';
 import { ScopeFindQuery } from '../application/queries/impl/scope-find.query';
 import { ScopesCountQuery } from '../application/queries/impl/scopes-count.query';
 import { ScopesSearchQuery } from '../application/queries/impl/scopes-search.query';
@@ -236,7 +236,7 @@ export class ScopesResolver {
     pagination: PaginationInput = PAGINATION_DEFAULT,
   ) {
     return await this.queryBus.execute(
-      new RoleHasScopeInQuery({
+      new RoleHasScopeInboundQuery({
         filters,
         sort,
         pagination,

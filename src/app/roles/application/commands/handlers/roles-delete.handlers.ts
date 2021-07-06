@@ -6,12 +6,12 @@ import {
 } from '@nestjs/cqrs';
 import { OperatorBoolean } from 'src/shared/enums/operator-boolean.enum';
 import { QueryParseService } from '../../../../../shared/services/query-parse/query-parse.service';
-import { RoleHasScopeOutQuery } from '../../../../roles-has-scope/application/queries/impl/role-has-scope-out.query';
 import { UserHasRoleInQuery } from '../../../../users-has-role/application/queries/impl/user-has-role-in.query';
 import { Role } from '../../../domain/entities/role.entity';
 import { RolesDeletedEvent } from '../../../domain/events/roles-deleted.event';
 import { RoleModel } from '../../../domain/models/role.model';
 import { RoleFindQuery } from '../../queries/impl/role-find.query';
+import { RoleHasScopeOutboundQuery } from '../../queries/impl/roles-has-scope/role-has-scope-outbound.query';
 import { RolesDeleteCommand } from '../impl/roles-delete.command';
 
 @CommandHandler(RolesDeleteCommand)
@@ -38,7 +38,7 @@ export class RolesDeleteCommandHandlers
       );
 
       const conflictEdgeOut = await this.queryBus.execute(
-        new RoleHasScopeOutQuery({ parentId: role._id }),
+        new RoleHasScopeOutboundQuery({ parentId: role._id }),
       );
 
       const conflictEdgeIn = await this.queryBus.execute(

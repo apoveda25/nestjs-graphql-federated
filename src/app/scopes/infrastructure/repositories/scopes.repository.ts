@@ -4,7 +4,6 @@ import { GraphQLError } from 'graphql';
 import { ArangodbService } from '../../../../arangodb/arangodb.service';
 import { PaginationInput } from '../../../../shared/dto/pagination.input';
 import { collectionsEnum } from '../../../../shared/enums/collections.enum';
-import { IEdge } from '../../../../shared/interfaces/edge.interface';
 import {
   IFilterToAQL,
   ISortToAQL,
@@ -118,57 +117,6 @@ export class ScopesRepository {
       ${this.queryParseService.paginationToAql(pagination)}
       RETURN doc
     `);
-
-      return await cursor.map((doc) => doc);
-    } catch (error) {
-      console.log(error);
-      throw new GraphQLError(error);
-    }
-  }
-
-  async searchDontBelongRole({
-    filters,
-    sort = SORT_DEFAULT,
-    pagination = PAGINATION_DEFAULT,
-  }: {
-    filters: IFilterToAQL[];
-    sort?: ISortToAQL;
-    pagination?: PaginationInput;
-  }): Promise<Scope[]> {
-    try {
-      const cursor = await this.arangoService.query(aql`
-        LET scopesIdInRole = (
-            FOR role_v IN Roles
-            ${aql.join(this.queryParseService.filtersToAql(filters, 'role_v'))}
-                FOR scope_v, role_e IN OUTBOUND role_v._id ${this.arangoService.collection(
-                  this.RolesHasScope,
-                )}
-                RETURN scope_v._id
-        )
-        FOR scope IN Scopes
-        FILTER scope._id NOT IN scopesIdInRole
-        ${aql.join(this.queryParseService.sortToAql(sort, 'scope'))}
-        ${this.queryParseService.paginationToAql(pagination)}
-        RETURN scope
-    `);
-
-      return await cursor.map((doc) => doc);
-    } catch (error) {
-      console.log(error);
-      throw new GraphQLError(error);
-    }
-  }
-
-  async inEdges(nodeId: string, collections: string[]): Promise<IEdge[]> {
-    try {
-      const collectionName = collections.map((item) =>
-        this.arangoService.collection(item),
-      );
-
-      const cursor = await this.arangoService.query(aql`
-        FOR v, e IN INBOUND ${nodeId} ${aql.join(collectionName, ', ')}
-        RETURN e
-      `);
 
       return await cursor.map((doc) => doc);
     } catch (error) {
