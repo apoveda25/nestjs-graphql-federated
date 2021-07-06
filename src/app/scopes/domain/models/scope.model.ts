@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { GraphQLError } from 'graphql';
 import { IScopeDeleteConflits } from '../../../../app/scopes/domain/interfaces/scope.interfaces';
-import { IEdge } from '../../../../shared/interfaces/edge.interface';
+import { Role } from '../../../roles/domain/entities/role.entity';
 import { CreateScopeDto } from '../dto/create-scope.dto';
 import { DeleteScopeDto } from '../dto/delete-scope.dto';
 import { Scope } from '../entities/scope.entity';
@@ -20,11 +20,11 @@ export class ScopeModel {
 
   delete(
     scope: DeleteScopeDto,
-    { conflictKey, conflictInEdges }: IScopeDeleteConflits,
+    { conflictKey, conflictInEdgesRoles }: IScopeDeleteConflits,
   ): DeleteScopeDto {
     if (this.isScopeNotExist(conflictKey)) throw new GraphQLError('Not Found');
 
-    if (this.isScopeVertexHasIncomingEdges(conflictInEdges))
+    if (this.isScopeVertexHasIncomingEdges(conflictInEdgesRoles))
       throw new GraphQLError('Conflict');
 
     return scope;
@@ -38,7 +38,7 @@ export class ScopeModel {
     return scope ? false : true;
   }
 
-  private isScopeVertexHasIncomingEdges(edges: IEdge[]): boolean {
-    return edges.length ? true : false;
+  private isScopeVertexHasIncomingEdges(vertexes: Role[]): boolean {
+    return vertexes.length ? true : false;
   }
 }

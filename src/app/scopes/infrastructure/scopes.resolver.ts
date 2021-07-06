@@ -26,8 +26,7 @@ import {
   PAGINATION_DEFAULT,
   SORT_DEFAULT,
 } from '../../../shared/queries.constant';
-import { RoleHasScopeInQuery } from '../../roles-has-scope/application/queries/impl/role-has-scope-in.query';
-import { FiltersSearchScopesDontBelongRoleInput } from '../../roles-has-scope/domain/dto/filters-search-scopes-dont-belong-role.input';
+import { RoleHasScopeInboundQuery } from '../../roles/application/queries/impl/roles-has-scope/role-has-scope-inbound.query';
 import { FilterRoleInput } from '../../roles/domain/dto/filter-role.input';
 import { SortRoleInput } from '../../roles/domain/dto/sort-role.input';
 import { Role } from '../../roles/domain/entities/role.entity';
@@ -36,7 +35,6 @@ import { ScopesDeleteCommand } from '../application/commands/impl/scopes-delete.
 import { ScopesInitCommand } from '../application/commands/impl/scopes-init.command';
 import { ScopeFindQuery } from '../application/queries/impl/scope-find.query';
 import { ScopesCountQuery } from '../application/queries/impl/scopes-count.query';
-import { ScopesSearchDontBelongRoleQuery } from '../application/queries/impl/scopes-search-dont-belong-role.query';
 import { ScopesSearchQuery } from '../application/queries/impl/scopes-search.query';
 import { CreateScopeDto } from '../domain/dto/create-scope.dto';
 import { CreateScopeInput } from '../domain/dto/create-scope.input';
@@ -206,49 +204,6 @@ export class ScopesResolver {
     return await this.queryBus.execute(new ScopesCountQuery({ filters }));
   }
 
-  @Query(() => [Scope], { name: 'scopesSearchDontBelongRole' })
-  @Authorization(
-    PermissionsEnum.scopesSearch,
-    PermissionsEnum.rolesHasScopeRead,
-  )
-  async searchDontBelongRole(
-    @Args(
-      'filters',
-      {
-        type: () => FiltersSearchScopesDontBelongRoleInput,
-      },
-      new ValidationPipe({
-        expectedType: FiltersSearchScopesDontBelongRoleInput,
-      }),
-      FindResourcePipe,
-    )
-    filters: IFilterToAQL[],
-
-    @Args(
-      'sort',
-      {
-        type: () => SortScopeInput,
-        nullable: true,
-      },
-      SortResourcesPipe,
-    )
-    sort: ISortToAQL = SORT_DEFAULT,
-
-    @Args('pagination', {
-      type: () => PaginationInput,
-      nullable: true,
-    })
-    pagination: PaginationInput = PAGINATION_DEFAULT,
-  ) {
-    return await this.queryBus.execute(
-      new ScopesSearchDontBelongRoleQuery({
-        filters,
-        sort,
-        pagination,
-      }),
-    );
-  }
-
   @ResolveField()
   @Authorization(PermissionsEnum.rolesHasScopeRead)
   async roles(
@@ -281,7 +236,7 @@ export class ScopesResolver {
     pagination: PaginationInput = PAGINATION_DEFAULT,
   ) {
     return await this.queryBus.execute(
-      new RoleHasScopeInQuery({
+      new RoleHasScopeInboundQuery({
         filters,
         sort,
         pagination,
