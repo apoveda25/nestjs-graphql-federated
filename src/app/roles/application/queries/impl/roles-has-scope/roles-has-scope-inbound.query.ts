@@ -5,7 +5,7 @@ import {
   ISortToAQL,
 } from '../../../../../../shared/interfaces/queries-resources.interface';
 
-export class RoleHasScopeInboundQuery implements IQuery {
+export class RolesHasScopeInboundQuery implements IQuery {
   constructor(
     public readonly input: {
       parentId: string;

@@ -11,12 +11,13 @@ import { Role } from '../../../domain/entities/role.entity';
 import { RolesDeletedEvent } from '../../../domain/events/roles-deleted.event';
 import { RoleModel } from '../../../domain/models/role.model';
 import { RoleFindQuery } from '../../queries/impl/role-find.query';
-import { RoleHasScopeOutboundQuery } from '../../queries/impl/roles-has-scope/role-has-scope-outbound.query';
+import { RolesHasScopeOutboundQuery } from '../../queries/impl/roles-has-scope/roles-has-scope-outbound.query';
 import { RolesDeleteCommand } from '../impl/roles-delete.command';
 
 @CommandHandler(RolesDeleteCommand)
 export class RolesDeleteCommandHandlers
-  implements ICommandHandler<RolesDeleteCommand> {
+  implements ICommandHandler<RolesDeleteCommand>
+{
   constructor(
     private readonly queryBus: QueryBus,
     private readonly eventBus: EventBus,
@@ -38,7 +39,7 @@ export class RolesDeleteCommandHandlers
       );
 
       const conflictEdgeOut = await this.queryBus.execute(
-        new RoleHasScopeOutboundQuery({ parentId: role._id }),
+        new RolesHasScopeOutboundQuery({ parentId: role._id }),
       );
 
       const conflictEdgeIn = await this.queryBus.execute(

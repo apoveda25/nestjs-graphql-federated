@@ -8,6 +8,7 @@ import { UsersSagas } from './application/sagas/users.saga';
 import { UserModel } from './domain/models/user.model';
 import { UsersRepository } from './infrastructure/repositories/users.repository';
 import { UsersResolver } from './infrastructure/users.resolver';
+import { UsersHasRoleRepository } from './infrastructure/repositories/users-has-role.repository';
 
 @Module({
   imports: [CqrsModule, SharedModule],
@@ -19,6 +20,7 @@ import { UsersResolver } from './infrastructure/users.resolver';
     UsersSagas,
     UsersRepository,
     UserModel,
+    UsersHasRoleRepository,
   ],
 })
 export class UsersModule {}

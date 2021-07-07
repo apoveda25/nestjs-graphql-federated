@@ -26,7 +26,7 @@ import {
   PAGINATION_DEFAULT,
   SORT_DEFAULT,
 } from '../../../shared/queries.constant';
-import { RoleHasScopeInboundQuery } from '../../roles/application/queries/impl/roles-has-scope/role-has-scope-inbound.query';
+import { RolesHasScopeInboundQuery } from '../../roles/application/queries/impl/roles-has-scope/roles-has-scope-inbound.query';
 import { FilterRoleInput } from '../../roles/domain/dto/filter-role.input';
 import { SortRoleInput } from '../../roles/domain/dto/sort-role.input';
 import { Role } from '../../roles/domain/entities/role.entity';
@@ -236,7 +236,7 @@ export class ScopesResolver {
     pagination: PaginationInput = PAGINATION_DEFAULT,
   ) {
     return await this.queryBus.execute(
-      new RoleHasScopeInboundQuery({
+      new RolesHasScopeInboundQuery({
         filters,
         sort,
         pagination,

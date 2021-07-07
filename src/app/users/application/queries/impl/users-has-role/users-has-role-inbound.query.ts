@@ -1,11 +1,11 @@
 import { IQuery } from '@nestjs/cqrs';
-import { PaginationInput } from '../../../../../../shared/dto/pagination.input';
+import { PaginationInput } from 'src/shared/dto/pagination.input';
 import {
   IFilterToAQL,
   ISortToAQL,
-} from '../../../../../../shared/interfaces/queries-resources.interface';
+} from 'src/shared/interfaces/queries-resources.interface';
 
-export class RoleHasScopeOutboundQuery implements IQuery {
+export class UsersHasRoleInboundQuery implements IQuery {
   constructor(
     public readonly input: {
       parentId: string;

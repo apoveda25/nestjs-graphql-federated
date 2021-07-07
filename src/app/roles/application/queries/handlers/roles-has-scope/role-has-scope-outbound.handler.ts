@@ -1,13 +1,14 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { RolesHasScopesRepository } from '../../../../infrastructure/repositories/roles-has-scopes.repository';
-import { RoleHasScopeOutboundQuery } from '../../impl/roles-has-scope/role-has-scope-outbound.query';
+import { RolesHasScopeOutboundQuery } from '../../impl/roles-has-scope/roles-has-scope-outbound.query';
 
-@QueryHandler(RoleHasScopeOutboundQuery)
+@QueryHandler(RolesHasScopeOutboundQuery)
 export class RoleHasScopeOutboundQueryHandler
-  implements IQueryHandler<RoleHasScopeOutboundQuery> {
+  implements IQueryHandler<RolesHasScopeOutboundQuery>
+{
   constructor(private readonly repository: RolesHasScopesRepository) {}
 
-  async execute({ input }: RoleHasScopeOutboundQuery) {
+  async execute({ input }: RolesHasScopeOutboundQuery) {
     return await this.repository.searchOut(input);
   }
 }

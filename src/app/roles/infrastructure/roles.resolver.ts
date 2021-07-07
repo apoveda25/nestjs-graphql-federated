@@ -37,7 +37,7 @@ import { RolesHasScopeDeleteCommand } from '../application/commands/impl/roles-h
 import { RolesUpdateCommand } from '../application/commands/impl/roles-update.command';
 import { RoleFindQuery } from '../application/queries/impl/role-find.query';
 import { RolesCountQuery } from '../application/queries/impl/roles-count.query';
-import { RoleHasScopeOutboundQuery } from '../application/queries/impl/roles-has-scope/role-has-scope-outbound.query';
+import { RolesHasScopeOutboundQuery } from '../application/queries/impl/roles-has-scope/roles-has-scope-outbound.query';
 import { RolesSearchQuery } from '../application/queries/impl/roles-search.query';
 import { CreateRoleDto } from '../domain/dto/create-role.dto';
 import { CreateRoleInput } from '../domain/dto/create-role.input';
@@ -253,7 +253,7 @@ export class RolesResolver {
     pagination: PaginationInput = PAGINATION_DEFAULT,
   ) {
     return await this.queryBus.execute(
-      new RoleHasScopeOutboundQuery({
+      new RolesHasScopeOutboundQuery({
         filters,
         sort,
         pagination,
