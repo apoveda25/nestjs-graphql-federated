@@ -64,7 +64,7 @@ input CreateUserInput {
   email: String!
 
   """Example field (MALE | FEMALE | UNDEFINED)"""
-  gender: Gender = UNDEFINED
+  gender: usersGenderEnum = UNDEFINED
 
   """Example field (name)"""
   name: String = ""
@@ -245,12 +245,6 @@ input FindUserInput {
 
   """Example field (username)"""
   username: String
-}
-
-enum Gender {
-  FEMALE
-  MALE
-  UNDEFINED
 }
 
 """Match mode for boolean values."""
@@ -518,7 +512,7 @@ input UpdateUserInput {
   email: String
 
   """Example field (MALE | FEMALE | UNDEFINED)"""
-  gender: Gender
+  gender: usersGenderEnum
 
   """Example field (name)"""
   name: String
@@ -612,4 +606,10 @@ enum scopesActionsEnum {
   FIND
   SEARCH
   UPDATE
+}
+
+enum usersGenderEnum {
+  FEMALE
+  MALE
+  UNDEFINED
 }

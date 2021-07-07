@@ -12,7 +12,6 @@ import {
 } from '@nestjs/graphql';
 import { Authorization } from '../../../shared/decorators/authorization.decorator';
 import { PaginationInput } from '../../../shared/dto/pagination.input';
-import { PermissionsEnum } from '../../../shared/enums/permissions';
 import { IContextGraphQL } from '../../../shared/interfaces/context-graphql.interface';
 import {
   IFilterToAQL,
@@ -44,6 +43,7 @@ import { FilterScopeInput } from '../domain/dto/filter-scope.input';
 import { FindScopeInput } from '../domain/dto/find-scope.input';
 import { SortScopeInput } from '../domain/dto/sort-scope.input';
 import { Scope } from '../domain/entities/scope.entity';
+import { PermissionsEnum } from '../domain/enums/permissions.enum';
 import { CreateScopesPipe } from '../domain/pipes/create-scopes.pipe';
 import { DeleteScopesPipe } from '../domain/pipes/delete-scopes.pipe';
 
@@ -167,7 +167,7 @@ export class ScopesResolver {
   }
 
   @ResolveField()
-  @Authorization(PermissionsEnum.rolesHasScopeRead)
+  @Authorization(PermissionsEnum.scopesInRoles)
   async roles(
     @Parent() { _id }: Role,
 

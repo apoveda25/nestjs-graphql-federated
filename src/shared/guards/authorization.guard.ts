@@ -2,7 +2,6 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { AUTHORIZATION_KEY } from '../decorators/authorization.decorator';
-import { PermissionsEnum } from '../enums/permissions';
 import { IContextGraphQL } from '../interfaces/context-graphql.interface';
 
 @Injectable()
@@ -12,9 +11,10 @@ export class AuthorizationGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const GqlCtx = GqlExecutionContext.create(context);
     const ctx = GqlCtx.getContext<IContextGraphQL>();
-    const requiredPermissions = this.reflector.getAllAndOverride<
-      PermissionsEnum[]
-    >(AUTHORIZATION_KEY, [context.getHandler(), context.getClass()]);
+    const requiredPermissions = this.reflector.getAllAndOverride(
+      AUTHORIZATION_KEY,
+      [context.getHandler(), context.getClass()],
+    );
 
     if (!requiredPermissions) return true;
 

@@ -11,7 +11,7 @@ import {
   Matches,
 } from 'class-validator';
 import { PASSWORD, USER_ID, WORD } from '../../../../shared/helpers/regex';
-import { Gender } from '../../../users/domain/dto/gender.enum';
+import { usersGenderEnum } from '../../../users/domain/enums/users.enum';
 
 @InputType()
 export class SignUpAuthDto {
@@ -52,7 +52,7 @@ export class SignUpAuthDto {
   @IsNumber()
   birthday: number;
 
-  @IsEnum(Gender)
+  @IsEnum(usersGenderEnum)
   gender: string;
 
   @IsString()

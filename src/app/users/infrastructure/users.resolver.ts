@@ -12,7 +12,6 @@ import {
 } from '@nestjs/graphql';
 import { Authorization } from '../../../shared/decorators/authorization.decorator';
 import { PaginationInput } from '../../../shared/dto/pagination.input';
-import { PermissionsEnum } from '../../../shared/enums/permissions';
 import { IContextUser } from '../../../shared/interfaces/context-graphql.interface';
 import {
   IFilterToAQL,
@@ -45,6 +44,7 @@ import { UpdateUserInput } from '../domain/dto/update-user.input';
 import { UserHasRoleUpdateDto } from '../domain/dto/users-has-role/user-has-role-update.dto';
 import { UserHasRoleUpdateInput } from '../domain/dto/users-has-role/user-has-role-update.input';
 import { User } from '../domain/entities/user.entity';
+import { PermissionsEnum } from '../domain/enums/permissions.enum';
 import { CreateUserPipe } from '../domain/pipes/create-user.pipe';
 import { UpdateUsersPipe } from '../domain/pipes/update-users.pipe';
 import { UpdateUsersHasRolePipe } from '../domain/pipes/users-has-role/update-users-has-role.pipe';
@@ -57,7 +57,7 @@ export class UsersResolver {
   ) {}
 
   @Mutation(() => User, { name: 'userCreate' })
-  @Authorization(PermissionsEnum.usersCreate, PermissionsEnum.usersHasRoleAdd)
+  @Authorization(PermissionsEnum.usersCreateOne, PermissionsEnum.usersAddRoles)
   async create(
     @Args(
       {
@@ -78,7 +78,7 @@ export class UsersResolver {
 
   @UsePipes(UpdateUsersPipe)
   @Mutation(() => [User], { name: 'usersUpdate' })
-  @Authorization(PermissionsEnum.usersUpdate)
+  @Authorization(PermissionsEnum.usersUpdateAll)
   async update(
     @Args(
       {
@@ -93,7 +93,7 @@ export class UsersResolver {
   }
 
   @Query(() => User, { name: 'userCurrent' })
-  @Authorization(PermissionsEnum.usersFind)
+  @Authorization(PermissionsEnum.usersCurrent)
   async current(@Context('user', CurrentResourcePipe) filters: IFilterToAQL[]) {
     return await this.queryBus.execute(new UserFindQuery(filters));
   }
@@ -165,7 +165,7 @@ export class UsersResolver {
   }
 
   @ResolveField()
-  @Authorization(PermissionsEnum.usersHasRoleRead)
+  @Authorization(PermissionsEnum.usersOutRoles)
   async role(@Parent() { _id }: User) {
     return await this.queryBus.execute(
       new UsersHasRoleOutboundQuery({ parentId: _id }),
@@ -173,7 +173,7 @@ export class UsersResolver {
   }
 
   @Mutation(() => Role, { name: 'userChangeRole' })
-  @Authorization(PermissionsEnum.usersHasRoleChange)
+  @Authorization(PermissionsEnum.usersChangeRoles)
   async changeRole(
     @Args(
       {
