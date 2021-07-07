@@ -12,14 +12,14 @@ import { RoleFindQuery } from '../../../../../roles/application/queries/impl/rol
 import { Role } from '../../../../../roles/domain/entities/role.entity';
 import { UserHasRoleUpdateDto } from '../../../../domain/dto/users-has-role/user-has-role-update.dto';
 import { User } from '../../../../domain/entities/user.entity';
-import { UsersHasRoleUpdatedEvent } from '../../../../domain/events/users-has-role/users-has-role-updated.event';
+import { UserHasRoleUpdatedEvent } from '../../../../domain/events/users-has-role/user-has-role-updated.event';
 import { UserFindQuery } from '../../../queries/impl/user-find.query';
 import { UserHasRoleFindQuery } from '../../../queries/impl/users-has-role/user-has-role-find.query';
-import { UsersHasRoleUpdateCommand } from '../../impl/users-has-role/users-has-role-update.command';
+import { UserHasRoleUpdateCommand } from '../../impl/users-has-role/user-has-role-update.command';
 
-@CommandHandler(UsersHasRoleUpdateCommand)
-export class UsersHasRoleUpdateCommandHandler
-  implements ICommandHandler<UsersHasRoleUpdateCommand>
+@CommandHandler(UserHasRoleUpdateCommand)
+export class UserHasRoleUpdateCommandHandler
+  implements ICommandHandler<UserHasRoleUpdateCommand>
 {
   constructor(
     private readonly queryBus: QueryBus,
@@ -28,7 +28,7 @@ export class UsersHasRoleUpdateCommandHandler
     private readonly queryParseService: QueryParseService,
   ) {}
 
-  async execute({ input, context }: UsersHasRoleUpdateCommand): Promise<Role> {
+  async execute({ input, context }: UserHasRoleUpdateCommand): Promise<Role> {
     const conflictFrom = await this.userFind(input);
 
     const conflictTo = await this.roleFind(input);
@@ -45,7 +45,7 @@ export class UsersHasRoleUpdateCommandHandler
       context,
     );
 
-    this.eventBus.publish(new UsersHasRoleUpdatedEvent(usersHasRoleUpdated));
+    this.eventBus.publish(new UserHasRoleUpdatedEvent(usersHasRoleUpdated));
 
     return conflictTo;
   }

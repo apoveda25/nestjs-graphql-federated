@@ -27,7 +27,7 @@ import {
 import { FilterScopeInput } from '../../scopes/domain/dto/filter-scope.input';
 import { SortScopeInput } from '../../scopes/domain/dto/sort-scope.input';
 import { Scope } from '../../scopes/domain/entities/scope.entity';
-import { UserHasRoleInQuery } from '../../users-has-role/application/queries/impl/user-has-role-in.query';
+import { UsersHasRoleInboundQuery } from '../../users/application/queries/impl/users-has-role/users-has-role-inbound.query';
 import { FilterUserInput } from '../../users/domain/dto/filter-user.input';
 import { SortUserInput } from '../../users/domain/dto/sort-user.input';
 import { RoleCreateCommand } from '../application/commands/impl/role-create.command';
@@ -212,7 +212,7 @@ export class RolesResolver {
     pagination: PaginationInput = PAGINATION_DEFAULT,
   ) {
     return await this.queryBus.execute(
-      new UserHasRoleInQuery({
+      new UsersHasRoleInboundQuery({
         filters,
         sort,
         pagination,
@@ -263,12 +263,12 @@ export class RolesResolver {
   }
 
   @UsePipes(CreateRolesHasScopePipe)
-  @Mutation(() => Boolean, { name: 'roleAddScopes' })
+  @Mutation(() => [Scope], { name: 'roleAddScopes' })
   @Authorization(PermissionsEnum.rolesHasScopeAdd)
   async addScopes(
     @Args(
       {
-        name: 'role',
+        name: 'scopes',
         type: () => CreateRoleHasScopeInput,
       },
       new ParseArrayPipe({ items: CreateRoleHasScopeDto }),
@@ -281,12 +281,12 @@ export class RolesResolver {
   }
 
   @UsePipes(DeleteRolesHasScopePipe)
-  @Mutation(() => Boolean, { name: 'roleRemoveScopes' })
+  @Mutation(() => [Scope], { name: 'roleRemoveScopes' })
   @Authorization(PermissionsEnum.rolesHasScopeRemove)
   async removeScopes(
     @Args(
       {
-        name: 'role',
+        name: 'scopes',
         type: () => DeleteRoleHasScopeInput,
       },
       new ParseArrayPipe({ items: DeleteRoleHasScopeDto }),

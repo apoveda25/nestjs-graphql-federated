@@ -44,9 +44,7 @@ import { FilterScopeInput } from '../domain/dto/filter-scope.input';
 import { FindScopeInput } from '../domain/dto/find-scope.input';
 import { SortScopeInput } from '../domain/dto/sort-scope.input';
 import { Scope } from '../domain/entities/scope.entity';
-import { CreateScopePipe } from '../domain/pipes/create-scope.pipe';
 import { CreateScopesPipe } from '../domain/pipes/create-scopes.pipe';
-import { DeleteScopePipe } from '../domain/pipes/delete-scope.pipe';
 import { DeleteScopesPipe } from '../domain/pipes/delete-scopes.pipe';
 
 @Resolver(() => Scope)
@@ -66,24 +64,6 @@ export class ScopesResolver {
     );
   }
 
-  @UsePipes(CreateScopePipe)
-  @Mutation(() => Scope)
-  @Authorization(PermissionsEnum.scopesCreateOne)
-  async scopeCreate(
-    @Args(
-      {
-        name: 'scope',
-        type: () => CreateScopeInput,
-      },
-      new ValidationPipe({ expectedType: CreateScopeDto }),
-    )
-    createScopeDto: CreateScopeDto,
-  ) {
-    return await this.commandBus.execute(
-      new ScopesCreateCommand([createScopeDto]),
-    );
-  }
-
   @UsePipes(CreateScopesPipe)
   @Mutation(() => [Scope])
   @Authorization(PermissionsEnum.scopesCreateAll)
@@ -99,24 +79,6 @@ export class ScopesResolver {
   ) {
     return await this.commandBus.execute(
       new ScopesCreateCommand(createScopesDto),
-    );
-  }
-
-  @UsePipes(DeleteScopePipe)
-  @Mutation(() => Scope)
-  @Authorization(PermissionsEnum.scopesDeleteOne)
-  async scopeDelete(
-    @Args(
-      {
-        name: 'scope',
-        type: () => DeleteScopeInput,
-      },
-      new ValidationPipe({ expectedType: DeleteScopeDto }),
-    )
-    deleteScopeDto: DeleteScopeDto,
-  ) {
-    return await this.commandBus.execute(
-      new ScopesDeleteCommand([deleteScopeDto]),
     );
   }
 

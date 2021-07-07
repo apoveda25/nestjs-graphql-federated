@@ -1,16 +1,16 @@
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { UsersHasRoleUpdatedEvent } from '../../../domain/events/users-has-role/users-has-role-updated.event';
+import { UserHasRoleUpdatedEvent } from '../../../domain/events/users-has-role/user-has-role-updated.event';
 import { UsersHasRoleRepository } from '../../../infrastructure/repositories/users-has-role.repository';
 
-@EventsHandler(UsersHasRoleUpdatedEvent)
-export class UsersHasRoleUpdatedEventHandler
-  implements IEventHandler<UsersHasRoleUpdatedEvent>
+@EventsHandler(UserHasRoleUpdatedEvent)
+export class UserHasRoleUpdatedEventHandler
+  implements IEventHandler<UserHasRoleUpdatedEvent>
 {
   constructor(
     private readonly usersHasRoleRepository: UsersHasRoleRepository,
   ) {}
 
-  async handle({ input }: UsersHasRoleUpdatedEvent) {
+  async handle({ input }: UserHasRoleUpdatedEvent) {
     return await this.usersHasRoleRepository.update(input);
   }
 }

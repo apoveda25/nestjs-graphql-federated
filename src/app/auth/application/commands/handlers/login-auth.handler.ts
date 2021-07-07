@@ -1,9 +1,8 @@
 import { CommandHandler, ICommandHandler, QueryBus } from '@nestjs/cqrs';
-import { UserHasRoleOutQuery } from 'src/app/users-has-role/application/queries/impl/user-has-role-out.query';
 import { OperatorBoolean } from 'src/shared/enums/operator-boolean.enum';
 import { QueryParseService } from '../../../../../shared/services/query-parse/query-parse.service';
-import { Role } from '../../../../roles/domain/entities/role.entity';
 import { UserFindQuery } from '../../../../users/application/queries/impl/user-find.query';
+import { UsersHasRoleOutboundQuery } from '../../../../users/application/queries/impl/users-has-role/users-has-role-outbound.query';
 import { User } from '../../../../users/domain/entities/user.entity';
 import { IPayload } from '../../../domain/interfaces/payload.interface';
 import { AuthModel } from '../../../domain/models/auth.model';
@@ -11,7 +10,8 @@ import { LoginAuthCommand } from '../impl/login-auth.command';
 
 @CommandHandler(LoginAuthCommand)
 export class LoginAuthCommandHandler
-  implements ICommandHandler<LoginAuthCommand> {
+  implements ICommandHandler<LoginAuthCommand>
+{
   constructor(
     private readonly queryBus: QueryBus,
     private readonly authModel: AuthModel,
@@ -34,8 +34,8 @@ export class LoginAuthCommandHandler
       ),
     );
 
-    const conflictRole = await this.queryBus.execute<UserHasRoleOutQuery, Role>(
-      new UserHasRoleOutQuery({
+    const conflictRole = await this.queryBus.execute(
+      new UsersHasRoleOutboundQuery({
         parentId: conflictUsernameEmail._id ?? '',
       }),
     );

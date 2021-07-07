@@ -6,7 +6,7 @@ import {
 } from '@nestjs/cqrs';
 import { OperatorBoolean } from 'src/shared/enums/operator-boolean.enum';
 import { QueryParseService } from '../../../../../shared/services/query-parse/query-parse.service';
-import { UserHasRoleInQuery } from '../../../../users-has-role/application/queries/impl/user-has-role-in.query';
+import { UsersHasRoleInboundQuery } from '../../../../users/application/queries/impl/users-has-role/users-has-role-inbound.query';
 import { Role } from '../../../domain/entities/role.entity';
 import { RolesDeletedEvent } from '../../../domain/events/roles-deleted.event';
 import { RoleModel } from '../../../domain/models/role.model';
@@ -43,7 +43,7 @@ export class RolesDeleteCommandHandlers
       );
 
       const conflictEdgeIn = await this.queryBus.execute(
-        new UserHasRoleInQuery({ parentId: role._id }),
+        new UsersHasRoleInboundQuery({ parentId: role._id }),
       );
 
       const roleDeleted = await this.roleModel.delete(role, {

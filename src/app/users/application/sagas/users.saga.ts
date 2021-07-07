@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ICommand, ofType, Saga } from '@nestjs/cqrs';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { UserAddRoleCommand } from '../../../users-has-role/application/commands/impl/user-add-role.command';
 import { UserCreatedEvent } from '../../domain/events/user-created.event';
+import { UserHasRoleCreateCommand } from '../commands/impl/users-has-role/user-has-role-create.command';
 
 @Injectable()
 export class UsersSagas {
@@ -13,13 +13,13 @@ export class UsersSagas {
       ofType(UserCreatedEvent),
       map(
         ({ user }) =>
-          new UserAddRoleCommand({
+          new UserHasRoleCreateCommand({
             _from: user._id,
             _to: user.roleId,
-            createdAt: user.createdAt,
+            createdAt: Date.now(),
             createdBy: user.createdBy,
-            updatedAt: user.updatedAt,
-            updatedBy: user.updatedBy,
+            updatedAt: null,
+            updatedBy: null,
           }),
       ),
     );
