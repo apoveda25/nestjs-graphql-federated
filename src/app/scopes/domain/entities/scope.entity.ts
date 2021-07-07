@@ -49,6 +49,8 @@ export class Scope {
   })
   updatedBy: string;
 
-  @Field(() => [Role])
+  @Field(() => [Role], {
+    description: `Roles assigned this scope`,
+  })
   roles?: Role[];
 }

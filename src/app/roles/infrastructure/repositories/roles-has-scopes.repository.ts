@@ -146,4 +146,42 @@ export class RolesHasScopesRepository {
       throw new GraphQLError(error);
     }
   }
+
+  async searchOutOrphans({
+    parentId,
+    filters = FILTER_DEFAULT,
+    sort = SORT_DEFAULT,
+    pagination = PAGINATION_DEFAULT,
+  }: {
+    parentId: string;
+    filters?: IFilterToAQL[];
+    sort?: ISortToAQL;
+    pagination?: PaginationInput;
+  }): Promise<Scope[]> {
+    const collectionEdge = this.arangoService.collection(this.name);
+    const collectionsVertex = this.collections.map((collection) =>
+      this.arangoService.collection(collection),
+    );
+
+    try {
+      const cursor = await this.arangoService.query(aql`
+        WITH ${aql.join([collectionEdge, ...collectionsVertex])}
+        LET scopesId = (
+          FOR vertex, edge IN OUTBOUND ${parentId} ${collectionEdge}
+          RETURN vertex._id
+        )
+        FOR scope IN ${collectionsVertex[1]}
+        FILTER scope._id NOT IN scopesId
+        ${aql.join(this.queryParseService.filtersToAql(filters, 'scope'))}
+        ${aql.join(this.queryParseService.sortToAql(sort, 'scope'))}
+        ${this.queryParseService.paginationToAql(pagination)}
+        RETURN scope
+      `);
+
+      return await cursor.map((el) => el);
+    } catch (error) {
+      console.log(error);
+      throw new GraphQLError(error);
+    }
+  }
 }

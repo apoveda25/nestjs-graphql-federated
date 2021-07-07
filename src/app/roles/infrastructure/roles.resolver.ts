@@ -37,6 +37,7 @@ import { RolesHasScopeDeleteCommand } from '../application/commands/impl/roles-h
 import { RolesUpdateCommand } from '../application/commands/impl/roles-update.command';
 import { RoleFindQuery } from '../application/queries/impl/role-find.query';
 import { RolesCountQuery } from '../application/queries/impl/roles-count.query';
+import { RolesHasScopeOutboundOrphansQuery } from '../application/queries/impl/roles-has-scope/roles-has-scope-outbound-orphans.query';
 import { RolesHasScopeOutboundQuery } from '../application/queries/impl/roles-has-scope/roles-has-scope-outbound.query';
 import { RolesSearchQuery } from '../application/queries/impl/roles-search.query';
 import { CreateRoleDto } from '../domain/dto/create-role.dto';
@@ -254,6 +255,47 @@ export class RolesResolver {
   ) {
     return await this.queryBus.execute(
       new RolesHasScopeOutboundQuery({
+        filters,
+        sort,
+        pagination,
+        parentId: _id,
+      }),
+    );
+  }
+
+  @ResolveField()
+  @Authorization(PermissionsEnum.rolesHasScopeRead)
+  async scopesOrphans(
+    @Parent() { _id }: Role,
+
+    @Args(
+      'filters',
+      {
+        type: () => FilterScopeInput,
+        nullable: true,
+      },
+      FiltersResourcesPipe,
+    )
+    filters: IFilterToAQL[] = FILTER_DEFAULT,
+
+    @Args(
+      'sort',
+      {
+        type: () => SortScopeInput,
+        nullable: true,
+      },
+      SortResourcesPipe,
+    )
+    sort: ISortToAQL = SORT_DEFAULT,
+
+    @Args('pagination', {
+      type: () => PaginationInput,
+      nullable: true,
+    })
+    pagination: PaginationInput = PAGINATION_DEFAULT,
+  ) {
+    return await this.queryBus.execute(
+      new RolesHasScopeOutboundOrphansQuery({
         filters,
         sort,
         pagination,

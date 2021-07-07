@@ -367,13 +367,20 @@ type Role {
 
   """Example field (name)"""
   name: String!
+
+  """Scopes that belong to the role"""
   scopes(filters: FilterScopeInput, pagination: PaginationInput, sort: SortScopeInput): [Scope!]!
+
+  """Scopes that do not belong to the role"""
+  scopesOrphans(filters: FilterScopeInput, pagination: PaginationInput, sort: SortScopeInput): [Scope!]!
 
   """Example field (1622236241726)"""
   updatedAt: Timestamp
 
   """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   updatedBy: String!
+
+  """Users assigned this role"""
   users(filters: FilterUserInput, pagination: PaginationInput, sort: SortUserInput): [User!]!
 }
 
@@ -398,6 +405,8 @@ type Scope {
 
   """Example field (scopes_create)"""
   name: String!
+
+  """Roles assigned this scope"""
   roles(filters: FilterRoleInput, pagination: PaginationInput, sort: SortRoleInput): [Role!]!
 
   """Example field (1617105326902)"""
@@ -560,6 +569,8 @@ type User {
 
   """Example field (prefix)"""
   prefix: String!
+
+  """Role that belong to the user"""
   role: Role!
 
   """Example field (surname)"""

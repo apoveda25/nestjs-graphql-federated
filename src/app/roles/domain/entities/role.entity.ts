@@ -60,9 +60,18 @@ export class Role {
   })
   updatedAt: number;
 
-  @Field(() => [User])
+  @Field(() => [User], {
+    description: `Users assigned this role`,
+  })
   users?: User[];
 
-  @Field(() => [Scope])
+  @Field(() => [Scope], {
+    description: `Scopes that belong to the role`,
+  })
   scopes?: Scope[];
+
+  @Field(() => [Scope], {
+    description: `Scopes that do not belong to the role`,
+  })
+  scopesOrphans?: Scope[];
 }

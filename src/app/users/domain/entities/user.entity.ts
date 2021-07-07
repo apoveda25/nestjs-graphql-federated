@@ -91,6 +91,8 @@ export class User {
   })
   updatedAt: number;
 
-  @Field(() => Role)
+  @Field(() => Role, {
+    description: `Role that belong to the user`,
+  })
   role?: Role;
 }
