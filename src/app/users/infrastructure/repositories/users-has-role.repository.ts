@@ -1,64 +1,58 @@
 import { Injectable } from '@nestjs/common';
-import { aql } from 'arangojs';
+import { aql } from 'arangojs/aql';
 import { Edge } from 'arangojs/documents';
 import { GraphQLError } from 'graphql';
-import { ArangodbService } from '../../../../arangodb/arangodb.service';
-import { PaginationInput } from '../../../../shared/dto/pagination.input';
-import { collectionsEnum } from '../../../../shared/enums/collections.enum';
 import {
   IFilterToAQL,
   ISortToAQL,
-} from '../../../../shared/interfaces/queries-resources.interface';
+} from 'src/shared/interfaces/queries-resources.interface';
+import { ArangodbService } from '../../../../arangodb/arangodb.service';
+import { PaginationInput } from '../../../../shared/dto/pagination.input';
+import { collectionsEnum } from '../../../../shared/enums/collections.enum';
 import {
   FILTER_DEFAULT,
   PAGINATION_DEFAULT,
   SORT_DEFAULT,
 } from '../../../../shared/queries.constant';
 import { QueryParseService } from '../../../../shared/services/query-parse/query-parse.service';
-import { Scope } from '../../../scopes/domain/entities/scope.entity';
-import { CreateRoleHasScopeDto } from '../../domain/dto/roles-has-scope/create-role-has-scope.dto';
-import { DeleteRoleHasScopeDto } from '../../domain/dto/roles-has-scope/delete-role-has-scope.dto';
-import { Role } from '../../domain/entities/role.entity';
+import { UserHasRoleCreateDto } from '../../domain/dto/users-has-role/user-has-role-create.dto';
+import { UserHasRoleUpdateDto } from '../../domain/dto/users-has-role/user-has-role-update.dto';
+import { User } from '../../domain/entities/user.entity';
 
 @Injectable()
-export class RolesHasScopesRepository {
-  private readonly name = collectionsEnum.ROLES_HAS_SCOPE;
-  private readonly collections = [
-    collectionsEnum.ROLES,
-    collectionsEnum.SCOPES,
-  ];
+export class UsersHasRoleRepository {
+  private readonly name = collectionsEnum.USERS_HAS_ROLE;
+  private readonly collections = [collectionsEnum.USERS, collectionsEnum.ROLES];
 
   constructor(
     private readonly arangoService: ArangodbService,
     private readonly queryParseService: QueryParseService,
   ) {}
 
-  async create(addScopesRoleDto: CreateRoleHasScopeDto[]) {
+  async create(userHasRoleCreateDto: UserHasRoleCreateDto) {
     try {
       const cursor = await this.arangoService.query(aql`
-        FOR vertex IN ${addScopesRoleDto}
-        INSERT vertex INTO ${this.arangoService.collection(this.name)}
-        RETURN NEW
+        INSERT ${userHasRoleCreateDto} INTO ${this.arangoService.collection(
+        this.name,
+      )}
       `);
 
-      return await cursor.map((doc) => doc);
+      return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
     } catch (error) {
       console.log(error);
       throw new GraphQLError(error);
     }
   }
 
-  async delete(removeScopesRoleDto: DeleteRoleHasScopeDto[]) {
+  async update(userHasRoleUpdateDto: UserHasRoleUpdateDto) {
     try {
+      const collection = this.arangoService.collection(this.name);
+
       const cursor = await this.arangoService.query(aql`
-        FOR edge IN ${this.arangoService.collection(this.name)}
-          FOR doc IN ${removeScopesRoleDto}
-          FILTER edge._from == doc._from && edge._to == doc._to
-          REMOVE edge IN ${this.arangoService.collection(this.name)}
-          RETURN OLD
+        UPDATE ${userHasRoleUpdateDto} IN ${collection}
       `);
 
-      return await cursor.map((doc) => doc);
+      return await cursor.reduce((acc: any, cur: any) => cur || acc, null);
     } catch (error) {
       console.log(error);
       throw new GraphQLError(error);
@@ -81,7 +75,7 @@ export class RolesHasScopesRepository {
     }
   }
 
-  async searchOut({
+  async searchIn({
     parentId,
     filters = FILTER_DEFAULT,
     sort = SORT_DEFAULT,
@@ -91,7 +85,7 @@ export class RolesHasScopesRepository {
     filters?: IFilterToAQL[];
     sort?: ISortToAQL;
     pagination?: PaginationInput;
-  }): Promise<Scope[]> {
+  }): Promise<User[]> {
     const collectionEdge = this.arangoService.collection(this.name);
     const collectionsVertex = this.collections.map((collection) =>
       this.arangoService.collection(collection),
@@ -100,7 +94,7 @@ export class RolesHasScopesRepository {
     try {
       const cursor = await this.arangoService.query(aql`
         WITH ${aql.join([collectionEdge, ...collectionsVertex])}
-        FOR vertex, edge IN OUTBOUND ${parentId} ${collectionEdge}
+        FOR vertex, edge IN INBOUND ${parentId} ${collectionEdge}
         ${aql.join(this.queryParseService.filtersToAql(filters, 'vertex'))}
         ${aql.join(this.queryParseService.sortToAql(sort, 'vertex'))}
         ${this.queryParseService.paginationToAql(pagination)}
@@ -114,7 +108,7 @@ export class RolesHasScopesRepository {
     }
   }
 
-  async searchIn({
+  async searchOut({
     parentId,
     filters = FILTER_DEFAULT,
     sort = SORT_DEFAULT,
@@ -124,7 +118,7 @@ export class RolesHasScopesRepository {
     filters?: IFilterToAQL[];
     sort?: ISortToAQL;
     pagination?: PaginationInput;
-  }): Promise<Role[]> {
+  }): Promise<User[]> {
     const collectionEdge = this.arangoService.collection(this.name);
     const collectionsVertex = this.collections.map((collection) =>
       this.arangoService.collection(collection),
@@ -133,7 +127,7 @@ export class RolesHasScopesRepository {
     try {
       const cursor = await this.arangoService.query(aql`
         WITH ${aql.join([collectionEdge, ...collectionsVertex])}
-        FOR vertex, edge IN INBOUND ${parentId} ${collectionEdge}
+        FOR vertex, edge IN OUTBOUND ${parentId} ${collectionEdge}
         ${aql.join(this.queryParseService.filtersToAql(filters, 'vertex'))}
         ${aql.join(this.queryParseService.sortToAql(sort, 'vertex'))}
         ${this.queryParseService.paginationToAql(pagination)}

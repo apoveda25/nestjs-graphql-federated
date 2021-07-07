@@ -4,11 +4,11 @@ import {
   ICommandHandler,
   QueryBus,
 } from '@nestjs/cqrs';
+import { ScopeFindQuery } from 'src/app/scopes/application/queries/impl/scope-find.query';
+import { Scope } from 'src/app/scopes/domain/entities/scope.entity';
+import { OperatorBoolean } from 'src/shared/enums/operator-boolean.enum';
 import { IEdge } from 'src/shared/interfaces/edge.interface';
-import { OperatorBoolean } from '../../../../../../shared/enums/operator-boolean.enum';
-import { QueryParseService } from '../../../../../../shared/services/query-parse/query-parse.service';
-import { ScopeFindQuery } from '../../../../../scopes/application/queries/impl/scope-find.query';
-import { Scope } from '../../../../../scopes/domain/entities/scope.entity';
+import { QueryParseService } from 'src/shared/services/query-parse/query-parse.service';
 import { DeleteRoleHasScopeDto } from '../../../../domain/dto/roles-has-scope/delete-role-has-scope.dto';
 import { RolesHasScopeDeletedEvent } from '../../../../domain/events/roles-has-scope/roles-has-scope-deleted.event';
 import { RolesHasScopeModel } from '../../../../domain/models/roles-has-scope.model';
@@ -17,7 +17,8 @@ import { RolesHasScopeDeleteCommand } from '../../impl/roles-has-scope/roles-has
 
 @CommandHandler(RolesHasScopeDeleteCommand)
 export class RolesHasScopeDeleteCommandHandler
-  implements ICommandHandler<RolesHasScopeDeleteCommand> {
+  implements ICommandHandler<RolesHasScopeDeleteCommand>
+{
   constructor(
     private readonly queryBus: QueryBus,
     private readonly eventBus: EventBus,

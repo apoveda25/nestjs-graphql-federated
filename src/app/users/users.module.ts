@@ -6,6 +6,8 @@ import { UsersEventHandlers } from './application/events';
 import { UsersQueryHandlers } from './application/queries/handlers/index';
 import { UsersSagas } from './application/sagas/users.saga';
 import { UserModel } from './domain/models/user.model';
+import { UsersHasRoleModel } from './domain/models/users-has-role.model';
+import { UsersHasRoleRepository } from './infrastructure/repositories/users-has-role.repository';
 import { UsersRepository } from './infrastructure/repositories/users.repository';
 import { UsersResolver } from './infrastructure/users.resolver';
 
@@ -19,6 +21,8 @@ import { UsersResolver } from './infrastructure/users.resolver';
     UsersSagas,
     UsersRepository,
     UserModel,
+    UsersHasRoleRepository,
+    UsersHasRoleModel,
   ],
 })
 export class UsersModule {}

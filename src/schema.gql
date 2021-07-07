@@ -17,14 +17,6 @@ type Auth {
   user: User!
 }
 
-input ChangeRoleUserInput {
-  """Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
-  roleId: ID!
-
-  """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
-  userId: ID!
-}
-
 input CreateRoleHasScopeInput {
   """Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   roleId: ID!
@@ -309,19 +301,17 @@ enum MatchModeString {
 
 type Mutation {
   login(payload: SignInAuthInput!): Auth!
-  roleAddScopes(role: CreateRoleHasScopeInput!): Boolean!
+  roleAddScopes(scopes: CreateRoleHasScopeInput!): [Scope!]!
   roleCreate(role: CreateRoleInput!): Role!
-  roleRemoveScopes(role: DeleteRoleHasScopeInput!): Boolean!
+  roleRemoveScopes(scopes: DeleteRoleHasScopeInput!): [Scope!]!
   rolesDelete(roles: [DeleteRoleInput!]!): [Role!]!
   rolesUpdate(roles: [UpdateRoleInput!]!): [Role!]!
-  scopeCreate(scope: CreateScopeInput!): Scope!
-  scopeDelete(scope: DeleteScopeInput!): Scope!
   scopesCreate(scopes: [CreateScopeInput!]!): [Scope!]!
   scopesDelete(scopes: [DeleteScopeInput!]!): [Scope!]!
   scopesInit: [Scope!]!
   signIn(payload: SignInAuthInput!): Auth!
   signUp(payload: SignUpAuthInput!): Auth!
-  userChangeRole(role: ChangeRoleUserInput!): Boolean!
+  userChangeRole(role: UserHasRoleUpdateInput!): Role!
   userCreate(user: CreateUserInput!): User!
   usersUpdate(users: [UpdateUserInput!]!): [User!]!
 }
@@ -586,6 +576,14 @@ type User {
 
   """Example field (username)"""
   username: String!
+}
+
+input UserHasRoleUpdateInput {
+  """Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
+  roleId: ID!
+
+  """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
+  userId: ID!
 }
 
 enum collectionsEnum {
