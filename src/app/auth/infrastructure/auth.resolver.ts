@@ -58,8 +58,6 @@ export class AuthResolver {
     )
     payload: SignInAuthDto,
   ) {
-    console.log('payload: ', payload);
-
     return await this.commandBus.execute(new LoginAuthCommand(payload));
   }
 }
