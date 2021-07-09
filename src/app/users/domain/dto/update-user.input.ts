@@ -1,5 +1,5 @@
 import { Field, GraphQLTimestamp, ID, InputType } from '@nestjs/graphql';
-import { Gender } from './gender.enum';
+import { usersGenderEnum } from '../enums/users.enum';
 
 @InputType()
 export class UpdateUserInput {
@@ -44,7 +44,7 @@ export class UpdateUserInput {
   })
   birthday?: number;
 
-  @Field(() => Gender, {
+  @Field(() => usersGenderEnum, {
     description: `Example field (MALE | FEMALE | UNDEFINED)`,
     nullable: true,
   })

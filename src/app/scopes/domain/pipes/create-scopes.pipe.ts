@@ -13,7 +13,7 @@ export class CreateScopesPipe implements PipeTransform {
     return scopes.map((scope) => ({
       _id: `${collectionsEnum.SCOPES}/${scope._key}`,
       ...scope,
-      name: `${scope.action.toLowerCase()}_${scope.collection.toLowerCase()}`,
+      name: `${scope.collection.toLowerCase()}_${scope.action.toLowerCase()}`,
       createdBy: this.context.user._id,
       updatedBy: null,
       createdAt: Date.now(),

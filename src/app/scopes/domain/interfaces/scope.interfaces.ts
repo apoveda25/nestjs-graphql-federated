@@ -1,4 +1,4 @@
-import { IEdge } from '../../../../shared/interfaces/edge.interface';
+import { Role } from '../../../roles/domain/entities/role.entity';
 import { Scope } from '../entities/scope.entity';
 export interface IScope {
   _id?: string;
@@ -16,7 +16,7 @@ export interface IScopeCreateConflits {
 
 export interface IScopeDeleteConflits {
   conflictKey: Scope;
-  conflictInEdges: IEdge[];
+  conflictInEdgesRoles: Role[];
 }
 
 export interface ICollection extends Record<string, any> {

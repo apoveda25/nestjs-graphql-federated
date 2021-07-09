@@ -12,25 +12,17 @@ directive @provides(fields: String!) on FIELD_DEFINITION
 
 directive @requires(fields: String!) on FIELD_DEFINITION
 
-input AddScopesRoleInput {
-  """Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
-  roleId: ID!
-
-  """Example field (Scopes/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
-  scopesId: [ID!]!
-}
-
 type Auth {
   token: String!
   user: User!
 }
 
-input ChangeRoleUserInput {
+input CreateRoleHasScopeInput {
   """Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   roleId: ID!
 
-  """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
-  userId: ID!
+  """Example field (Scopes/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
+  scopesId: [ID!]!
 }
 
 input CreateRoleInput {
@@ -72,7 +64,7 @@ input CreateUserInput {
   email: String!
 
   """Example field (MALE | FEMALE | UNDEFINED)"""
-  gender: Gender = UNDEFINED
+  gender: usersGenderEnum = UNDEFINED
 
   """Example field (name)"""
   name: String = ""
@@ -91,6 +83,14 @@ input CreateUserInput {
 
   """Example field (username)"""
   username: String!
+}
+
+input DeleteRoleHasScopeInput {
+  """Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
+  roleId: ID!
+
+  """Example field (Scopes/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
+  scopesId: [ID!]!
 }
 
 input DeleteRoleInput {
@@ -175,17 +175,6 @@ input FilterUserInput {
   username: [FilterStringInput!]
 }
 
-input FiltersSearchScopesDontBelongRoleInput {
-  """Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
-  _id: ID
-
-  """Example field (20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
-  _key: ID
-
-  """Example field (name)"""
-  name: String
-}
-
 input FindRoleInput {
   """Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   _id: ID
@@ -258,12 +247,6 @@ input FindUserInput {
   username: String
 }
 
-enum Gender {
-  FEMALE
-  MALE
-  UNDEFINED
-}
-
 """Match mode for boolean values."""
 enum MatchModeBoolean {
   DISTINCT
@@ -312,19 +295,17 @@ enum MatchModeString {
 
 type Mutation {
   login(payload: SignInAuthInput!): Auth!
-  roleAddScopes(role: AddScopesRoleInput!): Boolean!
+  roleAddScopes(scopes: CreateRoleHasScopeInput!): [Scope!]!
   roleCreate(role: CreateRoleInput!): Role!
-  roleRemoveScopes(role: RemoveScopesRoleInput!): Boolean!
+  roleRemoveScopes(scopes: DeleteRoleHasScopeInput!): [Scope!]!
   rolesDelete(roles: [DeleteRoleInput!]!): [Role!]!
   rolesUpdate(roles: [UpdateRoleInput!]!): [Role!]!
-  scopeCreate(scope: CreateScopeInput!): Scope!
-  scopeDelete(scope: DeleteScopeInput!): Scope!
   scopesCreate(scopes: [CreateScopeInput!]!): [Scope!]!
   scopesDelete(scopes: [DeleteScopeInput!]!): [Scope!]!
   scopesInit: [Scope!]!
   signIn(payload: SignInAuthInput!): Auth!
   signUp(payload: SignUpAuthInput!): Auth!
-  userChangeRole(role: ChangeRoleUserInput!): Boolean!
+  userChangeRole(role: UserHasRoleUpdateInput!): Role!
   userCreate(user: CreateUserInput!): User!
   usersUpdate(users: [UpdateUserInput!]!): [User!]!
 }
@@ -347,19 +328,10 @@ type Query {
   scopeFind(find: FindScopeInput!): Scope
   scopesCount(filters: FilterScopeInput): Int!
   scopesSearch(filters: FilterScopeInput, pagination: PaginationInput, sort: SortScopeInput): [Scope!]!
-  scopesSearchDontBelongRole(filters: FiltersSearchScopesDontBelongRoleInput!, pagination: PaginationInput, sort: SortScopeInput): [Scope!]!
   userCurrent: User!
   userFind(filters: FindUserInput!): User
   usersCount(filters: FilterUserInput): Int!
   usersSearch(filters: FilterUserInput, pagination: PaginationInput, sort: SortUserInput): [User!]!
-}
-
-input RemoveScopesRoleInput {
-  """Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
-  roleId: ID!
-
-  """Example field (Scopes/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
-  scopesId: [ID!]!
 }
 
 type Role {
@@ -389,13 +361,20 @@ type Role {
 
   """Example field (name)"""
   name: String!
+
+  """Scopes that belong to the role"""
   scopes(filters: FilterScopeInput, pagination: PaginationInput, sort: SortScopeInput): [Scope!]!
+
+  """Scopes that do not belong to the role"""
+  scopesOrphans(filters: FilterScopeInput, pagination: PaginationInput, sort: SortScopeInput): [Scope!]!
 
   """Example field (1622236241726)"""
   updatedAt: Timestamp
 
   """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
   updatedBy: String!
+
+  """Users assigned this role"""
   users(filters: FilterUserInput, pagination: PaginationInput, sort: SortUserInput): [User!]!
 }
 
@@ -420,6 +399,8 @@ type Scope {
 
   """Example field (scopes_create)"""
   name: String!
+
+  """Roles assigned this scope"""
   roles(filters: FilterRoleInput, pagination: PaginationInput, sort: SortRoleInput): [Role!]!
 
   """Example field (1617105326902)"""
@@ -531,7 +512,7 @@ input UpdateUserInput {
   email: String
 
   """Example field (MALE | FEMALE | UNDEFINED)"""
-  gender: Gender
+  gender: usersGenderEnum
 
   """Example field (name)"""
   name: String
@@ -582,6 +563,8 @@ type User {
 
   """Example field (prefix)"""
   prefix: String!
+
+  """Role that belong to the user"""
   role: Role!
 
   """Example field (surname)"""
@@ -600,6 +583,14 @@ type User {
   username: String!
 }
 
+input UserHasRoleUpdateInput {
+  """Example field (Roles/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
+  roleId: ID!
+
+  """Example field (Users/20f736ce-b6a0-4ed5-8062-47d32c844d3d)"""
+  userId: ID!
+}
+
 enum collectionsEnum {
   ROLES
   ROLES_HAS_SCOPE
@@ -615,4 +606,10 @@ enum scopesActionsEnum {
   FIND
   SEARCH
   UPDATE
+}
+
+enum usersGenderEnum {
+  FEMALE
+  MALE
+  UNDEFINED
 }

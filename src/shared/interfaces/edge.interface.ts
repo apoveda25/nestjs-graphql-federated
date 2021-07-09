@@ -1,10 +1,11 @@
-export interface IEdge {
+export interface IEdge<T = Record<string, any>> {
   _id: string;
   _key: string;
   _from: string;
   _to: string;
   createdBy: string;
   createdAt: number;
+  vertex: T;
 }
 
 export interface IEdgeFilter {

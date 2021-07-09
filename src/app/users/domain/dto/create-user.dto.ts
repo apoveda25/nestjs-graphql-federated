@@ -15,7 +15,7 @@ import {
   USER_ID,
   WORD,
 } from '../../../../shared/helpers/regex';
-import { Gender } from './gender.enum';
+import { usersGenderEnum } from '../enums/users.enum';
 
 @InputType()
 export class CreateUserDto {
@@ -56,7 +56,7 @@ export class CreateUserDto {
   @IsInt()
   birthday: number;
 
-  @IsEnum(Gender)
+  @IsEnum(usersGenderEnum)
   gender: string;
 
   @IsString()

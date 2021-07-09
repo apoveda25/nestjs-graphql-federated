@@ -3,10 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { GraphQLFederationModule } from '@nestjs/graphql';
 import { AuthModule } from './app/auth/auth.module';
-import { RolesHasScopeModule } from './app/roles-has-scope/roles-has-scope.module';
 import { RolesModule } from './app/roles/roles.module';
 import { ScopesModule } from './app/scopes/scopes.module';
-import { UsersHasRoleModule } from './app/users-has-role/users-has-role.module';
 import { UsersModule } from './app/users/users.module';
 import { ArangodbModule } from './arangodb/arangodb.module';
 import appConfig from './config/app.config';
@@ -36,8 +34,6 @@ import { SharedModule } from './shared/shared.module';
     UsersModule,
     RolesModule,
     ScopesModule,
-    UsersHasRoleModule,
-    RolesHasScopeModule,
     AuthModule,
   ],
   providers: [

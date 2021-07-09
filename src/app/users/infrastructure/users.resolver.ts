@@ -12,7 +12,6 @@ import {
 } from '@nestjs/graphql';
 import { Authorization } from '../../../shared/decorators/authorization.decorator';
 import { PaginationInput } from '../../../shared/dto/pagination.input';
-import { PermissionsEnum } from '../../../shared/enums/permissions';
 import { IContextUser } from '../../../shared/interfaces/context-graphql.interface';
 import {
   IFilterToAQL,
@@ -27,15 +26,13 @@ import {
   PAGINATION_DEFAULT,
   SORT_DEFAULT,
 } from '../../../shared/queries.constant';
-import { UserChangeRoleCommand } from '../../users-has-role/application/commands/impl/user-change-role.command';
-import { UserHasRoleOutQuery } from '../../users-has-role/application/queries/impl/user-has-role-out.query';
-import { ChangeRoleUserDto } from '../../users-has-role/domain/dto/change-role-user.dto';
-import { ChangeRoleUserInput } from '../../users-has-role/domain/dto/change-role-user.input';
-import { ChangeRoleUserPipe } from '../../users-has-role/domain/pipes/change-role-user.pipe';
+import { Role } from '../../roles/domain/entities/role.entity';
 import { UserCreateCommand } from '../application/commands/impl/user-create.command';
+import { UserHasRoleUpdateCommand } from '../application/commands/impl/users-has-role/user-has-role-update.command';
 import { UsersUpdateCommand } from '../application/commands/impl/users-update.command';
 import { UserFindQuery } from '../application/queries/impl/user-find.query';
 import { UsersCountQuery } from '../application/queries/impl/users-count.query';
+import { UsersHasRoleOutboundQuery } from '../application/queries/impl/users-has-role/users-has-role-outbound.query';
 import { UsersSearchQuery } from '../application/queries/impl/users-search.query';
 import { CreateUserDto } from '../domain/dto/create-user.dto';
 import { CreateUserInput } from '../domain/dto/create-user.input';
@@ -44,9 +41,13 @@ import { FindUserInput } from '../domain/dto/find-user.input';
 import { SortUserInput } from '../domain/dto/sort-user.input';
 import { UpdateUserDto } from '../domain/dto/update-user.dto';
 import { UpdateUserInput } from '../domain/dto/update-user.input';
+import { UserHasRoleUpdateDto } from '../domain/dto/users-has-role/user-has-role-update.dto';
+import { UserHasRoleUpdateInput } from '../domain/dto/users-has-role/user-has-role-update.input';
 import { User } from '../domain/entities/user.entity';
+import { PermissionsEnum } from '../domain/enums/permissions.enum';
 import { CreateUserPipe } from '../domain/pipes/create-user.pipe';
 import { UpdateUsersPipe } from '../domain/pipes/update-users.pipe';
+import { UpdateUsersHasRolePipe } from '../domain/pipes/users-has-role/update-users-has-role.pipe';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -56,7 +57,7 @@ export class UsersResolver {
   ) {}
 
   @Mutation(() => User, { name: 'userCreate' })
-  @Authorization(PermissionsEnum.usersCreate, PermissionsEnum.usersHasRoleAdd)
+  @Authorization(PermissionsEnum.usersCreateOne, PermissionsEnum.usersAddRoles)
   async create(
     @Args(
       {
@@ -77,7 +78,7 @@ export class UsersResolver {
 
   @UsePipes(UpdateUsersPipe)
   @Mutation(() => [User], { name: 'usersUpdate' })
-  @Authorization(PermissionsEnum.usersUpdate)
+  @Authorization(PermissionsEnum.usersUpdateAll)
   async update(
     @Args(
       {
@@ -92,7 +93,7 @@ export class UsersResolver {
   }
 
   @Query(() => User, { name: 'userCurrent' })
-  @Authorization(PermissionsEnum.usersFind)
+  @Authorization(PermissionsEnum.usersCurrent)
   async current(@Context('user', CurrentResourcePipe) filters: IFilterToAQL[]) {
     return await this.queryBus.execute(new UserFindQuery(filters));
   }
@@ -164,30 +165,30 @@ export class UsersResolver {
   }
 
   @ResolveField()
-  @Authorization(PermissionsEnum.usersHasRoleRead)
+  @Authorization(PermissionsEnum.usersOutRoles)
   async role(@Parent() { _id }: User) {
     return await this.queryBus.execute(
-      new UserHasRoleOutQuery({ parentId: _id }),
+      new UsersHasRoleOutboundQuery({ parentId: _id }),
     );
   }
 
-  @Mutation(() => Boolean, { name: 'userChangeRole' })
-  @Authorization(PermissionsEnum.usersHasRoleChange)
+  @Mutation(() => Role, { name: 'userChangeRole' })
+  @Authorization(PermissionsEnum.usersChangeRoles)
   async changeRole(
     @Args(
       {
         name: 'role',
-        type: () => ChangeRoleUserInput,
+        type: () => UserHasRoleUpdateInput,
       },
-      ChangeRoleUserPipe,
-      new ValidationPipe({ expectedType: ChangeRoleUserDto }),
+      UpdateUsersHasRolePipe,
+      new ValidationPipe({ expectedType: UserHasRoleUpdateDto }),
     )
-    changeRoleUserDto: ChangeRoleUserDto,
+    userHasRoleUpdateDto: UserHasRoleUpdateDto,
 
     @Context('user') context: IContextUser,
   ) {
     return await this.commandBus.execute(
-      new UserChangeRoleCommand(changeRoleUserDto, context),
+      new UserHasRoleUpdateCommand(userHasRoleUpdateDto, context),
     );
   }
 }

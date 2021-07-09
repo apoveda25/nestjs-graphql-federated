@@ -11,7 +11,7 @@ import {
   Matches,
 } from 'class-validator';
 import { USER_ID, WORD } from '../../../../shared/helpers/regex';
-import { Gender } from './gender.enum';
+import { usersGenderEnum } from '../enums/users.enum';
 
 @InputType()
 export class UpdateUserDto {
@@ -45,7 +45,7 @@ export class UpdateUserDto {
   @IsOptional()
   birthday?: number;
 
-  @IsEnum(Gender)
+  @IsEnum(usersGenderEnum)
   @IsOptional()
   gender?: string;
 
