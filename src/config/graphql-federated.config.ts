@@ -14,17 +14,17 @@ export const graphqlFederatedConfig: (
     configService.get('graphql.autoSchemaFile'),
   ),
   sortSchema: configService.get('graphql.sortSchema'),
-  context: ({ req }) => {
-    const user = req.headers['x-user']
-      ? JSON.parse(req.headers['x-user'])
+  context: ({ request }) => {
+    const user = request.headers['x-user']
+      ? JSON.parse(request.headers['x-user'])
       : { _id: '', active: false, emailActive: false };
 
-    const role = req.headers['x-role']
-      ? JSON.parse(req.headers['x-role'])
+    const role = request.headers['x-role']
+      ? JSON.parse(request.headers['x-role'])
       : { _id: '', _key: '', level: 9 };
 
-    const scopes = req.headers['x-scopes']
-      ? req.headers['x-scopes'].split(',')
+    const scopes = request.headers['x-scopes']
+      ? request.headers['x-scopes'].split(',')
       : [];
 
     return { user: { ...user, role, scopes } };
